@@ -9,7 +9,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root{
     --alta:#295097;
@@ -56,6 +55,7 @@
     backdrop-filter:blur(6px);
     text-align:center;
   }
+  .gate-logo{width:58px; height:auto; display:block; margin:0 auto 14px;}
   .wordmark{
     color:#fff; font-size:28px; font-weight:700; letter-spacing:-.01em; margin:0 0 4px;
   }
@@ -63,10 +63,28 @@
   .gate-sub{
     color:#c9d4e8; font-size:14px; margin:0 0 28px; line-height:1.5;
   }
-  #g_id_button_wrap{display:flex; justify-content:center; margin-bottom:16px;}
+  .gate-form{display:flex; flex-direction:column; gap:10px; margin-bottom:6px;}
+  .gate-form input{
+    width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--line);
+    background:rgba(255,255,255,.06); color:#fff; font-size:14px; font-family:inherit;
+    text-align:center;
+  }
+  .gate-form input::placeholder{color:#8ea0c2;}
+  .gate-form input:focus{outline:2px solid var(--gold); outline-offset:1px;}
+  .gate-btn{
+    padding:12px 14px; border-radius:100px; border:none; cursor:pointer;
+    background:var(--gold); color:#1c2b45; font-weight:600; font-size:14px; font-family:inherit;
+  }
+  .gate-btn:hover{filter:brightness(1.05);}
+  .gate-btn:disabled{opacity:.6; cursor:default;}
+  .gate-link{
+    background:none; border:none; color:#9db3d9; font-size:12px; cursor:pointer;
+    text-decoration:underline; font-family:inherit; padding:4px;
+  }
   .gate-msg{
     min-height:20px; font-size:13px; color:#ffb4b4; margin-top:10px;
   }
+  .gate-msg.ok{color:#a8e6b8;}
   .gate-foot{
     margin-top:26px; font-size:12px; color:#8ea0c2;
   }
@@ -85,6 +103,8 @@
     position:relative; z-index:1;
     display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap;
   }
+  .topbar-brand{display:flex; align-items:center; gap:14px;}
+  .topbar-logo{height:32px; width:auto; display:block;}
   .topbar-title{font-size:26px; font-weight:700; margin:0;}
   .topbar-title span{color:var(--gold);}
   .topbar-user{
@@ -147,27 +167,48 @@
 <!-- ============ GATE: login screen ============ -->
 <div id="gate">
   <div class="contours" aria-hidden="true">
-    <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
-      <g fill="none" stroke="#ffffff" stroke-opacity="0.09" stroke-width="1.4">
-        <path d="M-50 480 C 150 380, 350 560, 550 420 S 850 380, 900 460"/>
-        <path d="M-50 400 C 150 300, 350 480, 550 340 S 850 300, 900 380"/>
-        <path d="M-50 320 C 150 220, 350 400, 550 260 S 850 220, 900 300"/>
-        <path d="M-50 240 C 150 140, 350 320, 550 180 S 850 140, 900 220"/>
-        <path d="M-50 160 C 150 60, 350 240, 550 100 S 850 60, 900 140"/>
+    <svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
+      <g fill="none" stroke="#ffffff" stroke-opacity="0.11" stroke-width="2">
+        <!-- Genética: dupla hélice -->
+        <path d="M240 20 C120 100,360 180,240 260 C120 340,360 420,240 500 C120 580,360 640,240 700"/>
+        <path d="M240 20 C360 100,120 180,240 260 C360 340,120 420,240 500 C360 580,120 640,240 700"/>
+        <path d="M148 62 L332 62 M170 142 L310 142 M148 220 L332 220 M170 302 L310 302 M148 380 L332 380 M170 460 L310 460 M148 540 L332 540 M170 620 L310 620" stroke-width="1.4"/>
+
+        <!-- Reprodução: ciclo -->
+        <circle cx="650" cy="120" r="120" stroke-width="1.6"/>
+        <path d="M650 0 l-14 20 M650 0 l20 12" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="650" cy="0" r="6" fill="#ffffff" fill-opacity="0.14" stroke="none"/>
+        <circle cx="770" cy="120" r="6" fill="#ffffff" fill-opacity="0.14" stroke="none"/>
+        <circle cx="650" cy="240" r="6" fill="#ffffff" fill-opacity="0.14" stroke="none"/>
+        <circle cx="530" cy="120" r="6" fill="#ffffff" fill-opacity="0.14" stroke="none"/>
+
+        <!-- Neonatos: bezerra em traço -->
+        <ellipse cx="990" cy="410" rx="98" ry="58"/>
+        <circle cx="890" cy="368" r="34"/>
+        <path d="M918 392 C942 400,958 404,970 406" stroke-linecap="round"/>
+        <path d="M862 350 L830 336 L862 366 Z" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M905 344 C912 326,930 322,940 332" stroke-linecap="round"/>
+        <path d="M1078 380 C1110 390,1112 430,1092 452" stroke-linecap="round"/>
+        <path d="M930 466 L924 540 M968 470 L964 546 M1010 470 L1014 546 M1048 466 L1056 540" stroke-linecap="round"/>
       </g>
     </svg>
   </div>
   <div class="gate-card">
+    <img class="gate-logo" src="assets/logo-alta-azul.png" alt="Alta" />
     <p class="wordmark">Plataforma <span>Azul</span></p>
-    <p class="gate-sub">Acesso restrito à equipe técnica da Alta.<br/>Entre com sua conta Google institucional.</p>
-    <div id="g_id_onload"
-         data-client_id="208924323002-9ss0n6ekbudfcvkfgatjil746dm92q2o.apps.googleusercontent.com"
-         data-callback="handleCredentialResponse"
-         data-auto_prompt="false">
+    <p class="gate-sub">Acesso restrito à equipe técnica da Alta.<br/>Entre com seu e-mail institucional.</p>
+
+    <div id="stepEmail" class="gate-form">
+      <input type="email" id="emailInput" placeholder="seu.nome@altagenetics.com" autocomplete="email" />
+      <button class="gate-btn" id="sendCodeBtn" type="button">Enviar código de acesso</button>
     </div>
-    <div id="g_id_button_wrap">
-      <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large" data-shape="pill" data-text="signin_with"></div>
+
+    <div id="stepCode" class="gate-form" style="display:none;">
+      <input type="text" id="codeInput" placeholder="Código de 6 dígitos" inputmode="numeric" maxlength="6" autocomplete="one-time-code" />
+      <button class="gate-btn" id="confirmCodeBtn" type="button">Confirmar e entrar</button>
+      <button class="gate-link" id="backBtn" type="button">Usar outro e-mail</button>
     </div>
+
     <p class="gate-msg" id="gateMsg"></p>
     <p class="gate-foot">Se seu e-mail não estiver autorizado, fale com Rafael.</p>
   </div>
@@ -177,15 +218,23 @@
 <div id="app">
   <header class="topbar">
     <div class="contours" aria-hidden="true">
-      <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice">
-        <g fill="none" stroke="#ffffff" stroke-width="1.2">
-          <path d="M-50 260 C 150 200, 350 300, 550 220 S 850 200, 900 240"/>
-          <path d="M-50 200 C 150 140, 350 240, 550 160 S 850 140, 900 180"/>
+      <svg viewBox="0 0 1200 500" preserveAspectRatio="xMidYMid slice">
+        <g fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="2">
+          <path d="M240 -80 C120 0,360 80,240 160 C120 240,360 320,240 400 C120 480,360 540,240 600"/>
+          <path d="M240 -80 C360 0,120 80,240 160 C360 240,120 320,240 400 C360 480,120 540,240 600"/>
+          <circle cx="620" cy="260" r="150"/>
+          <circle cx="620" cy="110" r="7" fill="#ffffff" fill-opacity="0.16" stroke="none"/>
+          <circle cx="770" cy="260" r="7" fill="#ffffff" fill-opacity="0.16" stroke="none"/>
+          <ellipse cx="990" cy="300" rx="90" ry="52"/>
+          <circle cx="890" cy="248" r="34"/>
         </g>
       </svg>
     </div>
     <div class="topbar-row">
-      <h1 class="topbar-title">Plataforma <span>Azul</span></h1>
+      <div class="topbar-brand">
+        <img class="topbar-logo" src="assets/logo-alta-branca.png" alt="Alta" />
+        <h1 class="topbar-title">Plataforma <span>Azul</span></h1>
+      </div>
       <div class="topbar-user">
         <span id="userEmail"></span>
         <button id="logoutBtn" type="button">Sair</button>
@@ -281,21 +330,60 @@
     }
   }
 
-  function showGateError(msg){
-    document.getElementById('gateMsg').textContent = msg;
+  function showGateMsg(msg, ok){
+    var el = document.getElementById('gateMsg');
+    el.textContent = msg;
+    el.classList.toggle('ok', !!ok);
   }
 
-  // Callback chamado pela biblioteca do Google após o login
-  function handleCredentialResponse(response) {
-    showGateError('Verificando...');
-    PlataformaAzulAuth.login(response.credential, function(result){
+  var pendingEmail = '';
+
+  document.getElementById('sendCodeBtn').addEventListener('click', function(){
+    var email = document.getElementById('emailInput').value.trim();
+    if (!email) { showGateMsg('Digite seu e-mail.'); return; }
+
+    this.disabled = true;
+    showGateMsg('Enviando código...');
+    var btn = this;
+
+    PlataformaAzulAuth.requestCode(email, function(result){
+      btn.disabled = false;
+      if (result.ok) {
+        pendingEmail = email;
+        document.getElementById('stepEmail').style.display = 'none';
+        document.getElementById('stepCode').style.display = 'flex';
+        document.getElementById('codeInput').focus();
+        showGateMsg('Código enviado — confira seu e-mail.', true);
+      } else {
+        showGateMsg(result.error || 'Não foi possível enviar o código.');
+      }
+    });
+  });
+
+  document.getElementById('confirmCodeBtn').addEventListener('click', function(){
+    var code = document.getElementById('codeInput').value.trim();
+    if (!code) { showGateMsg('Digite o código recebido.'); return; }
+
+    this.disabled = true;
+    showGateMsg('Verificando...');
+    var btn = this;
+
+    PlataformaAzulAuth.verifyCode(pendingEmail, code, function(result){
+      btn.disabled = false;
       if (result.ok) {
         showApp(result.email);
       } else {
-        showGateError(result.error || 'Não foi possível entrar.');
+        showGateMsg(result.error || 'Código incorreto.');
       }
     });
-  }
+  });
+
+  document.getElementById('backBtn').addEventListener('click', function(){
+    document.getElementById('stepCode').style.display = 'none';
+    document.getElementById('stepEmail').style.display = 'flex';
+    document.getElementById('codeInput').value = '';
+    showGateMsg('');
+  });
 
   document.getElementById('logoutBtn').addEventListener('click', function(){
     PlataformaAzulAuth.logout();

@@ -23,7 +23,7 @@
 
 (function (global) {
   var STORAGE_KEY = 'plataformaAzul.session';
-  var APPS_SCRIPT_URL = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT_IMPLANTADO';
+  var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwuLqckGdPDJAUyGhEjPacycPsNFZ7F8kkDzHIZ6NYnfpOCXHbaEnrBlUFXJtn1UophNg/exec';
 
   function getSession() {
     try {
@@ -95,9 +95,22 @@
     });
   }
 
-  // Chamado pelo hub depois que o login com Google + checagem na planilha der certo.
-  function login(idToken, callback) {
-    var url = APPS_SCRIPT_URL + '?action=login&id_token=' + encodeURIComponent(idToken);
+  // Passo 1 do login: pede ao servidor para mandar um código de 6 dígitos para o e-mail.
+  function requestCode(email, callback) {
+    var url = APPS_SCRIPT_URL + '?action=request_code&email=' + encodeURIComponent(email);
+    fetch(url)
+      .then(function (r) { return r.json(); })
+      .then(callback)
+      .catch(function () {
+        callback({ ok: false, error: 'falha de rede ao contatar o servidor de login' });
+      });
+  }
+
+  // Passo 2 do login: confirma o código digitado; se bater, salva a sessão.
+  function verifyCode(email, code, callback) {
+    var url = APPS_SCRIPT_URL +
+      '?action=verify_code&email=' + encodeURIComponent(email) +
+      '&code=' + encodeURIComponent(code);
     fetch(url)
       .then(function (r) { return r.json(); })
       .then(function (data) {
@@ -119,7 +132,8 @@
     getSession: getSession,
     verifySession: verifySession,
     guard: guard,
-    login: login,
+    requestCode: requestCode,
+    verifyCode: verifyCode,
     logout: logout,
     APPS_SCRIPT_URL: APPS_SCRIPT_URL
   };
