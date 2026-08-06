@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="theme-color" content="#17305C" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Plataforma Azul</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root{
+    --alta:#295097;
+    --alta-deep:#17305C;
+    --alta-deeper:#0d1e3d;
+    --gold:#d7c36e;
+    --mist:#eef2f8;
+    --paper:#f7f8fb;
+    --ink:#0f1b30;
+    --line:rgba(255,255,255,.14);
+    --radius:14px;
+    font-family:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+  }
+  h1,h2,h3,.wordmark{font-family:'Space Grotesk',system-ui,sans-serif;}
+
+  /* ---------- contour field pattern (signature element) ---------- */
+  .contours{
+    position:absolute; inset:0; overflow:hidden; pointer-events:none;
+  }
+  .contours svg{width:100%;height:100%;display:block;}
+
+  /* ---------- GATE (login) ---------- */
+  #gate{
+    position:fixed; inset:0; z-index:50;
+    display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 20% 15%, var(--alta) 0%, var(--alta-deep) 45%, var(--alta-deeper) 100%);
+    transition:opacity .5s ease, visibility .5s ease;
+  }
+  #gate.hidden{opacity:0; visibility:hidden; pointer-events:none;}
+  .gate-card{
+    position:relative; z-index:1;
+    width:min(420px,88vw);
+    background:rgba(13,30,61,.55);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:44px 36px;
+    backdrop-filter:blur(6px);
+    text-align:center;
+  }
+  .wordmark{
+    color:#fff; font-size:28px; font-weight:700; letter-spacing:-.01em; margin:0 0 4px;
+  }
+  .wordmark span{color:var(--gold);}
+  .gate-sub{
+    color:#c9d4e8; font-size:14px; margin:0 0 28px; line-height:1.5;
+  }
+  #g_id_button_wrap{display:flex; justify-content:center; margin-bottom:16px;}
+  .gate-msg{
+    min-height:20px; font-size:13px; color:#ffb4b4; margin-top:10px;
+  }
+  .gate-foot{
+    margin-top:26px; font-size:12px; color:#8ea0c2;
+  }
+
+  /* ---------- APP (post-login) ---------- */
+  #app{display:none;}
+  #app.visible{display:block;}
+
+  header.topbar{
+    background:linear-gradient(120deg,var(--alta-deep),var(--alta));
+    color:#fff; padding:26px 6vw 30px;
+    position:relative; overflow:hidden;
+  }
+  header.topbar .contours{opacity:.25;}
+  .topbar-row{
+    position:relative; z-index:1;
+    display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap;
+  }
+  .topbar-title{font-size:26px; font-weight:700; margin:0;}
+  .topbar-title span{color:var(--gold);}
+  .topbar-user{
+    display:flex; align-items:center; gap:10px; font-size:13px; color:#dbe4f3;
+  }
+  .topbar-user button{
+    background:none; border:1px solid var(--line); color:#dbe4f3;
+    padding:6px 12px; border-radius:100px; font-size:12px; cursor:pointer;
+    font-family:inherit;
+  }
+  .topbar-user button:hover{background:rgba(255,255,255,.08);}
+
+  main{max-width:1180px; margin:0 auto; padding:44px 6vw 80px;}
+  .areas{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:22px;
+  }
+  @media (max-width:860px){ .areas{grid-template-columns:1fr;} }
+
+  .area{
+    border-radius:var(--radius);
+    background:#fff;
+    border:1px solid #e3e8f2;
+    overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .area-head{
+    padding:22px 22px 18px;
+    color:#fff;
+    position:relative;
+  }
+  .area-head h2{margin:8px 0 4px; font-size:20px;}
+  .area-head p{margin:0; font-size:13px; color:rgba(255,255,255,.82); line-height:1.5;}
+  .area-eyebrow{
+    font-size:11px; letter-spacing:.08em; text-transform:uppercase; opacity:.8;
+  }
+  .area[data-area="genetica"] .area-head{background:linear-gradient(135deg,#1c3d78,#295097);}
+  .area[data-area="reproducao"] .area-head{background:linear-gradient(135deg,#295097,#4069b8);}
+  .area[data-area="neonatos"] .area-head{background:linear-gradient(135deg,#17305C,#295097);}
+
+  .tool-list{list-style:none; margin:0; padding:14px 14px 18px; flex:1; display:flex; flex-direction:column; gap:8px;}
+  .tool-list li a{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:12px 14px; border-radius:10px; text-decoration:none;
+    color:var(--ink); background:var(--mist); font-size:14px; font-weight:500;
+    transition:background .15s ease, transform .15s ease;
+  }
+  .tool-list li a:hover{background:#e2e9f6; transform:translateX(2px);}
+  .tool-list li a .arrow{color:var(--alta); font-size:16px;}
+  .tool-note{
+    font-size:12px; color:#8891a0; padding:2px 14px 4px; font-style:italic;
+  }
+
+  footer.hub-foot{
+    text-align:center; font-size:12px; color:#9aa4b6; padding:30px 6vw 50px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ GATE: login screen ============ -->
+<div id="gate">
+  <div class="contours" aria-hidden="true">
+    <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <g fill="none" stroke="#ffffff" stroke-opacity="0.09" stroke-width="1.4">
+        <path d="M-50 480 C 150 380, 350 560, 550 420 S 850 380, 900 460"/>
+        <path d="M-50 400 C 150 300, 350 480, 550 340 S 850 300, 900 380"/>
+        <path d="M-50 320 C 150 220, 350 400, 550 260 S 850 220, 900 300"/>
+        <path d="M-50 240 C 150 140, 350 320, 550 180 S 850 140, 900 220"/>
+        <path d="M-50 160 C 150 60, 350 240, 550 100 S 850 60, 900 140"/>
+      </g>
+    </svg>
+  </div>
+  <div class="gate-card">
+    <p class="wordmark">Plataforma <span>Azul</span></p>
+    <p class="gate-sub">Acesso restrito à equipe técnica da Alta.<br/>Entre com sua conta Google institucional.</p>
+    <div id="g_id_onload"
+         data-client_id="208924323002-9ss0n6ekbudfcvkfgatjil746dm92q2o.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
+    <div id="g_id_button_wrap">
+      <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large" data-shape="pill" data-text="signin_with"></div>
+    </div>
+    <p class="gate-msg" id="gateMsg"></p>
+    <p class="gate-foot">Se seu e-mail não estiver autorizado, fale com Rafael.</p>
+  </div>
+</div>
+
+<!-- ============ APP: hub content (post-login) ============ -->
+<div id="app">
+  <header class="topbar">
+    <div class="contours" aria-hidden="true">
+      <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice">
+        <g fill="none" stroke="#ffffff" stroke-width="1.2">
+          <path d="M-50 260 C 150 200, 350 300, 550 220 S 850 200, 900 240"/>
+          <path d="M-50 200 C 150 140, 350 240, 550 160 S 850 140, 900 180"/>
+        </g>
+      </svg>
+    </div>
+    <div class="topbar-row">
+      <h1 class="topbar-title">Plataforma <span>Azul</span></h1>
+      <div class="topbar-user">
+        <span id="userEmail"></span>
+        <button id="logoutBtn" type="button">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="areas">
+
+      <div class="area" data-area="genetica">
+        <div class="area-head">
+          <span class="area-eyebrow">Área</span>
+          <h2>Genética</h2>
+          <p>Análise de rebanho, endogamia e monetização genética.</p>
+        </div>
+        <ul class="tool-list">
+          <li><a href="#" data-tool="genetica-analise"><span>Análise genética</span><span class="arrow">→</span></a></li>
+          <li><a href="#" data-tool="genetica-endogamia"><span>Endogamia</span><span class="arrow">→</span></a></li>
+          <li><a href="#" data-tool="genetica-monetizacao"><span>Monetização</span><span class="arrow">→</span></a></li>
+        </ul>
+      </div>
+
+      <div class="area" data-area="reproducao">
+        <div class="area-head">
+          <span class="area-eyebrow">Área</span>
+          <h2>Reprodução</h2>
+          <p>Desempenho reprodutivo e evolução do rebanho.</p>
+        </div>
+        <ul class="tool-list">
+          <li><a href="#" data-tool="reproducao-analise"><span>Análise reprodutiva</span><span class="arrow">→</span></a></li>
+          <li><a href="#" data-tool="reproducao-evolucao"><span>Evolução de rebanho</span><span class="arrow">→</span></a></li>
+        </ul>
+      </div>
+
+      <div class="area" data-area="neonatos">
+        <div class="area-head">
+          <span class="area-eyebrow">Área</span>
+          <h2>Neonatos</h2>
+          <p>Criação de bezerras: dados de campo e referência técnica.</p>
+        </div>
+        <ul class="tool-list">
+          <li><a href="#" data-tool="neonatos-ideagri"><span>Análise de dados · Ideagri</span><span class="arrow">→</span></a></li>
+          <li><a href="#" data-tool="neonatos-excel-dcu"><span>Análise de dados · Excel/DCU</span><span class="arrow">→</span></a></li>
+          <li><a href="https://altaleite.github.io/padrao-ouro/" target="_blank" rel="noopener"><span>Padrão Ouro (livro técnico)</span><span class="arrow">→</span></a></li>
+        </ul>
+        <p class="tool-note">Livro de perguntas e respostas Alta CRIA — em produção</p>
+      </div>
+
+    </section>
+  </main>
+
+  <footer class="hub-foot">Plataforma Azul · equipe técnica Alta · uso interno</footer>
+</div>
+
+<script src="auth.js"></script>
+<script>
+  // ------------------------------------------------------------------
+  // Mapa de ferramentas → URL real. Preencha conforme cada uma for
+  // publicada (ver README de cada ferramenta / DEPLOY.md).
+  // ------------------------------------------------------------------
+  var TOOL_URLS = {
+    'genetica-analise':    'https://altaleite.github.io/COLOQUE-O-CAMINHO-AQUI/',
+    'genetica-endogamia':  'https://altaleite.github.io/COLOQUE-O-CAMINHO-AQUI/',
+    'genetica-monetizacao':'https://altaleite.github.io/COLOQUE-O-CAMINHO-AQUI/',
+    'reproducao-analise':  'https://altaleite.github.io/COLOQUE-O-CAMINHO-AQUI/',
+    'reproducao-evolucao': 'https://altaleite.github.io/COLOQUE-O-CAMINHO-AQUI/',
+    'neonatos-ideagri':    'https://altaleite.github.io/COLOQUE-O-CAMINHO-AQUI/',
+    'neonatos-excel-dcu':  'https://altaleite.github.io/COLOQUE-O-CAMINHO-AQUI/'
+  };
+
+  document.querySelectorAll('.tool-list a[data-tool]').forEach(function(a){
+    a.addEventListener('click', function(ev){
+      ev.preventDefault();
+      var url = TOOL_URLS[a.dataset.tool];
+      if (url && url.indexOf('COLOQUE-O-CAMINHO-AQUI') === -1) {
+        window.location.href = url;
+      } else {
+        alert('Essa ferramenta ainda não tem URL configurada no hub (TOOL_URLS no index.html).');
+      }
+    });
+  });
+
+  function showApp(email){
+    document.getElementById('gate').classList.add('hidden');
+    document.getElementById('app').classList.add('visible');
+    document.getElementById('userEmail').textContent = email;
+
+    var params = new URLSearchParams(location.search);
+    var returnTo = params.get('returnTo');
+    if (returnTo) {
+      location.href = decodeURIComponent(returnTo);
+    }
+  }
+
+  function showGateError(msg){
+    document.getElementById('gateMsg').textContent = msg;
+  }
+
+  // Callback chamado pela biblioteca do Google após o login
+  function handleCredentialResponse(response) {
+    showGateError('Verificando...');
+    PlataformaAzulAuth.login(response.credential, function(result){
+      if (result.ok) {
+        showApp(result.email);
+      } else {
+        showGateError(result.error || 'Não foi possível entrar.');
+      }
+    });
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', function(){
+    PlataformaAzulAuth.logout();
+    location.reload();
+  });
+
+  // Ao carregar a página, se já existir sessão válida, pula direto pro hub
+  (function init(){
+    var session = PlataformaAzulAuth.getSession();
+    if (!session) return;
+    PlataformaAzulAuth.verifySession(function(ok, email){
+      if (ok) showApp(email);
+    });
+  })();
+</script>
+</body>
+</html>
