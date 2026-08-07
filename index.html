@@ -14,6 +14,8 @@
     --alta:#295097;
     --alta-deep:#17305C;
     --alta-deeper:#0d1e3d;
+    --navy-deep:#071427;
+    --cyan:#6fd8ff;
     --gold:#d7c36e;
     --mist:#eef2f8;
     --paper:#f7f8fb;
@@ -106,76 +108,135 @@
   #app{display:none;}
   #app.visible{display:block;}
 
+  body:has(#app.visible){background:var(--navy-deep);}
+
+  /* ---------- topbar ---------- */
   header.topbar{
-    background:#0a1730 url('fundo-plataforma.jpg') center 35%/cover no-repeat;
-    color:#fff; padding:26px 6vw 30px;
+    background:#0a1730 url('fundo-plataforma.jpg') 68% 42%/cover no-repeat;
+    color:#fff; padding:22px 6vw 26px;
     position:relative; overflow:hidden;
+    border-bottom:1px solid rgba(111,216,255,.16);
   }
   header.topbar::before{
     content:''; position:absolute; inset:0;
-    background:linear-gradient(100deg, rgba(5,16,31,.94) 0%, rgba(5,16,31,.80) 45%, rgba(5,16,31,.55) 100%);
+    background:linear-gradient(100deg, rgba(5,16,31,.96) 0%, rgba(5,16,31,.88) 50%, rgba(5,16,31,.70) 100%);
     pointer-events:none;
   }
   .topbar-row{
     position:relative; z-index:1;
-    display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap;
+    display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
   }
   .topbar-brand{display:flex; align-items:center; gap:14px;}
-  .topbar-logo{height:32px; width:auto; display:block;}
-  .topbar-title{font-size:26px; font-weight:700; margin:0;}
+  .topbar-logo{height:30px; width:auto; display:block;}
+  .topbar-title{font-size:23px; font-weight:700; margin:0; letter-spacing:-.01em;}
   .topbar-title span{color:var(--gold);}
   .topbar-user{
-    display:flex; align-items:center; gap:10px; font-size:13px; color:#dbe4f3;
+    display:flex; align-items:center; gap:10px; font-size:13px; color:#b9c9e4;
   }
   .topbar-user button{
-    background:none; border:1px solid var(--line); color:#dbe4f3;
-    padding:6px 12px; border-radius:100px; font-size:12px; cursor:pointer;
-    font-family:inherit;
+    background:none; border:1px solid rgba(111,216,255,.28); color:#cfe0f5;
+    padding:6px 14px; border-radius:100px; font-size:12px; cursor:pointer;
+    font-family:inherit; transition:background .15s ease, border-color .15s ease;
   }
-  .topbar-user button:hover{background:rgba(255,255,255,.08);}
+  .topbar-user button:hover{background:rgba(111,216,255,.12); border-color:rgba(111,216,255,.5);}
+  .topbar-user button:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
 
-  main{max-width:1180px; margin:0 auto; padding:44px 6vw 80px;}
+  /* ---------- main ---------- */
+  main{max-width:1160px; margin:0 auto; padding:52px 6vw 90px;}
+
+  .hub-intro{margin-bottom:34px;}
+  .hub-title{
+    font-family:'Space Grotesk',system-ui,sans-serif;
+    font-size:clamp(22px,3vw,29px); font-weight:600; color:#eaf1fb;
+    margin:0 0 6px; letter-spacing:-.015em;
+  }
+  .hub-sub{margin:0; font-size:14px; color:#7f95b8;}
+
+  /* ---------- as três áreas, na ordem do ciclo ---------- */
   .areas{
-    display:grid; grid-template-columns:repeat(3,1fr); gap:22px;
-  }
-  @media (max-width:860px){ .areas{grid-template-columns:1fr;} }
-
-  .area{
-    border-radius:var(--radius);
-    background:#fff;
-    border:1px solid #e3e8f2;
-    overflow:hidden;
-    display:flex; flex-direction:column;
-  }
-  .area-head{
-    padding:22px 22px 18px;
-    color:#fff;
+    display:grid; grid-template-columns:repeat(3,1fr); gap:20px;
     position:relative;
   }
-  .area-head h2{margin:8px 0 4px; font-size:20px;}
-  .area-head p{margin:0; font-size:13px; color:rgba(255,255,255,.82); line-height:1.5;}
-  .area-eyebrow{
-    font-size:11px; letter-spacing:.08em; text-transform:uppercase; opacity:.8;
+  /* a linha do ciclo: passa por trás dos três marcadores */
+  .areas::before{
+    content:''; position:absolute; left:0; right:0; top:34px; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(111,216,255,.30) 12%, rgba(111,216,255,.30) 88%, transparent);
+    pointer-events:none; z-index:0;
   }
-  .area[data-area="genetica"] .area-head{background:linear-gradient(135deg,#1c3d78,#295097);}
-  .area[data-area="reproducao"] .area-head{background:linear-gradient(135deg,#295097,#4069b8);}
-  .area[data-area="neonatos"] .area-head{background:linear-gradient(135deg,#17305C,#295097);}
 
-  .tool-list{list-style:none; margin:0; padding:14px 14px 18px; flex:1; display:flex; flex-direction:column; gap:8px;}
+  .area{
+    position:relative; z-index:1;
+    border-radius:14px;
+    background:linear-gradient(180deg, #102340, #0a172d);
+    border:1px solid rgba(120,160,215,.16);
+    display:flex; flex-direction:column;
+    padding:0 0 8px;
+    transition:border-color .2s ease, transform .2s ease;
+  }
+  .area:hover{border-color:rgba(111,216,255,.34); transform:translateY(-2px);}
+
+  .area-head{padding:26px 22px 16px; position:relative;}
+
+  /* marcador do estágio, alinhado sobre a linha do ciclo */
+  .stage-mark{
+    position:absolute; top:-7px; left:22px; z-index:2;
+    width:13px; height:13px; border-radius:50%;
+    background:var(--navy-deep);
+    border:2px solid var(--stage);
+    box-shadow:0 0 0 4px var(--navy-deep), 0 0 14px -2px var(--stage);
+  }
+
+  .area-stage{
+    display:block; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--stage); font-weight:600; margin-bottom:10px;
+  }
+  .area-head h3{
+    margin:0 0 6px; font-size:21px; color:#f0f5fc; font-weight:600; letter-spacing:-.01em;
+  }
+  .area-head p{margin:0; font-size:13px; color:#8ea6c9; line-height:1.55;}
+
+  /* cada área tem sua cor de estágio */
+  .area[data-area="genetica"]{--stage:#6fd8ff;}
+  .area[data-area="reproducao"]{--stage:#7fa6f0;}
+  .area[data-area="neonatos"]{--stage:#d7c36e;}
+
+  .tool-list{list-style:none; margin:0; padding:6px 14px 14px; flex:1; display:flex; flex-direction:column; gap:7px;}
   .tool-list li a{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
-    padding:12px 14px; border-radius:10px; text-decoration:none;
-    color:var(--ink); background:var(--mist); font-size:14px; font-weight:500;
-    transition:background .15s ease, transform .15s ease;
+    padding:13px 14px; border-radius:9px; text-decoration:none;
+    color:#dbe6f5; background:rgba(255,255,255,.045);
+    border:1px solid transparent;
+    font-size:14px; font-weight:500;
+    transition:background .15s ease, border-color .15s ease, color .15s ease;
   }
-  .tool-list li a:hover{background:#e2e9f6; transform:translateX(2px);}
-  .tool-list li a .arrow{color:var(--alta); font-size:16px;}
-  .tool-note{
-    font-size:12px; color:#8891a0; padding:2px 14px 4px; font-style:italic;
+  .tool-list li a:hover{
+    background:rgba(255,255,255,.09);
+    border-color:color-mix(in srgb, var(--stage) 40%, transparent);
+    color:#fff;
   }
+  .tool-list li a:focus-visible{outline:2px solid var(--stage); outline-offset:2px;}
+  .tool-list li a .arrow{
+    color:var(--stage); font-size:15px; opacity:.65;
+    transition:transform .15s ease, opacity .15s ease;
+  }
+  .tool-list li a:hover .arrow{transform:translateX(3px); opacity:1;}
 
   footer.hub-foot{
-    text-align:center; font-size:12px; color:#9aa4b6; padding:30px 6vw 50px;
+    text-align:center; font-size:12px; color:#5c718f; padding:8px 6vw 54px;
+  }
+
+  @media (max-width:880px){
+    .areas{grid-template-columns:1fr; gap:16px;}
+    .areas::before{
+      left:28px; right:auto; top:0; bottom:0; width:1px; height:auto;
+      background:linear-gradient(180deg, transparent, rgba(111,216,255,.28) 6%, rgba(111,216,255,.28) 94%, transparent);
+    }
+    .area{margin-left:0;}
+    main{padding-top:38px;}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important;}
   }
 </style>
 </head>
@@ -220,46 +281,54 @@
   </header>
 
   <main>
+    <div class="hub-intro">
+      <h2 class="hub-title">Ferramentas da equipe técnica</h2>
+      <p class="hub-sub">Organizadas na ordem do ciclo do animal.</p>
+    </div>
+
     <section class="areas">
 
-      <div class="area" data-area="genetica">
+      <article class="area" data-area="genetica">
         <div class="area-head">
-          <span class="area-eyebrow">Área</span>
-          <h2>Genética</h2>
-          <p>Análise de rebanho, endogamia e monetização genética.</p>
+          <span class="stage-mark" aria-hidden="true"></span>
+          <span class="area-stage">Antes da concepção</span>
+          <h3>Genética</h3>
+          <p>Seleção, acasalamento e valor genético do rebanho.</p>
         </div>
         <ul class="tool-list">
-          <li><a href="#" data-tool="genetica-analise"><span>Análise genética</span><span class="arrow">→</span></a></li>
-          <li><a href="#" data-tool="genetica-endogamia"><span>Endogamia</span><span class="arrow">→</span></a></li>
-          <li><a href="#" data-tool="genetica-monetizacao"><span>Monetização</span><span class="arrow">→</span></a></li>
+          <li><a href="#" data-tool="genetica-analise"><span>Análise genética</span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="#" data-tool="genetica-endogamia"><span>Endogamia</span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="#" data-tool="genetica-monetizacao"><span>Monetização</span><span class="arrow" aria-hidden="true">→</span></a></li>
         </ul>
-      </div>
+      </article>
 
-      <div class="area" data-area="reproducao">
+      <article class="area" data-area="reproducao">
         <div class="area-head">
-          <span class="area-eyebrow">Área</span>
-          <h2>Reprodução</h2>
+          <span class="stage-mark" aria-hidden="true"></span>
+          <span class="area-stage">Concepção e gestação</span>
+          <h3>Reprodução</h3>
           <p>Desempenho reprodutivo e evolução do rebanho.</p>
         </div>
         <ul class="tool-list">
-          <li><a href="#" data-tool="reproducao-analise"><span>Análise reprodutiva</span><span class="arrow">→</span></a></li>
-          <li><a href="#" data-tool="reproducao-evolucao"><span>Evolução de rebanho</span><span class="arrow">→</span></a></li>
+          <li><a href="#" data-tool="reproducao-analise"><span>Análise reprodutiva</span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="#" data-tool="reproducao-evolucao"><span>Evolução de rebanho</span><span class="arrow" aria-hidden="true">→</span></a></li>
         </ul>
-      </div>
+      </article>
 
-      <div class="area" data-area="neonatos">
+      <article class="area" data-area="neonatos">
         <div class="area-head">
-          <span class="area-eyebrow">Área</span>
-          <h2>Neonatos</h2>
+          <span class="stage-mark" aria-hidden="true"></span>
+          <span class="area-stage">Do nascimento à novilha</span>
+          <h3>Neonatos</h3>
           <p>Criação de bezerras: dados de campo e referência técnica.</p>
         </div>
         <ul class="tool-list">
-          <li><a href="#" data-tool="neonatos-ideagri"><span>Análise de dados · Ideagri</span><span class="arrow">→</span></a></li>
-          <li><a href="#" data-tool="neonatos-excel-dcu"><span>Análise de dados · Excel/DCU</span><span class="arrow">→</span></a></li>
-          <li><a href="https://altaleite.github.io/padrao-ouro/" target="_blank" rel="noopener"><span>Padrão Ouro (livro técnico)</span><span class="arrow">→</span></a></li>
+          <li><a href="#" data-tool="neonatos-ideagri"><span>Análise de dados · Ideagri</span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="#" data-tool="neonatos-excel-dcu"><span>Análise de dados · Excel/DCU</span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="https://altaleite.github.io/padrao-ouro/" target="_blank" rel="noopener"><span>Padrão Ouro</span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="#" data-tool="neonatos-perguntas-respostas"><span>Perguntas e Respostas Alta CRIA</span><span class="arrow" aria-hidden="true">→</span></a></li>
         </ul>
-        <p class="tool-note">Livro de perguntas e respostas Alta CRIA — em produção</p>
-      </div>
+      </article>
 
     </section>
   </main>
@@ -280,7 +349,8 @@
     'reproducao-analise':  'https://altaleite.github.io/COLOQUE-O-CAMINHO-AQUI/',
     'reproducao-evolucao': 'https://altaleite.github.io/COLOQUE-O-CAMINHO-AQUI/',
     'neonatos-ideagri':    'https://altaleite.github.io/COLOQUE-O-CAMINHO-AQUI/',
-    'neonatos-excel-dcu':  'https://altaleite.github.io/COLOQUE-O-CAMINHO-AQUI/'
+    'neonatos-excel-dcu':  'https://altaleite.github.io/COLOQUE-O-CAMINHO-AQUI/',
+    'neonatos-perguntas-respostas': 'https://altaleite.github.io/COLOQUE-O-CAMINHO-AQUI/'
   };
 
   document.querySelectorAll('.tool-list a[data-tool]').forEach(function(a){
