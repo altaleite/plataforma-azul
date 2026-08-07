@@ -81,16 +81,32 @@
       });
   }
 
-  // Chame no topo de cada página PROTEGIDA (uma das 7 ferramentas).
-  // Se não houver sessão válida, redireciona pro hub imediatamente.
+  // Chame no topo de cada página PROTEGIDA (uma das ferramentas internas).
+  // Esconde a página IMEDIATAMENTE e só revela depois que o servidor confirmar
+  // a sessão. Sem isso, o conteúdo apareceria por um instante antes do
+  // redirecionamento — expondo dado sensível em conexões lentas.
   function guard(opts) {
     opts = opts || {};
     var hubUrl = opts.hubUrl || 'https://altaleite.github.io/plataforma-azul/';
 
+    // 1) esconde tudo antes de qualquer coisa ser pintada na tela
+    var blocker = document.createElement('style');
+    blocker.id = 'pa-blocker';
+    blocker.textContent = 'html{visibility:hidden !important;}';
+    (document.head || document.documentElement).appendChild(blocker);
+
+    // rede de segurança: se o servidor não responder em 8s, manda pro hub
+    var timeout = setTimeout(function () {
+      location.replace(hubUrl + '?returnTo=' + encodeURIComponent(location.href));
+    }, 8000);
+
     verifySession(function (ok) {
-      if (!ok) {
-        var returnTo = encodeURIComponent(location.href);
-        location.replace(hubUrl + '?returnTo=' + returnTo);
+      clearTimeout(timeout);
+      if (ok) {
+        var el = document.getElementById('pa-blocker');
+        if (el) el.parentNode.removeChild(el);
+      } else {
+        location.replace(hubUrl + '?returnTo=' + encodeURIComponent(location.href));
       }
     });
   }
