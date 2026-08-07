@@ -105,10 +105,56 @@
       if (ok) {
         var el = document.getElementById('pa-blocker');
         if (el) el.parentNode.removeChild(el);
+        addBackLink(hubUrl);
       } else {
         location.replace(hubUrl + '?returnTo=' + encodeURIComponent(location.href));
       }
     });
+  }
+
+  // Botão flutuante de retorno ao hub, injetado em toda ferramenta protegida.
+  // Fica no canto inferior esquerdo, discreto, e recolhe para um ícone quando
+  // a tela é estreita — para não cobrir os controles da própria ferramenta.
+  function addBackLink(hubUrl) {
+    if (document.getElementById('pa-back')) return;
+
+    function build() {
+      if (document.getElementById('pa-back')) return;
+
+      var css = document.createElement('style');
+      css.textContent =
+        '#pa-back{position:fixed;left:16px;bottom:16px;z-index:2147483000;' +
+        'display:inline-flex;align-items:center;gap:8px;' +
+        'padding:9px 15px 9px 12px;border-radius:100px;' +
+        'background:rgba(10,23,45,.93);color:#dbe6f5 !important;' +
+        'border:1px solid rgba(111,216,255,.30);' +
+        'font:500 13px/1 system-ui,-apple-system,"Segoe UI",sans-serif;' +
+        'text-decoration:none !important;cursor:pointer;' +
+        'box-shadow:0 6px 22px -6px rgba(0,0,0,.55);' +
+        '-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);' +
+        'transition:background .15s ease,border-color .15s ease;}' +
+        '#pa-back:hover{background:rgba(16,35,64,.98);border-color:rgba(111,216,255,.55);}' +
+        '#pa-back:focus-visible{outline:2px solid #6fd8ff;outline-offset:2px;}' +
+        '#pa-back .pa-arrow{font-size:14px;line-height:1;color:#6fd8ff;}' +
+        '@media print{#pa-back{display:none !important;}}' +
+        '@media (max-width:640px){#pa-back{padding:10px;left:12px;bottom:12px;}' +
+        '#pa-back .pa-label{display:none;}}';
+      document.head.appendChild(css);
+
+      var a = document.createElement('a');
+      a.id = 'pa-back';
+      a.href = hubUrl;
+      a.title = 'Voltar para a Plataforma Azul';
+      a.innerHTML = '<span class="pa-arrow" aria-hidden="true">←</span>' +
+                    '<span class="pa-label">Plataforma Azul</span>';
+      document.body.appendChild(a);
+    }
+
+    if (document.body) {
+      build();
+    } else {
+      document.addEventListener('DOMContentLoaded', build);
+    }
   }
 
   // Passo 1 do login: pede ao servidor para mandar um código de 6 dígitos para o e-mail.
