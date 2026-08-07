@@ -1,0 +1,17 @@
+{
+  "name": "Plataforma Azul",
+  "short_name": "Plataforma Azul",
+  "description": "Ferramentas de Genética, Reprodução e Neonatos da equipe técnica Alta.",
+  "start_url": "/plataforma-azul/",
+  "scope": "/plataforma-azul/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#05101f",
+  "theme_color": "#0a172d",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
