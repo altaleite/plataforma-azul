@@ -44,12 +44,24 @@
   }
 
   // Revalida a sessão no servidor (Apps Script). Nunca confia só no que está
-  // salvo localmente — qualquer um pode editar o localStorage no navegador,
-  // então a decisão final de "pode entrar" é sempre do servidor.
+  // salvo localmente quando há internet — qualquer um pode editar o
+  // localStorage, então a decisão final é sempre do servidor.
+  //
+  // SEM internet, cai para a validade local: é isso que permite o técnico usar
+  // a plataforma em fazenda sem sinal. O custo é que, offline, alguém removido
+  // da planilha continua entrando até a sessão expirar.
   function verifySession(callback) {
     var session = getSession();
     if (!session || !session.email || !session.token || !session.expires) {
       callback(false);
+      return;
+    }
+
+    var localOk = session.expires > Date.now();
+
+    // Offline detectado: não adianta esperar o servidor, decide na hora.
+    if (navigator.onLine === false) {
+      callback(localOk, session.email);
       return;
     }
 
@@ -70,14 +82,9 @@
         }
       })
       .catch(function () {
-        // Falha de rede: não derruba a sessão por causa de instabilidade momentânea,
-        // mas também não libera acesso sem nunca ter confirmado. Usa a validade local
-        // como fallback só quando o servidor está inalcançável.
-        if (session.expires > Date.now()) {
-          callback(true, session.email);
-        } else {
-          callback(false);
-        }
+        // Servidor inalcançável (sinal fraco, Apps Script fora do ar):
+        // usa a validade local em vez de derrubar quem está em campo.
+        callback(localOk, session.email);
       });
   }
 

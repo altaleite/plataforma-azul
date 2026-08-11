@@ -258,6 +258,36 @@
   }
   .tool-list li a:hover .arrow{transform:translateX(3px); opacity:1;}
 
+  /* ---------- painel de uso offline ---------- */
+  .offline-panel{
+    margin-top:28px; padding:20px 22px;
+    border:1px solid rgba(120,160,215,.18); border-radius:13px;
+    background:rgba(16,35,64,.5);
+    display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
+  }
+  .offline-copy h3{
+    margin:0 0 4px; font-family:'Space Grotesk',system-ui,sans-serif;
+    font-size:15px; font-weight:600; color:#dce7f6;
+  }
+  .offline-copy p{margin:0; font-size:13px; color:#8ea6c9; line-height:1.55; max-width:62ch;}
+  .offline-copy p.pronto{color:#9fe0b4;}
+  .offline-btn{
+    flex:none; padding:11px 20px; border-radius:100px; cursor:pointer;
+    border:1px solid rgba(111,216,255,.36); background:rgba(111,216,255,.10);
+    color:#cfe7fa; font:600 13px/1 inherit; font-family:inherit;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .offline-btn:hover:not(:disabled){background:rgba(111,216,255,.2); border-color:rgba(111,216,255,.6);}
+  .offline-btn:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
+  .offline-btn:disabled{opacity:.55; cursor:default;}
+
+  /* faixa de aviso quando o aparelho está sem internet */
+  .sem-rede{
+    background:#3b2f12; color:#f0dfae; text-align:center;
+    padding:9px 16px; font-size:13px;
+    border-bottom:1px solid rgba(215,195,110,.3);
+  }
+
   footer.hub-foot{
     text-align:center; font-size:12px; color:#5c718f; padding:8px 6vw 54px;
   }
@@ -371,6 +401,14 @@
       </article>
 
     </section>
+
+    <section class="offline-panel" id="offlinePanel">
+      <div class="offline-copy">
+        <h3>Uso em campo, sem internet</h3>
+        <p id="offlineStatus">Baixe as ferramentas para o aparelho antes de ir a campo. Depois disso elas abrem mesmo sem sinal.</p>
+      </div>
+      <button class="offline-btn" id="offlineBtn" type="button">Baixar para uso offline</button>
+    </section>
   </main>
 
   <footer class="hub-foot">Plataforma Azul · equipe técnica Alta · uso interno</footer>
@@ -409,6 +447,8 @@
     document.getElementById('gate').classList.add('hidden');
     document.getElementById('app').classList.add('visible');
     document.getElementById('userEmail').textContent = email;
+    atualizarStatusOffline();
+    marcarRede();
 
     var params = new URLSearchParams(location.search);
     var returnTo = params.get('returnTo');
@@ -476,6 +516,101 @@
     PlataformaAzulAuth.logout();
     location.reload();
   });
+
+  // ------------------------------------------------------------------
+  // Uso offline: registra o service worker e permite baixar as ferramentas
+  // ------------------------------------------------------------------
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(function(){ /* sem offline */ });
+  }
+
+  var CACHE_OFFLINE = 'plataforma-azul-v1';
+
+  function alvosOffline(){
+    var lista = [location.pathname, 'auth.js', 'fundo-plataforma.jpg', 'logo-alta-branca.png'];
+    for (var k in TOOL_URLS) {
+      if (TOOL_URLS[k].indexOf('COLOQUE-O-CAMINHO-AQUI') === -1) lista.push(TOOL_URLS[k]);
+    }
+    return lista;
+  }
+
+  function atualizarStatusOffline(){
+    var status = document.getElementById('offlineStatus');
+    var btn = document.getElementById('offlineBtn');
+    if (!('caches' in window)) {
+      status.textContent = 'Este navegador não permite uso offline. No iPhone, use o Safari.';
+      btn.style.display = 'none';
+      return;
+    }
+    caches.open(CACHE_OFFLINE).then(function(c){
+      return c.keys();
+    }).then(function(keys){
+      var ferramentas = keys.filter(function(r){
+        return /\/(analise-genetica|endogamia|monetizacao|analise-reprodutiva|evolucao-rebanho|ideagri|excel-dcu|perguntas-respostas)\//.test(r.url);
+      }).length;
+      if (ferramentas > 0) {
+        status.textContent = ferramentas + ' de 8 ferramentas disponíveis sem internet. Atualize sempre que alguma ferramenta mudar.';
+        status.className = 'pronto';
+        document.getElementById('offlineBtn').textContent = 'Atualizar cópia offline';
+      }
+    }).catch(function(){});
+  }
+
+  document.getElementById('offlineBtn').addEventListener('click', function(){
+    var btn = this;
+    var status = document.getElementById('offlineStatus');
+    var alvos = alvosOffline();
+    var feitos = 0, falhas = 0;
+
+    btn.disabled = true;
+    status.className = '';
+    status.textContent = 'Baixando… 0 de ' + alvos.length;
+
+    caches.open(CACHE_OFFLINE).then(function(cache){
+      return Promise.all(alvos.map(function(u){
+        return fetch(u, { cache: 'reload' })
+          .then(function(resp){
+            if (!resp.ok) throw new Error('falhou');
+            return cache.put(u, resp);
+          })
+          .then(function(){ feitos++; })
+          .catch(function(){ falhas++; })
+          .then(function(){
+            status.textContent = 'Baixando… ' + (feitos + falhas) + ' de ' + alvos.length;
+          });
+      }));
+    }).then(function(){
+      btn.disabled = false;
+      if (falhas === 0) {
+        status.className = 'pronto';
+        status.textContent = 'Pronto — as ferramentas abrem sem internet por até 30 dias. Refaça sempre que alguma ferramenta for atualizada.';
+        btn.textContent = 'Atualizar cópia offline';
+      } else {
+        status.textContent = falhas + ' item(ns) não baixaram. Verifique a conexão e tente de novo.';
+      }
+    }).catch(function(){
+      btn.disabled = false;
+      status.textContent = 'Não foi possível baixar. Verifique a conexão e tente de novo.';
+    });
+  });
+
+  // aviso quando o aparelho está sem internet
+  function marcarRede(){
+    var existente = document.getElementById('semRede');
+    if (navigator.onLine === false) {
+      if (!existente) {
+        var d = document.createElement('div');
+        d.id = 'semRede'; d.className = 'sem-rede';
+        d.textContent = 'Sem internet — usando a cópia salva no aparelho.';
+        var app = document.getElementById('app');
+        app.insertBefore(d, app.firstChild);
+      }
+    } else if (existente) {
+      existente.parentNode.removeChild(existente);
+    }
+  }
+  window.addEventListener('online', marcarRede);
+  window.addEventListener('offline', marcarRede);
 
   // Ao carregar: se já existe sessão salva, mostra "Verificando seu acesso…"
   // em vez do formulário de login — quem já entrou não deve ver tela de login
