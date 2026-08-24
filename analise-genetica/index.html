@@ -6485,6 +6485,16 @@ function boot(entrada){
     if(APP_CONFIG.mode==='client') setMeta(APP_CONFIG.meta?.farm,APP_CONFIG.meta?.owner,APP_CONFIG.meta?.analyst);
     else setMeta($('#farm-name').value,$('#owner-name').value,$('#analyst-name').value);
     const faltando = ingest(csv);
+    /* A planilha de touros em uso é carregada separadamente do CSV principal.
+       Ao gerar a cópia para o cliente, seus dados viajam serializados em
+       APP_CONFIG. Reidratar antes de montar as abas é essencial: a navegação
+       do cliente só inclui esta seção quando USO.touros já está preenchido. */
+    if(APP_CONFIG.uso && Array.isArray(APP_CONFIG.uso.touros) && APP_CONFIG.uso.touros.length){
+      USO = APP_CONFIG.uso;
+      USO_TRAIT = APP_CONFIG.usoTrait || 'Leite';
+      USO_COLS = Array.isArray(APP_CONFIG.usoCols) ? new Set(APP_CONFIG.usoCols) : null;
+      USO_RACA = APP_CONFIG.usoRaca || 'auto';
+    }
     if(APP_CONFIG.embeddedAcasBase64){
       try{ ingestAcas([{nome:'acasalamento incorporado', texto:base64ToUtf8(APP_CONFIG.embeddedAcasBase64)}]); }
       catch(e){ console.error('Acasalamento incorporado ilegível:', e); }
@@ -6543,6 +6553,13 @@ function montarConfigCliente(){
   if(!META.farm||!META.owner){alert('Preencha o nome da fazenda e do proprietário antes de gerar a versão do cliente.');openMeta();return;}
   return {mode:'client',embeddedCsvBase64:utf8ToBase64(RAW_CSV),
     embeddedAcasBase64: AC.csv ? utf8ToBase64(AC.csv) : '',
+    /* A planilha de touros em uso é um segundo arquivo e não fazia parte do
+       payload anterior. Guardamos o resultado já normalizado, evitando
+       depender do XLSX original no navegador do cliente. */
+    uso: USO?.touros?.length ? USO : null,
+    usoTrait: USO_TRAIT,
+    usoCols: USO_COLS ? [...USO_COLS] : null,
+    usoRaca: USO_RACA,
     meta:{farm:META.farm,owner:META.owner,analyst:META.analyst},
     sharePrefs:SHARE_PREFS,
     plano:PLANO.ativo?PLANO:null,
