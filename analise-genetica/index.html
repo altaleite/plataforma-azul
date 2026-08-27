@@ -2109,6 +2109,7 @@ function ingest(text){
   const v = (r,k) => col[k] === undefined ? '' : r[col[k]];
 
   D.traits = TRAITS.filter(t => t.k in col);
+  sincronizarPerfisPlano();
   const faltando = TRAITS.filter(t => !(t.k in col)).map(t=>t.lab);
   D.ref = new Date();
 
@@ -3245,6 +3246,37 @@ const PLANO_PERFIS = [
     ['Composto de Pés e Pernas (FLC)','Pés Pernas Composição'],
     ['Composto de Peso Corporal (BC)','Composto de Peso Corporal']]}
 ];
+const PLANO_PERFIS_BASE = PLANO_PERFIS.map(p=>({...p,itens:p.itens.map(i=>[...i])}));
+
+/* O menu de características é montado a partir de D.traits, que representa
+   as colunas realmente presentes no CSV. A construção do plano, porém, tinha
+   ficado com a lista histórica acima. Reaproveitamos os três perfis do plano
+   e acrescentamos automaticamente todas as demais características disponíveis
+   no mesmo arquivo, sem incluir o índice geral (Meu Índice) como componente.
+   Eficiência entra em Produção; reprodução, saúde e parto em Saúde; compostos
+   e lineares em Conformação. */
+function sincronizarPerfisPlano(){
+  const catalogo = D.traits?.length ? D.traits : TRAITS;
+  const basePorId = Object.fromEntries(PLANO_PERFIS_BASE.map(p=>[p.id,p]));
+  PLANO_PERFIS.forEach(p=>{
+    p.itens = (basePorId[p.id]?.itens||[]).map(i=>[...i]);
+  });
+  const destino = t => {
+    if(t.g==='prod' || t.g==='eficiencia') return 'prod';
+    if(['saude','repro','parto'].includes(t.g)) return 'saude';
+    if(['tipo','lin'].includes(t.g)) return 'conf';
+    return null;
+  };
+  const presentes = new Set(PLANO_PERFIS.flatMap(p=>p.itens.map(([,k])=>k)));
+  catalogo.forEach(t=>{
+    const id = destino(t);
+    if(id && !presentes.has(t.k)){
+      PLANO_PERFIS.find(p=>p.id===id).itens.push([t.lab,t.k]);
+      presentes.add(t.k);
+    }
+  });
+}
+sincronizarPerfisPlano();
 const PLANO_PREDEF = {
   'Produção':            {prod:70, saude:30, conf:0},
   'Balanceado':          {prod:50, saude:35, conf:15},
