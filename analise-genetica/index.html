@@ -3178,7 +3178,10 @@ function baixarImagemCertificado(){
   if(!animal){window.alert('Escolha um animal dentro do corte selecionado para baixar a imagem.');return;}
   const logo=new Image(); logo.src=$('#hdr img').src;
   const logoBlue=new Image(); logoBlue.src=$('#logo-blue-link').src;
+  let exportado=false;
   const desenhar=()=>{
+    if(exportado) return;
+    exportado=true;
     const cv=document.createElement('canvas'),ctx=cv.getContext('2d');cv.width=1440;cv.height=1800;
     const W=cv.width,H=cv.height,azul='#28549A',prof='#173461',linha='#D9E3F1',cinza='#58677D',claro='#EDF3FB',branco='#FFFFFF';
     const texto=(s,x,y,tam,cor=prof,peso='400',max=0,al='left')=>{ctx.fillStyle=cor;ctx.font=`${peso} ${tam}px Arial`;ctx.textAlign=al;let v=String(s??'—');if(max){while(ctx.measureText(v).width>max&&v.length>1)v=v.slice(0,-2)+'…';}ctx.fillText(v,x,y);};
@@ -3187,9 +3190,12 @@ function baixarImagemCertificado(){
     const card=(x,y,w,h,t)=>{ctx.save();ctx.shadowColor='rgba(23,52,97,.10)';ctx.shadowBlur=12;ctx.shadowOffsetY=3;arred(x,y,w,h,12,branco);ctx.restore();arred(x,y,w,h,12,null,linha);arred(x,y,w,42,12,claro);ctx.fillStyle=claro;ctx.fillRect(x,y+22,w,20);texto(t.toUpperCase(),x+16,y+27,13,prof,'700');};
     ctx.fillStyle=branco;ctx.fillRect(0,0,W,H);
     const grad=ctx.createLinearGradient(0,0,W,0);grad.addColorStop(0,'#15315D');grad.addColorStop(.55,'#28549A');grad.addColorStop(1,'#4C80C6');ctx.fillStyle=grad;ctx.fillRect(0,0,W,190);ctx.fillStyle='#6EA0EB';ctx.fillRect(0,190,W,5);
-    arred(52,48,430,62,14,'rgba(255,255,255,.12)');
-    texto('PLATAFORMA AZUL',520,104,25,branco,'700');try{ctx.drawImage(logo,72,60,152,34)}catch(e){} try{ctx.drawImage(logoBlue,242,43,176,66)}catch(e){}
-    texto('CERTIFICADO GENÉTICO',W/2,72,18,'#C9DBF7','700',0,'center');texto('FÊMEA INDIVIDUAL',W/2,115,35,branco,'700',0,'center');texto('AVALIAÇÃO OFICIAL',W-64,70,14,'#C9DBF7','700',0,'right');texto(certDataLabel(),W-64,111,27,branco,'700',0,'right');
+    /* Cabeçalho da imagem: mantém marca, título e data em zonas independentes.
+       Antes, "PLATAFORMA AZUL" começava em x=520 e invadia o título central. */
+    arred(52,40,430,116,14,'rgba(255,255,255,.12)');
+    try{ctx.drawImage(logo,72,60,152,34)}catch(e){} try{ctx.drawImage(logoBlue,242,43,176,66)}catch(e){}
+    texto('PLATAFORMA AZUL',267,142,18,'#D6E4F8','700',390,'center');
+    texto('CERTIFICADO GENÉTICO',W/2,72,18,'#C9DBF7','700',420,'center');texto('FÊMEA INDIVIDUAL',W/2,115,35,branco,'700',470,'center');texto('AVALIAÇÃO OFICIAL',W-64,70,14,'#C9DBF7','700',0,'right');texto(certDataLabel(),W-64,111,27,branco,'700',0,'right');
     texto('NÚMERO DO ANIMAL',W/2,231,14,cinza,'700',0,'center');texto(animal.id||'—',W/2,284,50,prof,'700',0,'center');texto('PLANO GENÉTICO',W/2,316,13,cinza,'700',0,'center');texto(uv(animal['Meu Índice'],certTrait('Meu Índice')),W/2,348,27,azul,'700',0,'center');texto(`Nascimento: ${animal.nasc?animal.nasc.toLocaleDateString('pt-BR'):'Não informado'}   ·   Base genética: ${animal.fonte?fonteLab(animal.fonte):'BlueLink'}`,W/2,377,15,cinza,'400',0,'center');linhaH(64,401,W-128);
     card(64,425,620,164,'Genealogia disponível');
     [['Pai',animal.touro||animal.codTouro||'Não informado'],['Avô materno',animal.mgs||animal.codMgs||'Não informado'],['Bisavô materno',animal.mggs||animal.codMggs||'Não informado']].forEach((r,i)=>{const yy=493+i*37;texto(r[0].toUpperCase(),84,yy,11,cinza,'700');texto(r[1],225,yy,16,prof,'700',425);});
