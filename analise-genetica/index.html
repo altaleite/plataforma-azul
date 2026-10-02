@@ -837,7 +837,7 @@ body.client-mode .admin-only,body.report-mode .admin-only{display:none!important
 .plano-faixa-itens .pfi-mais{color:var(--ink-3)}
 
 .uso-disp{position:relative;height:380px}
-body.report #uso-up{display:none!important}
+body.report #uso-up,body.client-mode #uso-up{display:none!important}
 
 /* Ficha factual do sumário — sem narrativa */
 .ficha-rel{width:100%;border-collapse:collapse;font-size:13px}
@@ -849,6 +849,12 @@ body.report #uso-up{display:none!important}
 
 /* Ferramentas do cabeçalho do card (seletor + botão de exportar) numa linha só */
 .card-h .ch-tools{display:flex;align-items:center;gap:8px;margin-left:auto;flex:0 0 auto}
+#v-touros .card-h:has(#sel-bull-metric),#central-merit-card .card-h{flex-wrap:wrap;align-items:flex-start}
+#v-touros .card-h:has(#sel-bull-metric) h3,#central-merit-card .card-h h3{flex:1 1 100%;min-width:100%;line-height:1.35}
+#v-touros .card-h:has(#sel-bull-metric) .ch-tools,#central-merit-card .card-h .ch-tools{flex:1 1 auto;min-width:0;flex-wrap:wrap;margin-left:0}
+#v-touros .card-h:has(#sel-bull-metric) .ch-tools select,#central-merit-card .card-h .ch-tools select{flex:1 1 132px;max-width:100%;min-width:0}
+#v-touros .card-h:has(#sel-bull-metric) .acts,#central-merit-card .card-h .acts{margin-left:auto}
+
 .card-h .acts{flex:0 0 auto}
 .card-h .hint{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .donut-wrap{height:400px}
@@ -1313,7 +1319,7 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
     <span class="cf-label">Dentro de</span><select id="cert-pool"></select><span id="cert-filter-hint" class="cert-filter-hint"></span>
   </div></div>
   <div class="cert-controls">
-    <div class="cert-animal-control"><label for="cert-animal">Escolher animal</label><select id="cert-animal" aria-label="Escolha o animal para emitir o certificado"></select></div>
+    <div class="cert-animal-control"><label for="cert-animal">Escolher animal</label><select id="cert-animal" aria-label="Escolha o animal para emitir o certificado"></select></div><div class="cert-animal-control"><label for="cert-busca">Ou digitar o número do animal</label><input id="cert-busca" type="search" placeholder="Digite o ID e pressione Enter" autocomplete="off"><small id="cert-busca-msg" role="status"></small></div>
     <div><label for="cert-cycle">Data oficial da prova</label><select id="cert-cycle"><option value="04">Abril</option><option value="08">Agosto</option><option value="12">Dezembro</option></select></div>
     <div><label for="cert-year">Ano</label><input id="cert-year" type="number" min="2020" max="2100"></div>
     <div class="cert-actions"><button id="cert-image" class="cert-image-btn" type="button">Baixar imagem</button></div>
@@ -1357,7 +1363,7 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
       <div class="seg" id="acas-seg-tipo"></div>
       <span style="font-size:12px;font-weight:600;color:var(--ink-2);margin-left:8px">Categoria</span>
       <select id="acas-sel-cat"></select>
-      <label class="acas-show-inb"><input type="checkbox" id="acas-show-inb" checked> Mostrar consanguinidade</label>
+      <label class="acas-show-inb"><input type="checkbox" id="acas-show-inb" checked> Mostrar consanguinidade</label><label class="acas-show-inb"><input type="checkbox" id="acas-show-naab"> Mostrar NAAB dos touros</label>
     </div></div>
 
     <div class="card" id="acas-card-lista" data-no-auto-table-export="1">
@@ -1385,8 +1391,7 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
   <div class="sec-h"><span class="eyebrow">Diagnóstico</span><h2>Onde este rebanho está</h2></div>
   <div class="grid g4" id="kpis"></div>
   <div class="grid g2" style="margin-top:16px">
-    <div class="card"><div class="card-h"><h3>Plano Genético por geração</h3></div><div class="card-b"><div class="chart-sm"><canvas id="c-comp"></canvas></div></div></div>
-    <div class="card"><div class="card-h"><h3>Distribuição do Plano Genético</h3><span class="hint">10 decis · média marcada no eixo</span></div><div class="card-b"><div class="chart-sm"><canvas id="c-dist"></canvas></div></div></div>
+    <div class="card" style="grid-column:1/-1"><div class="card-h"><h3>Plano Genético por geração</h3></div><div class="card-b"><div class="chart-sm" style="height:380px"><canvas id="c-comp"></canvas></div></div></div>
   </div>
   <div class="card" style="margin-top:16px"><div class="card-b" id="ins-lucro"></div></div>
   <div class="card" style="margin-top:16px">
@@ -1457,7 +1462,7 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
   <div class="card acas-up" id="uso-up" style="margin-bottom:16px"><div class="card-b">
     <div id="drop-uso" tabindex="0" role="button" aria-label="Carregar a planilha de touros em uso">
       <div class="big">Arraste aqui a planilha de touros em uso (.xlsx)</div>
-      <div class="small">o export de touros do BlueLink · a aba com os touros é lida automaticamente</div>
+      <div class="small">export do BullSearch (.xlsx) · aba Alta identificada automaticamente</div>
       <input type="file" id="file-uso" accept=".xlsx,.xls" hidden>
     </div>
     <div id="uso-files" style="margin-top:10px"></div>
@@ -1480,7 +1485,7 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
     <div class="card" style="margin-bottom:16px"><div class="card-h"><h3>Touros em uso × rebanho × CDCB</h3>
       <span class="hint">característica a característica</span></div>
       <div class="card-b tw"><div class="tabela-fixa"><table id="t-uso-comp"></table></div><p class="share-note" id="uso-comp-note"></p></div></div>
-    <div class="card" id="uso-avg-card" hidden><div class="card-h"><h3>Alta × concorrência</h3>
+    <div class="card" id="uso-avg-card" hidden><div class="card-h"><h3>Alta × Outros</h3>
       <span class="hint">médias que vieram prontas na planilha</span></div>
       <div class="card-b tw"><div class="tabela-fixa"><table id="t-uso-avg"></table></div></div></div>
     <div class="card" style="margin-top:16px"><div class="card-h"><h3>Touros da planilha</h3>
@@ -1504,7 +1509,7 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
   <div class="grid g4" id="cdcb-kpis" style="margin-bottom:16px"></div>
   <div id="cdcb-aviso" style="margin-bottom:16px"></div>
   <div class="card" id="cdcb-chart-card" style="margin-bottom:16px"><div class="card-h"><h3>Distância da média da raça, em desvios-padrão</h3>
-    <span class="hint">0 = média americana · azul = lado desejável · dourado = lado menos favorável</span></div>
+    <span class="hint">0 = média americana · azul = lado desejável · vermelho = lado menos favorável</span></div>
     <div class="card-b"><div class="cdcb-wrap"><canvas id="c-cdcb"></canvas></div></div></div>
   <div class="card" id="cdcb-table-card"><div class="card-h"><h3>Comparação característica a característica</h3></div>
     <div class="card-b tw"><div class="tabela-fixa"><table id="t-cdcb"></table></div>
@@ -1557,7 +1562,7 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
     <div class="card"><div class="card-h"><h3>Concentração do rebanho por touro</h3><span class="hint">nome completo, filhas e participação</span></div>
       <div class="card-b"><div class="donut-wrap"><canvas id="c-donut"></canvas></div><div class="ins info" id="donut-resumo" style="margin-top:12px"></div></div></div>
     <div class="card"><div class="card-h"><h3>Mérito genético × Número de filhas</h3>
-      <span class="ch-tools"><select id="sel-bull-metric" aria-label="Característica"></select></span></div>
+      <span class="ch-tools"><select id="sel-bull-ano" aria-label="Ano de nascimento das filhas"></select><select id="sel-bull-cat" aria-label="Categoria das filhas"></select><select id="sel-bull-metric" aria-label="Característica"></select></span></div>
       <div class="card-b"><div class="rank-wrap"><canvas id="c-quad"></canvas></div><div class="quadleg" id="quad-leg"></div></div></div>
   </div>
   <div class="card" style="margin-top:16px">
@@ -1572,7 +1577,7 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
   <div class="grid g4" id="central-kpis" style="margin-bottom:16px"></div>
   <div class="grid g2 central-grid">
     <div class="card" id="central-share-card"><div class="card-h"><h3>Participação por central</h3></div><div class="card-b"><div class="central-share-wrap"><canvas id="c-central-share"></canvas></div></div></div>
-    <div class="card" id="central-merit-card"><div class="card-h"><h3>Centrais que mais elevam a característica</h3><select id="sel-central-metric" aria-label="Característica para análise por central"></select></div><div class="card-b"><div class="central-merit-wrap"><canvas id="c-central-merit"></canvas></div><div class="quadleg central-merit-leg" id="central-merit-leg"></div></div></div>
+    <div class="card" id="central-merit-card"><div class="card-h"><h3>Centrais × características</h3><span class="ch-tools"><select id="sel-central-ano" aria-label="Ano de nascimento das filhas"></select><select id="sel-central-cat" aria-label="Categoria das filhas"></select><select id="sel-central-metric" aria-label="Característica para análise por central"></select></span></div><div class="card-b"><div class="central-merit-wrap"><canvas id="c-central-merit"></canvas></div><div class="quadleg central-merit-leg" id="central-merit-leg"></div></div></div>
   </div>
   <div class="card" id="central-ranking-card" style="margin-top:16px">
     <div class="card-h"><h3>Ranking estratégico por central</h3><span class="colsel" id="central-cols"></span></div>
@@ -1742,35 +1747,35 @@ const TRAITS = [
   {k:'Early First Calving',            lab:'Parto Precoce',             u:'',d:1,dir:-1,g:'repro'},
   {k:'First Service Conception',       lab:'Concepção no Primeiro Serviço',u:'',d:1,dir:1,g:'repro'},
   {k:'Mastitis',                       lab:'Mastite',                   u:'',d:1,dir:-1,g:'saude'},
-  {k:'Milking Speed',                  lab:'Velocidade de Ordenha',     u:'',d:1,dir:0, g:'saude'},
+  {k:'Milking Speed',                  lab:'Velocidade de Ordenha',     u:'',d:1,dir:1, g:'saude'},
   {k:'Heifer Livability',              lab:'Sobrevivência da Novilha',  u:'',d:1,dir:1, g:'saude'},
   {k:'Resistance To Respiratory Disease',lab:'Resistência à Doença Respiratória',u:'',d:1,dir:1,g:'saude'},
   {k:'Resistance To Diarrhea',         lab:'Resistência à Diarreia',    u:'',d:1,dir:1, g:'saude'},
-  {k:'Facilidade de Parto do Touro',   lab:'Facilidade de Parto do Touro',u:'',d:1,dir:1,g:'parto'},
-  {k:'Facilidade no Parto da Filha',   lab:'Facilidade de Parto de Filha',u:'',    d:1, dir:1,g:'parto'},
+  {k:'Facilidade de Parto do Touro',   lab:'Facilidade de Parto do Touro',u:'',d:1,dir:-1,g:'parto'},
+  {k:'Facilidade no Parto da Filha',   lab:'Facilidade de Parto de Filha',u:'',    d:1, dir:-1,g:'parto'},
   {k:'Touro Natimorto',                lab:'Natimorto do Touro',        u:''    ,d:1,dir:-1,g:'parto'},
   {k:'Filha Natimorto',                lab:'Índice de Natimorto da Filha',u:'' ,    d:1, dir:-1,g:'parto'},
   {k:'Modern Udder Index',             lab:'Índice Moderno de Úbere',   u:'',d:1,dir:1,g:'tipo'},
   {k:'Composição do Úbere',            lab:'Composto do Úbere (UDC)',   u:'',       d:2, dir:1, g:'tipo'},
   {k:'Pés Pernas Composição',          lab:'Composto de Pés e Pernas (FLC)',u:'',   d:2, dir:1, g:'tipo'},
-  {k:'Composto de Peso Corporal',      lab:'Composto de Peso Corporal (BWC)',u:'',  d:2, dir:0, g:'tipo'},
-  {k:'Estatura',                       lab:'Estatura',                  u:'',d:2,dir:0,g:'lin'},
-  {k:'Força',                          lab:'Força',                     u:'',d:2,dir:0,g:'lin'},
-  {k:'Profundidade Corporal',          lab:'Profundidade Corporal',     u:'',d:2,dir:0,g:'lin'},
-  {k:'Angularidade da Forma Láctea',   lab:'Angulosidade',              u:'',d:2,dir:0,g:'lin'},
-  {k:'Ângulo da Alcatra',              lab:'Ângulo de Garupa',          u:'',d:2,dir:0,g:'lin'},
-  {k:'Largura da Alcatra',             lab:'Largura de Garupa',         u:'',d:2,dir:0,g:'lin'},
-  {k:'Ângulo do pé',                   lab:'Ângulo de Casco',           u:'',d:2,dir:0,g:'lin'},
-  {k:'Vista Lateral da Perna Traseira',lab:'Pernas Vista Lateral',      u:'',d:2,dir:0,g:'lin'},
-  {k:'Vista Traseira da Perna Traseira',lab:'Pernas Vista Posterior',   u:'',d:2,dir:0,g:'lin'},
-  {k:'Fixação do Úbere',               lab:'Inserção Anterior',        u:'',d:2,dir:0,g:'lin'},
-  {k:'Altura do Úbere',                lab:'Altura de Úbere Posterior', u:'',d:2,dir:0,g:'lin'},
-  {k:'Largura do Úbere',               lab:'Largura de Úbere Posterior',u:'',d:2,dir:0,g:'lin'},
-  {k:'Fenda do Úbere',                 lab:'Ligamento Central',       u:'',d:2,dir:0,g:'lin'},
-  {k:'Profundidade do Úbere',          lab:'Profundidade de Úbere',     u:'',d:2,dir:0,g:'lin'},
-  {k:'Posicionamento da Teta',         lab:'Colocação de Tetos Anteriores',u:'',d:2,dir:0,g:'lin'},
-  {k:'Posicionamento da Teta Traseira',lab:'Colocação de Tetos Posteriores',u:'',d:2,dir:0,g:'lin'},
-  {k:'Comprimento da Teta',            lab:'Comprimento de Tetos',      u:'',d:2,dir:0,g:'lin'},
+  {k:'Composto de Peso Corporal',      lab:'Composto de Peso Corporal (BWC)',u:'',  d:2, dir:1, g:'tipo'},
+  {k:'Estatura',                       lab:'Estatura',                  u:'',d:2,dir:1,g:'lin'},
+  {k:'Força',                          lab:'Força',                     u:'',d:2,dir:1,g:'lin'},
+  {k:'Profundidade Corporal',          lab:'Profundidade Corporal',     u:'',d:2,dir:1,g:'lin'},
+  {k:'Angularidade da Forma Láctea',   lab:'Angulosidade',              u:'',d:2,dir:1,g:'lin'},
+  {k:'Ângulo da Alcatra',              lab:'Ângulo de Garupa',          u:'',d:2,dir:1,g:'lin'},
+  {k:'Largura da Alcatra',             lab:'Largura de Garupa',         u:'',d:2,dir:1,g:'lin'},
+  {k:'Ângulo do pé',                   lab:'Ângulo de Casco',           u:'',d:2,dir:1,g:'lin'},
+  {k:'Vista Lateral da Perna Traseira',lab:'Pernas Vista Lateral',      u:'',d:2,dir:1,g:'lin'},
+  {k:'Vista Traseira da Perna Traseira',lab:'Pernas Vista Posterior',   u:'',d:2,dir:1,g:'lin'},
+  {k:'Fixação do Úbere',               lab:'Inserção Anterior',        u:'',d:2,dir:1,g:'lin'},
+  {k:'Altura do Úbere',                lab:'Altura de Úbere Posterior', u:'',d:2,dir:1,g:'lin'},
+  {k:'Largura do Úbere',               lab:'Largura de Úbere Posterior',u:'',d:2,dir:1,g:'lin'},
+  {k:'Fenda do Úbere',                 lab:'Ligamento Central',       u:'',d:2,dir:1,g:'lin'},
+  {k:'Profundidade do Úbere',          lab:'Profundidade de Úbere',     u:'',d:2,dir:1,g:'lin'},
+  {k:'Posicionamento da Teta',         lab:'Colocação de Tetos Anteriores',u:'',d:2,dir:1,g:'lin'},
+  {k:'Posicionamento da Teta Traseira',lab:'Colocação de Tetos Posteriores',u:'',d:2,dir:1,g:'lin'},
+  {k:'Comprimento da Teta',            lab:'Comprimento de Tetos',      u:'',d:2,dir:1,g:'lin'},
 ];
 const GRP = {plano:'Plano Genético', prod:'Produção', eficiencia:'Eficiência e Sustentabilidade', repro:'Fertilidade', saude:'Saúde e Longevidade', parto:'Parto', tipo:'Compostos de Tipo', lin:'Lineares de Tipo'};
 
@@ -1780,8 +1785,9 @@ const GRP = {plano:'Plano Genético', prod:'Produção', eficiencia:'Eficiência
 /* Bloco 1: 'Prenhez' saiu de todas as tabelas e gráficos — a informação nunca
    existe no arquivo. E a ordem passou a ser sempre da geração mais velha para a
    mais nova, em TODA a plataforma (tabelas, sparklines, curvas). */
-const CATS = ['Lact 3+','Lact 2','Lact 1','Novilha >12','Novilha 0-12'];
+const CATS = ['Lact 3+','Lact 2','Lact 1','Novilha >12','Bezerras 0-12'];
 const CATS_TEMPO = () => CATS.slice();
+const ehNovilha = r => r.cat==='Bezerras 0-12' || r.cat.startsWith('Novilha');
 
 /* --- Ponte NAAB: colunas do Alta Bull Search -> colunas do Relatório de Índice de Fêmeas.
    Só entram aqui características que existem nos DOIS lados. --- */
@@ -2041,6 +2047,20 @@ function lerCsv(text, nome){
 function mapearColunas(hdr){
   const col = {}, src = {};
   hdr.forEach((h,i) => { if(h && !(h in col)) col[h] = i; });
+  const aliases = {
+    'Feed Saved':'Ração guardado (FSAV)',
+    'Residual Feed Intake':'Consumo residual de ração (RFI)',
+    'Repro Efficiency Index':'Índice de Eficiência Reprodutiva (REI)',
+    'Early First Calving':'Primeiro parto precoce (EFC)',
+    'First Service Conception':'Primeiro Serviço até à Concepção (FSC)',
+    'Mastitis':'Resistência à mastite (MAST)',
+    'Milking Speed':'Velocidade de ordenha (MSPD)',
+    'Heifer Livability':'Livabilidade de novilhas (HLIV)',
+    'Resistance To Respiratory Disease':'Resistência às doenças respiratórias (RSP)',
+    'Resistance To Diarrhea':'Resistência à diarreia (DIA)',
+    'Modern Udder Index':'Índice Moderno do Úbere (MUI)'
+  };
+  Object.entries(aliases).forEach(([canon,origem])=>{if(col[canon]===undefined && col[origem]!==undefined)col[canon]=col[origem];});
   TRAITS.forEach(t => {
     const i = col[t.k];
     if(i === undefined) return;
@@ -2065,7 +2085,7 @@ function origemDoAnimal(linha, src){
   if(vistos.size === 1) return [...vistos][0];
   return 'MISTO';
 }
-const FONTE_LAB = {PA:'Média de parentesco (PA)', G:'Genômica (G)', BA:'Média da raça (BA)', MISTO:'Origem mista', SEM:'Sem informação'};
+const FONTE_LAB = {PA:'Média de parentesco (PA)', G:'Genômica (G)', BA:'Sem informação de pedigree (BA)', MISTO:'Origem mista', SEM:'Sem informação'};
 
 /* --- RAÇA DA FÊMEA -------------------------------------------------------
    O Relatório de Índice de Fêmeas não traz raça. A plataforma usa primeiro a
@@ -2133,7 +2153,7 @@ function ingest(text){
     if(!nasc || nasc > D.ref){ cat = 'Sem data'; }
     else {
       idade = (D.ref - nasc)/(1000*60*60*24*30.4375);
-      if(lact === 0 || lact === null) cat = idade <= 12 ? 'Novilha 0-12' : 'Novilha >12';
+      if(lact === 0 || lact === null) cat = idade <= 12 ? 'Bezerras 0-12' : 'Novilha >12';
       else if(lact === 1) cat = 'Lact 1';
       else if(lact === 2) cat = 'Lact 2';
       else cat = 'Lact 3+';
@@ -2157,15 +2177,9 @@ function ingest(text){
     o.bullProof = bull ? String(bull['Proof']||'').trim() : '';
     return o;
   });
-  const totalBruto = D.all.length;
-  const foraAnalise = D.all.filter(r=>!racaElegivelAnalise(r.raca)).length;
-  if(foraAnalise){
-    D.all = D.all.filter(r=>racaElegivelAnalise(r.raca));
-    AVISOS.push(['warn','Filtro racial da análise',
-      `<b>${fmt(foraAnalise)}</b> fêmea(s) foram retiradas das análises porque a <b>raça oficial do pai no BullSearch</b> não é Holstein nem Jersey. `+
-      `Quando o pai não existe na base BullSearch, as letras do código NAAB são usadas apenas como fallback. `+
-      `A plataforma trabalha nas análises com filhas Holstein e Jersey. Restaram <b>${fmt(D.all.length)}</b> de ${fmt(totalBruto)} fêmeas.`]);
-  }
+  const semRaca = D.all.filter(r=>r.raca==='—').length;
+  if(semRaca) AVISOS.push(['info','Raça não identificada',
+    `<b>${fmt(semRaca)}</b> fêmea(s) permanecem no banco e nas análises do rebanho. Comparações CDCB exigem raça identificada e são apresentadas por raça.`]);
 
   if(divergBull.size){
     const ex=[...divergBull.entries()].slice(0,6).map(([c,x])=>`<b>${esc(c)}</b>: ${esc(x.orig)} → ${esc(x.oficial||x.full||'nome BullSearch')}`).join(' · ');
@@ -2366,7 +2380,7 @@ function pintarAvisos(){
     window.__mergeAvisosTimer = setTimeout(()=>{
       box.classList.add('hiding');
       setTimeout(()=>{ box.hidden=true; }, 480);
-    },10000);
+    },180000);
   }else box.hidden = true;
 }
 
@@ -2700,7 +2714,7 @@ function abrirModalShare(acao){
   SHARE_MODAL_ACTION=acao; prepararModalShare(); preencherFormShare(SHARE_PREFS);
   const cliente=acao==='client-link'||acao==='client-download';
   $('#share-title').textContent=cliente?'Conteúdo da versão do cliente':'Conteúdo do relatório em PDF';
-  $('#share-subtitle').textContent=cliente?'Escolha o que o cliente poderá visualizar.':'Escolha o que aparecerá no relatório antes de abrir a impressão.';
+  $('#share-subtitle').textContent=cliente?`Escolha o que o cliente poderá visualizar. ${USO?.touros?.length?`${fmt(USO.touros.length)} touros em uso serão incorporados ao HTML.`:'Carregue a planilha BullSearch em Touros em uso antes de gerar o HTML para incluir esta análise.'}`:'Escolha o que aparecerá no relatório antes de abrir a impressão.';
   $('#share-apply').textContent=acao==='client-link'?'Gerar link':acao==='client-download'?'Baixar HTML':'Abrir modo relatório';
   $('#share-modal').hidden=false;
 }
@@ -2919,7 +2933,7 @@ function achados(){
   a.tend = D.anos.length ? trend(R,'Meu Índice', Math.max(...D.anos)-6, 3) : null;
 
   // gap novilhas x vacas
-  const nov = R.filter(r=>r.cat.startsWith('Novilha')), vac = R.filter(r=>r.cat.startsWith('Lact'));
+  const nov = R.filter(r=>ehNovilha(r)), vac = R.filter(r=>r.cat.startsWith('Lact'));
   a.nNov = nov.length; a.nVac = vac.length;
   a.gap = (nov.length>=5 && vac.length>=5)
     ? mean(vals(nov,'Meu Índice')) - mean(vals(vac,'Meu Índice')) : null;
@@ -3086,7 +3100,7 @@ function montarCriteriosCertificado(){
 function animaisDoCorteCertificado(){
   const pool=$('#cert-pool')?.value||'all';
   let R=[...D.rows];
-  if(pool==='nov') R=R.filter(r=>r.cat.startsWith('Novilha'));
+  if(pool==='nov') R=R.filter(r=>ehNovilha(r));
   else if(pool!=='all') R=R.filter(r=>r.cat===pool);
   const todos=[...R], criterios=[certCrit,certCrit2,certCrit3].filter(Boolean).map(k=>D.traits.find(t=>t.k===k)).filter(Boolean);
   criterios.forEach(cr=>{
@@ -3101,6 +3115,7 @@ function atualizarCorteCertificado(){
   input.innerHTML=selecionados.map(r=>`<option value="${esc(r.id)}">${esc(r.id)} · ${esc(r.touro||r.codTouro||'Pai não informado')}</option>`).join('');
   if(selecionados.some(r=>String(r.id)===valorAtual)) input.value=valorAtual;
   else input.selectedIndex=0;
+  const busca=$('#cert-busca'); if(busca?.value.trim() && !selecionados.some(r=>String(r.id).trim()===busca.value.trim())) busca.value='';
   const texto=criterios.length ? `${selecionados.length} de ${todos.length} fêmeas · corte em cascata: ${criterios.map(c=>c.lab).join(' → ')}${certPct<100?` · top ${certPct}% por etapa`:''}` : `${selecionados.length} fêmeas · lista completa`;
   $('#cert-filter-hint').textContent=texto;
   document.querySelectorAll('#cert-seg button').forEach(b=>b.classList.toggle('on',+b.dataset.p===certPct));
@@ -3133,7 +3148,7 @@ function certGrupoHtml(animal,g){
 }
 function renderCertificado(){
   const out=$('#cert-output'); if(!out) return;
-  const id=String($('#cert-animal').value||'').trim();
+  const id=String($('#cert-busca')?.value||$('#cert-animal').value||'').trim();
   const permitidos=animaisDoCorteCertificado().selecionados;
   const animal=id ? permitidos.find(r=>String(r.id).trim()===id) : permitidos[0];
   if(!animal){out.innerHTML=id ? `<div class="ins warn">O animal <b>${esc(id)}</b> não está dentro do corte selecionado acima.</div>` : '<div class="ins warn">Ajuste os filtros para encontrar animais elegíveis.</div>';return;}
@@ -3166,14 +3181,19 @@ function rCertificado(){
   }
   if(!$('#cert-year').value) $('#cert-year').value=new Date().getFullYear();
   const atualizar=()=>renderCertificado();
-  input.onchange=atualizar; $('#cert-cycle').onchange=atualizar; $('#cert-year').oninput=atualizar;
+  input.onchange=()=>{$('#cert-busca').value='';$('#cert-busca-msg').textContent='';atualizar();};
+  const buscar=()=>{const q=$('#cert-busca').value.trim(); const achado=animaisDoCorteCertificado().selecionados.find(r=>String(r.id).trim()===q);
+    $('#cert-busca-msg').textContent=achado?'Animal encontrado.':q?'Animal não encontrado neste recorte.':'';
+    if(achado){input.value=String(achado.id);atualizar();}else if(q){$('#cert-output').innerHTML='<div class="ins warn">Animal não encontrado neste recorte.</div>';}};
+  $('#cert-busca').oninput=buscar;$('#cert-busca').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();buscar();}};
+  $('#cert-cycle').onchange=atualizar; $('#cert-year').oninput=atualizar;
   const certPrintBtn=$('#cert-print'); if(certPrintBtn) certPrintBtn.onclick=emitirCertificado;
   $('#cert-image').onclick=baixarImagemCertificado;
   atualizarCorteCertificado();
 }
 /* Exportação de imagem do certificado — implementação única da release. */
 function baixarImagemCertificado(){
-  const id=String($('#cert-animal').value||'').trim();
+  const id=String($('#cert-busca')?.value||$('#cert-animal').value||'').trim();
   const animal=animaisDoCorteCertificado().selecionados.find(r=>String(r.id).trim()===id);
   if(!animal){window.alert('Escolha um animal dentro do corte selecionado para baixar a imagem.');return;}
   const logo=new Image(); logo.src=$('#hdr img').src;
@@ -3218,6 +3238,7 @@ function baixarImagemCertificado(){
 }
 function emitirCertificado(){
   renderCertificado();
+  if(!$('#cert-output .cert-sheet')) return;
   const style=document.createElement('style'); style.id='cert-print-page'; style.textContent='@media print{@page{size:A4 portrait;margin:8mm}}'; document.head.appendChild(style);
   document.body.classList.add('cert-print');
   const limpar=()=>{document.body.classList.remove('cert-print');style.remove();};
@@ -3427,7 +3448,7 @@ function rPlanoCliente(){
     p.itens.forEach(([lab,k])=>{
       const w = PLANO.pesos[k]||0;
       const reb = PLANO.rebanho[k], prog = PLANO.progenie[k];
-      const t = TRAITS.find(x=>x.k===k) || {d:2,u:'',dir:0};
+      const t = TRAITS.find(x=>x.k===k) || {d:2,u:'',dir:1};
       let cols='';
       if(temValores){
         const dif = (reb!==undefined && prog!==undefined) ? prog-reb : null;
@@ -3541,7 +3562,7 @@ function montarSeletorRacaUso(elId, touros, onChange){
 /* ======================= VISÃO GERAL ======================= */
 function rGeral(){
   const R = D.rows, mi = vals(R,'Meu Índice');
-  const nov = R.filter(r=>r.cat.startsWith('Novilha')), vacas = R.filter(r=>r.cat.startsWith('Lact'));
+  const nov = R.filter(r=>ehNovilha(r)), vacas = R.filter(r=>r.cat.startsWith('Lact'));
   const gap = (nov.length&&vacas.length) ? mean(vals(nov,'Meu Índice')) - mean(vals(vacas,'Meu Índice')) : null;
   const tr = trend(R,'Meu Índice', Math.max(...D.anos)-6, 3);
 
@@ -3605,32 +3626,6 @@ function rGeral(){
       const txt='Média do rebanho';ctx.font='400 12px Arial';const tw=ctx.measureText(txt).width+12;
       ctx.fillStyle='#fff';ctx.fillRect(x-tw/2,a.top-27,tw,18);ctx.fillStyle='#6D7E98';ctx.textAlign='center';ctx.textBaseline='middle';
       ctx.fillText(txt,x,a.top-18);ctx.restore();}}]});
-
-  // histograma
-  /* Bloco 1: 10 barras fixas (decis) e a média marcada no eixo X. Decil não é
-     bin de largura fixa — cada barra tem exatamente 10% do rebanho, e o que
-     varia é a FAIXA de US$ que ela cobre. É isso que mostra concentração. */
-  const ord = mi.slice().sort((a,b)=>a-b), nDec = 10, media = mean(mi);
-  const dec = Array.from({length:nDec}, (_,i)=>{
-    const a = Math.floor(i*ord.length/nDec), b = Math.floor((i+1)*ord.length/nDec);
-    const fatia = ord.slice(a, Math.max(b,a+1));
-    return {i:i+1, n:fatia.length, lo:fatia[0], hi:fatia[fatia.length-1], m:mean(fatia)};
-  });
-  chart('c-dist', {type:'bar', data:{labels:dec.map(d=>`D${d.i}`), datasets:[{data:dec.map(d=>d.m),
-    backgroundColor:dec.map(d=>d.m>=media?C.alta:C.light), borderRadius:3}]},
-    options:{plugins:{legend:{display:false}, tooltip:{callbacks:{
-        title:ctx=>`Decil ${dec[ctx[0].dataIndex].i} · ${dec[ctx[0].dataIndex].n} fêmeas`,
-        label:ctx=>`média ${RS(dec[ctx.dataIndex].m,0)}`,
-        afterLabel:ctx=>`faixa ${RS(dec[ctx.dataIndex].lo,0)} a ${RS(dec[ctx.dataIndex].hi,0)}`}}},
-      scales:{x:{grid:{display:false}, title:{display:true,text:`Decis do rebanho · média geral ${RS(media,0)}`}},
-        y:{grid:{color:C.line}, title:{display:true,text:'Plano Genético (US$)'}, ticks:{callback:v=>fmt(v,0)}}}},
-    plugins:[{id:'linhaMedia',afterDatasetsDraw(ch){const {ctx,scales,chartArea:a}=ch;
-      const py=scales.y.getPixelForValue(media); if(!isFinite(py)) return;
-      ctx.save();ctx.strokeStyle=C.deep;ctx.lineWidth=1.4;ctx.setLineDash([6,4]);
-      ctx.beginPath();ctx.moveTo(a.left,py);ctx.lineTo(a.right,py);ctx.stroke();ctx.setLineDash([]);
-      const txt=`média ${RS(media,0)}`;ctx.font='700 10px Arial';const w=ctx.measureText(txt).width+12;
-      ctx.fillStyle='#fff';ctx.strokeStyle=C.deep;ctx.beginPath();ctx.roundRect(a.right-w-4,py-19,w,16,4);ctx.fill();ctx.stroke();
-      ctx.fillStyle=C.deep;ctx.textAlign='center';ctx.fillText(txt,a.right-4-w/2,py-7);ctx.restore();}}]});
 
   // Sumário por ordem de lactação — mesmo desenho da Composição do rebanho
   const grpL = [0,1,2,3,'>=4'];
@@ -3759,7 +3754,7 @@ function pintarEvolucao(){
   }).join('');
   $('#evo-note').innerHTML = usar.length
     ? `Comparação entre fêmeas nascidas em <b>${A}</b> (${rowsA.length}) e em <b>${B}</b> (${rowsB.length}). `+
-      `A cor segue o sentido desejável de cada característica; características de ótimo intermediário ficam em cinza.`
+      `A cor segue o sentido desejável de cada característica; as cores mostram o sentido desejável de cada característica.`
     : `Nenhuma característica selecionada.`;
 }
 
@@ -3857,7 +3852,7 @@ function spark(cv, data, dir){
   let first=true;
   data.forEach((y,i)=>{ if(y===null) return; if(first){g.moveTo(X(i),Y(y));first=false;} else g.lineTo(X(i),Y(y)); });
   const up = v[v.length-1] > v[0];
-  g.strokeStyle = dir===0 ? C.ink3 : ((up?1:-1)*dir>0 ? C.green : C.red);
+  g.strokeStyle = (up?1:-1)*dir>0 ? C.alta : C.red;
   g.lineWidth = 2.5; g.lineJoin='round'; g.stroke();
   const li = data.map((y,i)=>y!==null?i:-1).filter(i=>i>=0).pop();
   g.beginPath(); g.arc(X(li), Y(data[li]), 3, 0, 7); g.fillStyle=g.strokeStyle; g.fill();
@@ -3866,11 +3861,10 @@ function spark(cv, data, dir){
 
 <script>
 /* ======================= EVOLUÇÃO GENÉTICA ======================= */
-const EVOL_ANO_CORES = ['#33477F','#315F99','#2D91B7','#34B4BE','#EDB6C4','#E45B5B','#B54040','#8D3037'];
+const EVOL_ANO_CORES = ['#184F91','#C74038','#15846D','#8C50A2','#D18A12','#176D9D','#9E3B69','#4C7131','#D3541C','#514A9B','#0F7275','#AF5B24'];
 function evolCorAno(i,n){
   if(n<=1) return EVOL_ANO_CORES[0];
-  const p = i*(EVOL_ANO_CORES.length-1)/(n-1);
-  return EVOL_ANO_CORES[Math.max(0,Math.min(EVOL_ANO_CORES.length-1,Math.round(p)))];
+  return EVOL_ANO_CORES[i % EVOL_ANO_CORES.length];
 }
 function jitterEvol(id, pos){
   const s = String(id ?? pos ?? '');
@@ -3923,7 +3917,7 @@ function paintEvol(){
      fill:true, tension:.25, spanGaps:true, borderWidth:2.5, pointRadius:all.map(p=>Math.min(11,3.5+Math.sqrt(p.n)*1.1)),
      pointBackgroundColor:all.map(p=>p.ano>=desde?C.alta:'#B6C4DC'), pointBorderColor:'#fff', pointBorderWidth:1.5},
     ...(tr?[{type:'line', label:`Tendência ${sgn(tr.slope,t.d+1)} ${t.u||''}/ano`.trim(), data:all.map(p=>p.ano>=desde? tr.int+tr.slope*p.ano : null),
-     borderColor:C.green, borderDash:[6,4], borderWidth:2, pointRadius:0, spanGaps:true}]:[]),
+     borderColor:tr.slope*t.dir>=0?C.alta:C.red, borderDash:[6,4], borderWidth:2, pointRadius:0, spanGaps:true}]:[]),
     {type:'bar', label:'nº de fêmeas', data:all.map(p=>p.n), backgroundColor:'rgba(74,127,212,.16)', yAxisID:'y2', borderRadius:3, order:9}]},
     options:{interaction:{mode:'index',intersect:false},
       plugins:{legend:{position:'bottom'}, tooltip:{callbacks:{label:ctx=>ctx.dataset.yAxisID==='y2'?`${ctx.raw} fêmeas`:`${ctx.dataset.label}: ${uv(ctx.raw,t)}`}}},
@@ -3993,20 +3987,20 @@ function paintEvol(){
   /* Painel de balanceamento: quando há referência CDCB, média e tendência são
      calculadas somente nas fêmeas da mesma raça da referência selecionada. */
   const Rbal = cdcbRowsComparaveis(D.rows, racaRef).rows;
-  let h = `<thead><tr><th>Característica</th><th>Média comparável</th><th>Ganho/ano</th><th>Acumulado</th><th>Confiança</th><th>Média CDCB</th><th>vs média CDCB</th></tr></thead><tbody>`;
+  let h = `<thead><tr><th>Característica</th><th>Média comparável</th><th>Ganho/ano</th><th>Acumulado</th><th>Média CDCB</th><th>vs média CDCB</th></tr></thead><tbody>`;
   D.traits.filter(x=>x.g!=='lin').forEach(x=>{
     const r = trend(Rbal,x.k,desde,nmin);
     const m = mean(vals(Rbal,x.k));
     const rx = cdcbRef(x.k,racaRef);
     const dx = (rx && m!==null) ? m-rx.media : null;
     const colsRef = `<td>${rx?uv(rx.media,x):'—'}</td><td class="${dx===null||!x.dir?'':(dx*x.dir>0?'pos':'neg')}">${dx===null?'—':uv(dx,x)}</td>`;
-    if(!r){ h+=`<tr><td>${x.lab}</td><td>${uv(m,x)}</td><td colspan="3" style="text-align:center;color:var(--ink-3)">períodos insuficientes</td>${colsRef}</tr>`; return; }
+    if(!r){ h+=`<tr><td>${x.lab}</td><td>${uv(m,x)}</td><td colspan="2" style="text-align:center;color:var(--ink-3)">períodos insuficientes</td>${colsRef}</tr>`; return; }
     const ok = x.dir===0 ? null : (r.slope*x.dir > 0);
     const q = r.qual;
     const selo = q.nivel==='fraca' ? `<span class="pill a" title="${esc(q.txt)}">${esc(q.lab)}</span>`
                : q.nivel==='media' ? `<span class="pill" title="${esc(q.txt)}">${esc(q.lab)}</span>`
                                    : `<span class="pill g" title="${esc(q.txt)}">${esc(q.lab)}</span>`;
-    h += `<tr><td>${x.lab}</td><td>${uv(m,x)}</td><td class="${q.nivel==='fraca'?'':(ok===null?'':(ok?'pos':'neg'))}">${sgn(r.slope,x.d+1)}</td><td>${sgn(r.slope*r.span,x.d)}</td><td class="mid">${selo}</td>${colsRef}</tr>`;
+    h += `<tr><td>${x.lab}</td><td>${uv(m,x)}</td><td class="${q.nivel==='fraca'?'':(ok===null?'':(ok?'pos':'neg'))}">${sgn(r.slope,x.d+1)}</td><td>${sgn(r.slope*r.span,x.d)}</td>${colsRef}</tr>`;
   });
   $('#t-bal').innerHTML = h+'</tbody>';
   ordenavel('t-bal');
@@ -4064,7 +4058,7 @@ function rRebanho(){
   const cat = catSel.value||'all', touro = tSel.value||'all';
   const q = ($('#reb-busca').value||'').trim().toLowerCase();
   let R = D.rows.filter(r =>
-    (cat==='all' || (cat==='nov'? r.cat.startsWith('Novilha') : cat==='vac'? r.cat.startsWith('Lact') : r.cat===cat)) &&
+    (cat==='all' || (cat==='nov'? ehNovilha(r) : cat==='vac'? r.cat.startsWith('Lact') : r.cat===cat)) &&
     (touro==='all' || chaveTouro(r)===touro) &&
     (!q || [r.id,r.touro,r.mgs,r.codTouro,r.codMgs].join(' ').toLowerCase().includes(q)));
 
@@ -4172,12 +4166,12 @@ function rCDCB(){
   }
   $('#sel-cdcb-raca').value = CDCB_RACA;
   const anos = D.anos.slice();
-  const anoPadrao = anos.length > 3 ? anos[Math.max(0, anos.length - 4)] : (anos[0] ?? 0);
+  const anoPadrao = 'all';
   const anoSel = $('#sel-cdcb-ano');
   if(!anoSel.dataset.on){
     anoSel.dataset.on = 1;
-    anoSel.innerHTML = `<option value="all">Todos os anos</option>`+
-      anos.map(a=>`<option value="${a}" ${a===anoPadrao?'selected':''}>${a}</option>`).join('');
+    anoSel.innerHTML = `<option value="all" selected>Todos os anos</option>`+
+      anos.map(a=>`<option value="${a}">${a}</option>`).join('');
     anoSel.onchange = rCDCB;
   }
   const desdeAno = anoSel.value==='all' ? -Infinity : +anoSel.value;
@@ -4185,14 +4179,15 @@ function rCDCB(){
   const R0 = D.rows.filter(r =>
     (r.ano ?? -Infinity) >= desdeAno &&
     (cat==='all' ? true
-     : cat==='nov' ? r.cat.startsWith('Novilha') : cat==='vac' ? r.cat.startsWith('Lact') : r.cat===cat));
+     : cat==='nov' ? ehNovilha(r) : cat==='vac' ? r.cat.startsWith('Lact') : r.cat===cat));
   const raca = cdcbRacaAtiva(), base = cdcbBase('femeas')[raca];
   const cmp = cdcbRowsComparaveis(R0,raca);
   const R = cmp.rows;
+  const faltasIndice = R.length - vals(R,'Meu Índice').length;
   $('#cdcb-base-hint').innerHTML = base
     ? `Referência <b>${esc(raca)}</b> · ${fmt(base.n)} animais no arquivo CDCB · comparação com <b>${fmt(R.length)}</b> fêmeas da mesma raça`+
       (desdeAno===-Infinity ? ` · todos os anos` : ` · nascidas de <b>${desdeAno}</b> em diante`)+
-      (cmp.excluidos ? ` · ${fmt(cmp.excluidos)} fora por raça` : '')
+      ` · ${fmt(R0.length-R.length)} fora da raça selecionada`
     : 'Raça sem referência publicada neste arquivo.';
 
   const linhas = D.traits.map(t=>{
@@ -4200,7 +4195,7 @@ function rCDCB(){
     const v = vals(R,t.k); const m = mean(v); if(m===null) return null;
     const dif = m - ref.media;
     const z = ref.sd ? dif/ref.sd : null;
-    return {t, m, ref, dif, z, n:v.length};
+    return {t, m, ref, dif, z, n:v.length, ausentes:R.length-v.length};
   }).filter(Boolean);
 
   if(!linhas.length){
@@ -4229,7 +4224,7 @@ function rCDCB(){
   chart('c-cdcb',{type:'bar', data:{labels:ord.map(l=>l.t.lab.replace(/ \(.*\)/,'')),
     datasets:[{data:ord.map(l=>l.z),
       backgroundColor:ord.map(l=>{const a=Math.min(1,Math.abs(l.z)/1.2);
-        return l.t.dir && l.z*l.t.dir<0 ? `rgba(200,149,0,${0.35+a*0.55})` : `rgba(41,80,151,${0.3+a*0.6})`;}),
+        return l.z*l.t.dir<0 ? `rgba(179,58,46,${0.35+a*0.55})` : `rgba(41,80,151,${0.3+a*0.6})`;}),
       borderRadius:4, barThickness:20}]},
     options:{indexAxis:'y', maintainAspectRatio:false, layout:{padding:{right:72, top:44}},
       plugins:{legend:{display:false}, tooltip:{callbacks:{
@@ -4248,10 +4243,10 @@ function rCDCB(){
       ctx.textBaseline='bottom';ctx.fillText(`média CDCB`,x,Math.max(14,a.top-12));ctx.restore();}}]});
 
   $('#t-cdcb').innerHTML =
-    `<thead><tr><th>Característica</th><th>Rebanho (${esc(raca)})</th><th>n</th><th>Média CDCB</th><th>σCDCB</th><th>Diferença</th><th>EMσ</th><th>Percentil aprox.</th></tr></thead><tbody>`+
+    `<thead><tr><th>Característica</th><th>Rebanho (${esc(raca)})</th><th>n com dado</th><th>Sem dado</th><th>Média CDCB</th><th>σCDCB</th><th>Diferença</th><th>EMσ</th><th>Percentil aprox.</th></tr></thead><tbody>`+
     linhas.map(l=>{
       const ok = l.t.dir===0 ? null : (l.dif*l.t.dir>0);
-      return `<tr><td>${esc(l.t.lab)}</td><td><b>${uv(l.m,l.t)}</b></td><td>${fmt(l.n)}</td>
+      return `<tr><td>${esc(l.t.lab)}</td><td><b>${uv(l.m,l.t)}</b></td><td>${fmt(l.n)}</td><td>${fmt(l.ausentes)}</td>
         <td>${uv(l.ref.media,l.t)}</td><td>${l.ref.sd===null?'—':fmt(l.ref.sd,l.t.d)}</td>
         <td class="${ok===null?'':(ok?'pos':'neg')}">${uv(l.dif,l.t)}</td>
         <td class="${ok===null?'':(ok?'pos':'neg')}">${l.z===null?'—':fmt(l.z,2)}</td>
@@ -4260,7 +4255,8 @@ function rCDCB(){
   ordenavel('t-cdcb');
   $('#cdcb-aviso').innerHTML =
     `<div class="ins ${cmp.excluidos?'warn':'info'}"><span class="tag">Método</span>`+
-    `A comparação usa somente fêmeas vinculadas à raça <b>${esc(raca)}</b> e a média/DP da mesma raça no arquivo <b>Mean & Standard Deviations of PTA</b>. `+
+    `Total do recorte: <b>${fmt(R0.length)}</b>; da raça ${esc(raca)}: <b>${fmt(R.length)}</b>; fora desta comparação por raça: <b>${fmt(R0.length-R.length)}</b>. O n em cada linha conta apenas fêmeas com o valor daquela característica. `+
+    `A referência é a média/DP da mesma raça no arquivo <b>Mean & Standard Deviations of PTA</b>. `+
     (cmp.excluidos ? `<b>${fmt(cmp.excluidos)}</b> fêmeas do recorte ficaram fora porque pertencem a outra raça ou não puderam ter a raça identificada pelo código NAAB do pai. ` : '')+
     (desdeAno===-Infinity
       ? `O recorte inclui todos os anos de nascimento disponíveis.`
@@ -4336,38 +4332,105 @@ let USO_COLS = null;
 const normCab = t => String(t??'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
                        .replace(/[^A-Z0-9]+/g,' ').trim();
 
+const USO_BULL_EXTRA = {
+  'DWP$':['DWP$',1], 'CM$':['CM$',1], 'FM$':['FM$',1], 'GM$':['GM$',1],
+  'TPI':['TPI',1], 'NM$':['NM$',1], 'HCC':['HCC',1],
+  'CFP':['Gordura + proteína (CFP)',1], 'PTAT':['Tipo (PTAT)',1], 'FE':['Eficiência alimentar (FE)',1],
+  'REI':['Índice de eficiência reprodutiva (REI)',1], 'EFC':['Parto precoce (EFC)',-1],
+  'FSC':['Concepção no primeiro serviço (FSC)',1], 'FI':['Índice de fertilidade (FI)',1],
+  'MAST':['Mastite (MAST)',-1], 'MUI':['Índice moderno de úbere (MUI)',1],
+  'MSPD':['Velocidade de ordenha (MSPD)',1], 'H-LIV':['Sobrevivência da novilha (H-LIV)',1],
+  'SSB':['Natimorto do touro (SSB)',-1], 'SCE':['Facilidade de parto do touro (SCE)',-1],
+  'DCE':['Facilidade de parto da filha (DCE)',-1], 'DSB':['Natimorto da filha (DSB)',-1],
+  'RSP':['Resistência à doença respiratória (RSP)',1], 'DIA':['Resistência à diarreia (DIA)',1],
+  'GL':['Duração da gestação (GL)',-1], 'KET':['Resistência à cetose (KET)',1],
+  'RP':['Resistência à retenção de placenta (RP)',1], 'MET':['Resistência à metrite (MET)',1],
+  'DA':['Resistência ao deslocamento de abomaso (DA)',1], 'MF':['Fertilidade masculina (MF)',1],
+  'MS':['Velocidade de ordenha (MS)',1], 'DC':['Composto leiteiro (DC)',1],
+  'PROT%':['Proteína (%)',1], 'FAT %':['Gordura (%)',1],
+  'STATURE':['Estatura',1], 'STRENGTH':['Força',1], 'BODY DEPTH':['Profundidade corporal',1],
+  'DAIRY FORM':['Angulosidade',1], 'RUMP ANGLE':['Ângulo de garupa',1],
+  'THURL WIDTH':['Largura de garupa',1], 'FOOT ANGLE':['Ângulo de casco',1],
+  'FLS':['Composto de membros anteriores (FLS)',1], 'F. UDDER ATT.':['Inserção anterior do úbere',1],
+  'R UDDER HEIGHT':['Altura de úbere posterior',1], 'REAR UDDER WIDTH':['Largura de úbere posterior',1],
+  'UDDER CLEFT':['Ligamento central',1], 'UDDER DEPTH':['Profundidade do úbere',1],
+  'TEAT LENGTH':['Comprimento de tetos',1], 'RFI':['Consumo alimentar residual (RFI)',-1]
+};
+const USO_BULL_ALIASES = {
+  'INDEX':'Meu Índice', 'MILK':'Leite', 'FAT':'Gordura', 'PROTEIN':'Proteína',
+  'PL':'Vida Produtiva', 'DPR':'Taxa de Gravidez da Filha', 'SCS':'Pontuação de Células Somáticas',
+  'CCR':'Taxa de Concepção de Vacas', 'HCR':'Taxa de Concepção de Novilhas',
+  'C-LIV':'Habitabilidade', 'UDC':'Composição do Úbere', 'FLC':'Pés Pernas Composição',
+  'BWC':'Composto de Peso Corporal', 'FEED SAVED':'Feed Saved',
+  'SCE':'Facilidade de Parto do Touro', 'DCE':'Facilidade no Parto da Filha',
+  'SSB':'Touro Natimorto', 'DSB':'Filha Natimorto', 'REI':'Repro Efficiency Index',
+  'EFC':'Early First Calving', 'FSC':'First Service Conception', 'MAST':'Mastitis',
+  'MUI':'Modern Udder Index', 'MSPD':'Milking Speed', 'H-LIV':'Heifer Livability',
+  'RSP':'Resistance To Respiratory Disease', 'DIA':'Resistance To Diarrhea',
+  'STATURE':'Estatura', 'STRENGTH':'Força', 'BODY DEPTH':'Profundidade Corporal',
+  'DAIRY FORM':'Angularidade da Forma Láctea', 'RUMP ANGLE':'Ângulo da Alcatra',
+  'THURL WIDTH':'Largura da Alcatra', 'FOOT ANGLE':'Ângulo do pé',
+  'RLSV':'Vista Lateral da Perna Traseira', 'RLRV':'Vista Traseira da Perna Traseira',
+  'F. UDDER ATT.':'Fixação do Úbere', 'R UDDER HEIGHT':'Altura do Úbere',
+  'REAR UDDER WIDTH':'Largura do Úbere', 'UDDER CLEFT':'Fenda do Úbere',
+  'UDDER DEPTH':'Profundidade do Úbere', 'FTP':'Posicionamento da Teta',
+  'RTP':'Posicionamento da Teta Traseira', 'TEAT LENGTH':'Comprimento da Teta',
+  'RFI':'Residual Feed Intake'
+};
+const USO_BULL_SKIP = new Set(['INTERREGNUMBER','PREL','TREL','D H','SCE REL','SCE OBS','MSPD REL',
+  'BETA CASEIN','BULL LOCATION','PRICE MEETING COMMENTS','ITEMSTATUS','MARKETINGSTATUS',
+  'SEXED','CP','CP SEXED','POLLED','RED','EDGE','PEDIGREE','AAA','DMS','KAPPA CASEIN','B LACT']);
+function traitUsoBull(h){
+  const x=normCab(h), pair=USO_MAP.find(([col])=>normCab(col)===x);
+  if(/%/.test(String(h)))return {k:/PROT/i.test(h)?'bull:PROT_PCT':'bull:FAT_PCT',lab:/PROT/i.test(h)?'Proteína (%)':'Gordura (%)',d:2,dir:1,u:''};
+  const k=Object.entries(USO_BULL_ALIASES).find(([a])=>normCab(a)===x)?.[1] || pair?.[1];
+  if(k){const t=TRAITS.find(z=>z.k===k);if(t)return t;}
+  if([...USO_BULL_SKIP].some(a=>normCab(a)===x)||/^(CP C|CP H|CP 511)/.test(x)||/ REL$/.test(x))return null;
+  const extra=Object.entries(USO_BULL_EXTRA).find(([a])=>normCab(a)===x)?.[1];
+  return extra?{k:'bull:'+x,lab:extra[0],d:1,dir:extra[1],u:''}:null;
+}
+const USO_MEDIA_NOME = {'MILK':'Leite','FAT':'Gordura','PROTEIN':'Proteína','FAT %':'Gordura (%)',
+  'PROT%':'Proteína (%)','PL':'Vida Produtiva','DPR':'Taxa de Prenhez da Filha',
+  'SCS':'Escore de Células Somáticas','CCR':'Taxa de Concepção de Vacas',
+  'HCR':'Taxa de Concepção de Novilhas','C-LIV':'Sobrevivência da Vaca',
+  'H-LIV':'Sobrevivência da Novilha','SCE':'Facilidade de Parto do Touro',
+  'DCE':'Facilidade de Parto da Filha','SSB':'Natimorto do Touro',
+  'DSB':'Natimorto da Filha','UDC':'Composto do Úbere','FLC':'Composto de Pés e Pernas',
+  'BWC':'Composto de Peso Corporal'};
+function nomeCaracteristicaUso(v){const x=normCab(v);return Object.entries(USO_MEDIA_NOME).find(([a])=>normCab(a)===x)?.[1]||traitUsoBull(v)?.lab||String(v||'');}
 function lerPlanilhaUso(buf, nomeArquivo){
   const wb = XLSX.read(buf, {type:'array'});
   let melhor = null;
   wb.SheetNames.forEach(nome => {
     const linhas = XLSX.utils.sheet_to_json(wb.Sheets[nome], {header:1, defval:null, blankrows:false});
     if(linhas.length < 2) return;
-    const hdr = (linhas[0]||[]).map(normCab);
-    const iNaab = hdr.findIndex(h => /^CODIGO NAAB$|^NAAB$/.test(h));
-    const iNome = hdr.findIndex(h => /^NOME$/.test(h));
-    if(iNaab < 0) return;
-    if(!melhor || linhas.length > melhor.linhas.length) melhor = {nome, linhas, hdr, iNaab, iNome};
+    const hdrRaw=(linhas[0]||[]).map(x=>String(x??''));
+    const hdr=hdrRaw.map(normCab);
+    const iNaab = hdr.findIndex(h => /^(CODIGO NAAB|NAAB CODE|NAAB)$/.test(h));
+    const iNome = hdr.findIndex(h => /^(NOME|NAME)$/.test(h));
+    if(iNaab < 0 || iNome < 0 || !hdr.includes('TPI') || !hdr.includes('NM')) return;
+    if(!melhor || linhas.length > melhor.linhas.length) melhor = {nome, linhas, hdr, hdrRaw, iNaab, iNome};
   });
   if(!melhor) throw new Error(`"${nomeArquivo}": não encontrei nenhuma aba com a coluna "Código NAAB". `+
-    `Esta não parece ser a planilha de touros do BlueLink. Abas lidas: ${wb.SheetNames.join(', ')}.`);
+    `Envie um export do BullSearch com a coluna Código NAAB ou NAAB Code. Abas lidas: ${wb.SheetNames.join(', ')}.`);
 
-  const {linhas, hdr, iNaab, iNome} = melhor;
-  const idx = {};
-  USO_MAP.forEach(([col, k]) => { const i = hdr.indexOf(normCab(col)); if(i >= 0) idx[k] = i; });
-  const iNomeCompleto = hdr.indexOf(normCab('Nome completo'));
-  const iRaca = hdr.indexOf(normCab('Raça'));
+  const {linhas, hdr, hdrRaw, iNaab, iNome} = melhor;
+  const idx = {}; const traitMap=new Map();
+  hdrRaw.forEach((h,i)=>{const tr=traitUsoBull(h);if(tr && !traitMap.has(tr.k)){idx[tr.k]=i;traitMap.set(tr.k,tr);}});
+  const iNomeCompleto = Math.max(hdr.indexOf(normCab('Nome completo')),hdr.indexOf(normCab('Full Name')));
+  const iRaca = Math.max(hdr.indexOf(normCab('Raça')),hdr.indexOf(normCab('Breed')));
   const iTPI  = hdr.indexOf(normCab('TPI'));
   const iNM   = hdr.indexOf(normCab('NM$'));
-  const iProva= hdr.indexOf(normCab('Prova'));
+  const iProva= Math.max(hdr.indexOf(normCab('Prova')),hdr.indexOf(normCab('Proof')));
   const iSex  = hdr.indexOf(normCab('Sexed'));
 
   const touros = linhas.slice(1)
     .filter(L => L && String(L[iNaab]??'').trim())
     .map(L => {
       const t = {naab:String(L[iNaab]).trim().toUpperCase(),
-        nome: iNome>=0 ? String(L[iNome]??'').trim() : '',
-        nomeCompleto: iNomeCompleto>=0 ? String(L[iNomeCompleto]??'').trim() : '',
-        raca: iRaca>=0 ? String(L[iRaca]??'').trim().toUpperCase() : '',
+        nome: (iNome>=0 ? String(L[iNome]??'').trim() : '') || nomeBullSearch(String(L[iNaab]??'').trim()),
+        nomeCompleto: iNomeCompleto>=0 ? String(L[iNomeCompleto]??'').trim() : nomeCompletoBullSearch(String(L[iNaab]??'').trim()) || '',
+        raca: iRaca>=0 ? String(L[iRaca]??'').trim().toUpperCase() : racaBullSearch(String(L[iNaab]??'').trim()) || racaDoNaab(String(L[iNaab]??'').trim()) || '',
         tpi: iTPI>=0 ? num(L[iTPI]) : null, nm: iNM>=0 ? num(L[iNM]) : null,
         prova: iProva>=0 ? String(L[iProva]??'').trim() : '',
         sexado: iSex>=0 && String(L[iSex]??'').trim().toUpperCase().startsWith('Y'),
@@ -4387,11 +4450,11 @@ function lerPlanilhaUso(buf, nomeArquivo){
     if(iCab < 0) return;
     const cab = L[iCab].map(x => String(x??'').trim());
     const linhasM = L.slice(iCab+1).filter(r => r && r[0] && num(r[1])!==null)
-      .map(r => ({trait:String(r[0]).trim(), a:num(r[1]), b:num(r[2])}));
-    if(linhasM.length) medias = {aba:nome, colA:cab[1]||'Alta', colB:cab[2]||'Concorrentes', linhas:linhasM};
+      .map(r => ({trait:nomeCaracteristicaUso(String(r[0]).trim()), a:num(r[1]), b:num(r[2])}));
+    if(linhasM.length) medias = {aba:nome, colA:cab[1]||'Alta', colB:'Outros', linhas:linhasM};
   });
 
-  return {touros, medias, aba:melhor.nome, colunas:Object.keys(idx).length, total:hdr.length};
+  return {touros, medias, traits:[...traitMap.values()], aba:melhor.nome, colunas:Object.keys(idx).length, total:hdr.length};
 }
 
 function montarDropUso(){
@@ -4403,7 +4466,7 @@ function montarDropUso(){
     fr.onload = () => {
       try{
         const r = lerPlanilhaUso(new Uint8Array(fr.result), arq.name);
-        USO = {touros:r.touros, arquivo:arq.name, medias:r.medias, aba:r.aba, colunas:r.colunas, total:r.total};
+        USO = {touros:r.touros, arquivo:arq.name, medias:r.medias, traits:r.traits, aba:r.aba, colunas:r.colunas, total:r.total};
         $('#uso-err').style.display = 'none';
         montarTabs(false); rUso();
       }catch(err){ $('#uso-err').textContent = err.message; $('#uso-err').style.display = 'block'; }
@@ -4435,7 +4498,7 @@ function rUso(){
   $('#uso-swap').hidden = !T0.length;
   $('#uso-files').innerHTML = T0.length
     ? `<span class="pill b">${esc(USO.arquivo)}</span> <span style="font-size:11.5px;color:var(--ink-3)">`+
-      `${fmt(T.length)} touros ${raca?esc(raca):''} em análise · aba "${esc(USO.aba)}" · ${fmt(USO.colunas)} das ${fmt(USO.total)} colunas têm equivalente no rebanho`+
+      `${fmt(T.length)} touros ${raca?esc(raca):''} em análise · aba "${esc(USO.aba)}" · ${fmt(USO.colunas)} características genéticas disponíveis`+
       `${exclRaca?` · ${fmt(exclRaca)} fora porque a raça oficial BullSearch não é HO/JE`:''}`+
       `${semRef?` · ${fmt(semRef)} touro(s) HO/JE fora desta comparação porque ainda não há referência CDCB de touros para a raça`:''}</span>`
     : '';
@@ -4448,16 +4511,17 @@ function rUso(){
 
   /* A característica precisa existir na planilha dos touros e no relatório do
      rebanho. O CDCB de touros entra somente para a mesma raça selecionada. */
-  const disp = D.traits.filter(t => T.some(b => b.v[t.k] !== null && b.v[t.k] !== undefined));
+  const disp = (USO.traits||[]).filter(t => T.some(b => b.v[t.k] !== null && b.v[t.k] !== undefined));
   if(!disp.some(t => t.k === USO_TRAIT)) USO_TRAIT = disp[0] ? disp[0].k : 'Meu Índice';
   const sel = $('#uso-trait');
   sel.innerHTML = disp.map(t => `<option value="${esc(t.k)}" ${t.k===USO_TRAIT?'selected':''}>${esc(t.lab)}</option>`).join('');
   sel.onchange = e => { USO_TRAIT = e.target.value; rUso(); };
 
-  const t = disp.find(x => x.k === USO_TRAIT) || D.traits[0];
+  const t = disp.find(x => x.k === USO_TRAIT) || disp[0] || D.traits[0];
   const vals_ = T.map(b => b.v[t.k]).filter(v => v !== null && v !== undefined && isFinite(v));
   const mUso = mean(vals_), mReb = mean(vals(Rraca, t.k));
-  const ref = raca ? cdcbRef(t.k, raca, 'touros') : null;
+  const ref = raca && D.traits.some(z=>z.k===t.k) ? cdcbRef(t.k, raca, 'touros') : null;
+  if(!disp.length){$('#uso-hint').textContent='Nenhuma característica numérica foi encontrada no BullSearch.';return;}
   $('#uso-hint').innerHTML = `${fmt(T.length)} touros ${esc(raca||'')} na planilha · ${fmt(Rraca.length)} fêmeas ${esc(raca||'')} no rebanho`+
     (ref ? ` · média CDCB de touros ${esc(raca)} (${fmt(ref.n)} animais no arquivo)` : ` · sem referência CDCB de touros para ${esc(t.lab)}`);
 
@@ -4488,8 +4552,8 @@ function rUso(){
   chart('c-uso-disp', {type:'scatter', data:{datasets:[{label:`Touros em uso · ${raca}`, __norot:true,
       data: ord.map((b,i) => ({x:i+1, y:b.v[t.k], nome:b.nomeCompleto||b.nome||b.naab, naab:b.naab,
                                central:b.central.nome, sexado:b.sexado})),
-      backgroundColor: ord.map(b => b.central.alta ? C.alta : 'rgba(130,140,158,.55)'),
-      borderColor: ord.map(b => b.central.alta ? C.deep : C.mid), borderWidth:1.4, pointRadius:7, pointHoverRadius:9}]},
+      backgroundColor: ord.map(b => b.central.alta ? C.alta : C.red),
+      borderColor: ord.map(b => b.central.alta ? C.deep : C.red), borderWidth:1.4, pointRadius:7, pointHoverRadius:9}]},
     options:{maintainAspectRatio:false,
       plugins:{legend:{display:false}, tooltip:{callbacks:{
         title:c => c[0].raw.nome,
@@ -4524,12 +4588,12 @@ function rUso(){
       }
     }}]});
 
-  let h = `<thead><tr><th>Característica</th><th>Touros em uso</th><th>n</th><th>Base do rebanho</th><th>Touros − rebanho</th>`+
-          `<th>Média CDCB</th><th>Touros − CDCB</th></tr></thead><tbody>`;
+  let h = `<thead><tr><th>Característica</th><th>Touros em uso</th><th>n</th><th>Base do rebanho</th><th>DIF TOUROS X REBANHO</th>`+
+          `<th>Média CDCB</th><th>DIF TOUROS X CDCB</th></tr></thead><tbody>`;
   let comCdcb = 0;
   disp.forEach(x => {
     const v = T.map(b => b.v[x.k]).filter(z => z!==null && z!==undefined && isFinite(z));
-    const mu = mean(v), mr = mean(vals(Rraca, x.k)), rx = cdcbRef(x.k, raca, 'touros');
+    const mu = mean(v), mr = D.traits.some(z=>z.k===x.k)?mean(vals(Rraca, x.k)):null, rx = D.traits.some(z=>z.k===x.k)?cdcbRef(x.k, raca, 'touros'):null;
     if(rx) comCdcb++;
     const d1 = (mu!==null && mr!==null) ? mu-mr : null;
     const d2 = (mu!==null && rx) ? mu-rx.media : null;
@@ -4565,30 +4629,30 @@ function rUso(){
       `<thead><tr><th>Característica</th><th>${esc(M.colA)}</th><th>${esc(M.colB)}</th><th>Diferença</th></tr></thead><tbody>`+
       M.linhas.map(l => {
         const d = (l.a!==null && l.b!==null) ? l.a-l.b : null;
-        return `<tr><td>${esc(l.trait)}</td><td><b>${fmt(l.a,2)}</b></td><td>${l.b===null?'—':fmt(l.b,2)}</td>`+
-               `<td>${d===null?'—':sgn(d,2)}</td></tr>`;
+        return `<tr><td>${esc(l.trait)}</td><td><b>${fmt(l.a,0)}</b></td><td>${l.b===null?'—':fmt(l.b,0)}</td>`+
+               `<td>${d===null?'—':sgn(d,0)}</td></tr>`;
       }).join('')+`</tbody>`;
     ordenavel('t-uso-avg');
   } else $('#uso-avg-card').hidden = true;
 
   if(USO_COLS === null) USO_COLS = new Set(['Leite','Gordura','Proteína','Vida Produtiva','Taxa de Gravidez da Filha']);
-  montarSeletorColunas('uso-cols', USO_COLS, rUso, disp.filter(x=>x.k!=='Meu Índice'), 'Características');
+  montarSeletorColunas('uso-cols', USO_COLS, rUso, [...disp.filter(x=>!['Meu Índice','bull:TPI','bull:NM'].includes(x.k)),{k:'TPI',lab:'TPI'},{k:'NM$',lab:'NM$'}], 'Características');
   const extras = disp.filter(x => USO_COLS.has(x.k));
   const tIdx = disp.find(x => x.k === 'Meu Índice');
-  let hb = `<thead><tr><th>Touro</th><th>NAAB</th><th>Central</th><th>Raça</th>`+
-           (tIdx?`<th>${esc(tIdx.lab)}</th>`:'')+`<th>TPI</th><th>NM$</th>`+
+  let hb = `<thead><tr><th>Touro</th><th>NAAB</th><th>Central</th>`+
+           (tIdx?`<th>${esc(tIdx.lab)}</th>`:'')+(USO_COLS.has('TPI')?`<th>TPI</th>`:'')+(USO_COLS.has('NM$')?`<th>NM$</th>`:'')+
            extras.filter(x=>x.k!=='Meu Índice').map(x=>`<th>${esc(x.lab)}</th>`).join('')+
-           `<th>Sexado</th></tr></thead><tbody>`;
+           `</tr></thead><tbody>`;
   const USO_LIMITE = 120;
   const ordTodos = [...T].sort((a,b)=> (b.v['Meu Índice']??b.tpi??0) - (a.v['Meu Índice']??a.tpi??0));
   const ordT = ordTodos.slice(0, USO_LIMITE);
   ordT.forEach(b => {
     hb += `<tr><td style="text-align:left">${esc(b.nomeCompleto || b.nome || b.naab)}</td>`+
-      `<td class="mono">${esc(b.naab)}</td><td>${esc(b.central.nome)}</td><td>${esc(raca)}</td>`+
+      `<td class="mono">${esc(b.naab)}</td><td>${esc(b.central.nome)}</td>`+
       (tIdx?`<td><b>${uv(b.v['Meu Índice'],tIdx)}</b></td>`:'')+
-      `<td>${b.tpi===null?'—':fmt(b.tpi)}</td><td>${b.nm===null?'—':fmt(b.nm)}</td>`+
+      (USO_COLS.has('TPI')?`<td>${b.tpi===null?'—':fmt(b.tpi)}</td>`:'')+(USO_COLS.has('NM$')?`<td>${b.nm===null?'—':fmt(b.nm)}</td>`:'')+
       extras.filter(x=>x.k!=='Meu Índice').map(x=>`<td>${uv(b.v[x.k],x)}</td>`).join('')+
-      `<td>${b.sexado?'<span class="pill b">sim</span>':'—'}</td></tr>`;
+      `</tr>`;
   });
   $('#t-uso').innerHTML = hb+'</tbody>'; ordenavel('t-uso');
   $('#uso-count').innerHTML = ordTodos.length > USO_LIMITE
@@ -4660,7 +4724,7 @@ function paintDens(){
     const bom = t.dir===0 ? null : (d*t.dir > 0);
     ins.push([bom===null?'info':(bom?'good':'bad'),'Deslocamento',
       `De <b>${velha.cat}</b> para <b>${nova.cat}</b>, a média mudou <b>${uv(d,t)}</b>. ` +
-      (bom===null?'A característica tem ótimo intermediário; avalie o alvo técnico.':bom?'O deslocamento está no sentido desejável.':'O deslocamento está no sentido indesejável.')]);
+      (bom===null?'Avalie o valor conforme a meta da característica.':bom?'O deslocamento está no sentido desejável.':'O deslocamento está no sentido indesejável.')]);
     if(ovl!==null) ins.push([ovl<0.5?'good':'warn','Sobreposição',
       `As distribuições se sobrepõem em <b>${fmt(ovl*100,0)}%</b>. `+
       (ovl<0.4?'As gerações estão claramente separadas.':ovl<0.7?'Há progresso, mas ainda existe mistura relevante entre gerações.':'As gerações são geneticamente muito semelhantes nesta característica.')]);
@@ -4697,9 +4761,9 @@ function chaveTouro(r){
   const num = naabNumero(r.codTouro);
   return num ? 'B:'+num : 'C:'+String(r.codTouro||'').toUpperCase();
 }
-function bullStats(){
+function bullStats(rows=D.rows){
   const m = new Map();
-  D.rows.filter(r=>r.codTouro).forEach(r=>{
+  rows.filter(r=>r.codTouro).forEach(r=>{
     const key = chaveTouro(r);
     if(!m.has(key)) m.set(key,{key, nomes:new Map(), cods:new Map(), filhas:[]});
     const x = m.get(key); x.filhas.push(r);
@@ -4743,12 +4807,14 @@ function montarSeletorColunas(elId, sel, onChange, opcoesCustom=null, rotulo='Ca
   const validas = new Set(opts.map(t=>t.k));
   [...sel].forEach(k=>{ if(!validas.has(k)) sel.delete(k); });
   const manterAberto = COLSEL_ABERTO === elId;
+  const posAnterior = el.querySelector('.colsel-pop')?.scrollTop || 0;
   el.innerHTML = `<button type="button" class="colsel-btn" aria-expanded="${manterAberto?'true':'false'}">${esc(rotulo)} <span>${sel.size}</span></button>
     <div class="colsel-pop" ${manterAberto?'':'hidden'}>
       <div class="colsel-actions"><button type="button" data-act="all">Todas</button><button type="button" data-act="none">Nenhuma</button></div>
       ${opts.map(t=>`<label><input type="checkbox" value="${esc(t.k)}" ${sel.has(t.k)?'checked':''}> ${esc(t.lab)}</label>`).join('')}
     </div>`;
   const pop = el.querySelector('.colsel-pop');
+  if(manterAberto) pop.scrollTop = posAnterior;
   const btn = el.querySelector('.colsel-btn');
   btn.onclick = e => {
     e.stopPropagation();
@@ -4781,15 +4847,30 @@ function montarSeletorColunas(elId, sel, onChange, opcoesCustom=null, rotulo='Ca
     });
   }
 }
+function filtrarAnoCategoria(prefix, base, pintar){
+  const anoEl=document.getElementById(prefix+'-ano'), catEl=document.getElementById(prefix+'-cat');
+  if(!anoEl || !catEl) return base;
+  const anos=[...new Set(base.map(r=>r.ano).filter(Number.isFinite))].sort((a,b)=>b-a);
+  const antigoAno=anoEl.value||'all';
+  anoEl.innerHTML=`<option value="all">Todos os anos</option>`+anos.map(a=>`<option value="${a}">${a}</option>`).join('');
+  anoEl.value=anos.some(a=>String(a)===antigoAno)?antigoAno:'all';
+  const porAno=base.filter(r=>anoEl.value==='all'||String(r.ano)===anoEl.value);
+  const cats=CATS.filter(c=>porAno.some(r=>r.cat===c)), antigoCat=catEl.value||'all';
+  catEl.innerHTML=`<option value="all">Todas as categorias</option>`+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  catEl.value=cats.includes(antigoCat)?antigoCat:'all';
+  anoEl.onchange=()=>{catEl.value='all';pintar();}; catEl.onchange=pintar;
+  return porAno.filter(r=>catEl.value==='all'||r.cat===catEl.value);
+}
 let BULL_METRIC = 'Meu Índice';
 let BULL_SORT = {key:'n', dir:'desc'};
 let ULT_BULL_RANK = null;
 let BULL_COLS = new Set(['Leite','Gordura','Proteína','Vida Produtiva']);
 let CENTRAL_COLS = new Set(['Leite','Gordura','Proteína']);
 function rTouros(){
-  const B = bullStats(), N = D.rows.filter(r=>r.codTouro).length;
-  const top5 = B.slice(0,5).reduce((s,b)=>s+b.n,0)/N*100;
-  const mediaGeral = mean(vals(D.rows,'Meu Índice'));
+  const R=filtrarAnoCategoria('sel-bull',D.rows,rTouros);
+  const B = bullStats(R), N = R.filter(r=>r.codTouro).length;
+  const top5 = N?B.slice(0,5).reduce((s,b)=>s+b.n,0)/N*100:0;
+  const mediaGeral = mean(vals(R,'Meu Índice'));
   /* "Nº efetivo de touros" (1/HHI) saiu: é um índice de concentração emprestado
      da economia, ninguém no campo lê aquilo, e a mesma informação já está em
      "Concentração top 5". No lugar entra quantos touros cobrem metade do
@@ -4801,7 +4882,7 @@ function rTouros(){
   $('#sel-bull-metric').innerHTML = metricas.map(t=>`<option value="${esc(t.k)}" ${t.k===BULL_METRIC?'selected':''}>${esc(t.lab)}</option>`).join('');
   $('#sel-bull-metric').onchange = e => { BULL_METRIC=e.target.value; rTouros(); };
   const metric = metricas.find(t=>t.k===BULL_METRIC) || metricas[0];
-  const mediaMetric = mean(vals(D.rows,metric.k));
+  const mediaMetric = mean(vals(R,metric.k));
 
   $('#bull-kpis').innerHTML = [
     kpi('Touros pais distintos', fmt(B.length), `${fmt(N)} fêmeas com pai · ${fmt(B.filter(b=>b.sexado).length)} touros com 2 NAAB (conv. × sexado)`, ''),
@@ -4852,7 +4933,7 @@ function rTouros(){
      ler no gráfico. Os 5 que mais elevam a característica ficam listados logo
      abaixo, em texto, com nº de filhas e média. -------------------------- */
   B.forEach(b=>{ b.merit = mean(vals(b.filhas,metric.k)); b.nMetric = vals(b.filhas,metric.k).length; });
-  const MIN_FILHAS = Math.max(5, Math.round(N*0.005));
+  const MIN_FILHAS = Math.max(1, Math.round(N*0.005));
   const quadB = B.filter(b=>b.merit!==null);
   const elegiveis = quadB.filter(b=>b.nMetric>=MIN_FILHAS);
   const melhorPrimeiro = (a,b)=> metric.dir>=0 ? b.merit-a.merit : a.merit-b.merit;
@@ -5046,10 +5127,10 @@ function montarDropNaab(){
   f.onchange=e=>carregar(e.target.files[0]);
 }
 let CENTRAL_METRIC = 'Meu Índice';
-function centralStats(metric){
-  const totalComPai = D.rows.filter(r=>r.codTouro).length;
+function centralStats(metric, baseRows=D.rows){
+  const totalComPai = baseRows.filter(r=>r.codTouro).length;
   const map = new Map();
-  D.rows.filter(r=>r.codTouro).forEach(r=>{
+  baseRows.filter(r=>r.codTouro).forEach(r=>{
     const c = centralDoNaab(r.codTouro);
     if(!map.has(c.id)) map.set(c.id,{...c, filhas:[], touros:new Map(), codigos:new Set(), oficiais:new Set()});
     const x = map.get(c.id); x.filhas.push(r);
@@ -5066,7 +5147,7 @@ function centralStats(metric){
       share:x.filhas.length/(totalComPai||1)*100,
       mi:mean(vals(x.filhas,metric.k)), tourosN:x.touros.size, principal:pesos[0]};
   }).sort((a,b)=>b.n-a.n);
-  return {rows, totalComPai, media:mean(vals(D.rows,metric.k))};
+  return {rows, totalComPai, media:mean(vals(baseRows,metric.k))};
 }
 function rCentrais(){
   montarDropNaab();
@@ -5078,7 +5159,8 @@ function rCentrais(){
   $('#sel-central-metric').innerHTML = metricas.map(t=>`<option value="${esc(t.k)}" ${t.k===CENTRAL_METRIC?'selected':''}>${esc(t.lab)}</option>`).join('');
   $('#sel-central-metric').onchange = e => { CENTRAL_METRIC=e.target.value; rCentrais(); };
   const metric = metricas.find(t=>t.k===CENTRAL_METRIC) || metricas[0];
-  const S = centralStats(metric), B = S.rows, media = S.media;
+  const R=filtrarAnoCategoria('sel-central',D.rows,rCentrais);
+  const S = centralStats(metric,R), B = S.rows, media = S.media;
   if(!B.length){
     $('#central-kpis').innerHTML = kpi('Centrais identificadas','—','Não há códigos NAAB de touros pais no recorte atual.');
     return;
@@ -5091,7 +5173,7 @@ function rCentrais(){
      círculos. A pergunta que a aba precisa responder é direta: qual central
      entregou as melhores filhas nesta característica, e com quantas filhas.
      Média isolada engana com n=1; por isso o corte mínimo. --------------- */
-  const MIN_FILHAS_C = Math.max(10, Math.round(S.totalComPai*0.01));
+  const MIN_FILHAS_C = Math.max(1, Math.round(S.totalComPai*0.01));
   const elegiveis = B.filter(x=>!x.desconhecida && x.mi!==null && x.nMetric>=MIN_FILHAS_C);
   const ordenar = (a,b)=> metric.dir>=0 ? b.mi-a.mi : a.mi-b.mi;
   const topC = [...elegiveis].sort(ordenar).slice(0,6);
@@ -5166,7 +5248,7 @@ function rCentrais(){
   B.forEach(x=>{
     const d=x.mi===null||media===null?null:x.mi-media;
     h+=`<tr><td><b>${esc(x.nome)}</b>${x.alta?' <span class="pill b">Alta</span>':''}${
-         x.oficiais.size&&![...x.oficiais].includes(x.nome)?`<div style="font-size:11px;color:var(--ink-3)">${esc([...x.oficiais].join(' · '))}</div>`:''}</td>
+         ''}</td>
       <td class="mono" style="font-size:11.5px">${esc(x.desconhecida?(x.naab||'—'):[...x.codigos].sort().join(' · ')||'—')}</td>
       <td>${fmt(x.n)}</td><td>${fmt(x.share,1)}</td><td>${fmt(x.tourosN)}</td>
       <td>${uv(x.mi,metric)}</td><td class="${sentido(d)}">${uv(d,metric)}</td>`+
@@ -5363,7 +5445,7 @@ function rPlano(){
   }
   const quartPool = selCat.value || 'all';
   const noPool = r => quartPool==='all' ? true
-    : quartPool==='nov' ? r.cat.startsWith('Novilha')
+    : quartPool==='nov' ? ehNovilha(r)
     : quartPool==='vac' ? r.cat.startsWith('Lact')
     : r.cat===quartPool;
   const R = [...D.rows].filter(r=>r['Meu Índice']!==null && noPool(r)).sort((a,b)=>b['Meu Índice']-a['Meu Índice']);
@@ -5394,12 +5476,15 @@ function rPlano(){
   const gens = CATS_TEMPO().filter(c=>D.rows.some(r=>r.cat===c));
   const dist = gens.map(g=>{ const sub = R.filter(r=>r.cat===g);
     return {g, n:sub.length, q:[0,1,2,3].map(i=>sub.filter(r=>qOf.get(r)===i).length)}; });
-  const qc = ['#17305C','#295097','#4A7FD4','#A8BEE4'];
-  chart('c-qgen',{type:'bar', data:{labels:dist.map(d=>`${d.g} (n=${d.n})`), datasets:[0,1,2,3].map(i=>({
-    label:`Q${i+1}${i===0?' — topo':(i===3?' — fundo':'')}`, data:dist.map(d=>d.n? d.q[i]/d.n*100 : 0),
-    backgroundColor:qc[i], borderRadius:i===3?{topLeft:0,topRight:0,bottomLeft:3,bottomRight:3}:0, stack:'s'}))},
-    options:{plugins:{legend:{position:'bottom'}, tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fmt(c.raw,1)}% (${dist[c.dataIndex].q[c.datasetIndex]} fêmeas)`}}},
-      scales:{x:{stacked:true, grid:{display:false}}, y:{stacked:true, max:100, grid:{color:C.line}, title:{display:true,text:'% da geração'}, ticks:{callback:v=>v+'%'}}}}});
+  const qc = ['#17305C','#295097','#4A7FD4','#80A6DD','#B4C8E7'];
+  chart('c-qgen',{type:'bar', data:{labels:['Q1 · topo','Q2','Q3','Q4 · fundo'], datasets:dist.map((d,gi)=>({
+    label:`${d.g} (n=${d.n})`, data:d.q.map(n=>d.n?n/d.n*100:0),
+    backgroundColor:qc[gi%qc.length], borderRadius:3, _q:d.q, _grupo:d.g, _n:d.n}))},
+    options:{plugins:{legend:{position:'bottom'}, tooltip:{callbacks:{
+      title:c=>c[0]?.label||'',
+      label:c=>`${c.dataset._grupo}: ${fmt(c.raw,1)}% da geração · ${fmt(c.dataset._q[c.dataIndex])} animais (n=${fmt(c.dataset._n)})`}}},
+      scales:{x:{grid:{display:false},title:{display:true,text:'Quartil do Plano Genético'}},
+              y:{beginAtZero:true,max:100,grid:{color:C.line},title:{display:true,text:'Animais da geração (%)'},ticks:{callback:v=>v+'%'}}}}});
 
   const gi = [];
   const nova = dist[dist.length-1], velha = dist[0];
@@ -5492,7 +5577,7 @@ function paintSel(){
   const cr2 = D.traits.find(t=>t.k===selCrit2) || null;
   const cr3 = D.traits.find(t=>t.k===selCrit3) || null;
   let R = D.rows.filter(r=>r[cr.k]!==null);
-  if(pool==='nov') R = R.filter(r=>r.cat.startsWith('Novilha'));
+  if(pool==='nov') R = R.filter(r=>ehNovilha(r));
   else if(pool!=='all') R = R.filter(r=>r.cat===pool);
   /* Bloco 3: o mesmo painel serve para achar as melhores e as piores. Com
      'piores' a ordenação inverte — e "diferencial de seleção" passa a ser
@@ -5858,7 +5943,7 @@ function acasCalcPlano(){
     pools.get(k).push({a, i: (r && r['Meu Índice'] !== null) ? r['Meu Índice'] : a.indice});
   });
   ACSUG = new Map(); ACPOOLS = [];
-  const ordem = ['Lact 3+','Lact 2','Lact 1','Novilha >12','Novilha 0-12','Sem data','Novilhas','Vacas','Rebanho inteiro','Sem categoria'];
+  const ordem = ['Lact 3+','Lact 2','Lact 1','Novilha >12','Bezerras 0-12','Sem data','Novilhas','Vacas','Rebanho inteiro','Sem categoria'];
   [...pools.keys()].sort((x,y) => {
     const ix = ordem.indexOf(x), iy = ordem.indexOf(y);
     return (ix<0?99:ix) - (iy<0?99:iy);
@@ -5880,6 +5965,7 @@ function acasCalcPlano(){
     ACPOOLS.push({k, n, psx, pbf, cont, mudam});
   });
 }
+let ACSHOW_NAAB=false;
 const acasTipo = a => (ACPLAN.on && ACSUG.has(a.id)) ? ACSUG.get(a.id) : a.stoc;
 const acasMudou = a => ACPLAN.on && ACSUG.has(a.id) && ACSUG.get(a.id) !== a.stoc;
 
@@ -5938,7 +6024,7 @@ function acasTourosHtml(a, fraco){
   return `<div class="acas-touros"${fraco?' style="opacity:.55"':''}>` + a.recs.map((t,i) =>
     `<div class="acas-touro ${i===0&&!fraco?'p1':''}">
        <span class="ord">${ord[i]||('opção '+(i+1))}</span>
-       <span><span class="naab">${esc(t.naab)}</span> <span class="nm">${esc(t.nome)}</span></span>
+       <span>${ACSHOW_NAAB?`<span class="naab">${esc(t.naab)}</span> `:''}<span class="nm">${esc(t.nome||t.naab)}</span></span>
        ${ACINB?`<span class="inb">consang. ${t.inb===null?'—':fmt(t.inb,2)+'%'}</span>`:''}
      </div>`).join('') + `</div>`;
 }
@@ -6016,10 +6102,10 @@ function acasTabela(){
       <td class="mono">${x.mi!==null?fmt(x.mi,0):'—'}</td>
       <td class="mono">${x.r && x.r.pct!==null ? x.r.pct : '—'}</td>
       <td class="mid"><span class="pill ${x.tipo==='SX'?'g':x.tipo==='BF'?'a':'b'}">${esc(stocLab(x.tipo))}</span></td>
-      <td>${t1?esc(t1.nome||t1.naab):'—'}</td>
+      <td>${t1?`${esc(t1.nome||t1.naab)}${ACSHOW_NAAB&&t1.nome?` <small>(${esc(t1.naab)})</small>`:''}`:'—'}</td>
       ${ACINB?`<td class="mono">${t1?inbFmt(t1.inb):'—'}</td>`:''}
-      <td>${t2?esc(t2.nome):'—'}</td>
-      <td>${t3?esc(t3.nome):'—'}</td>
+      <td>${t2?`${esc(t2.nome||t2.naab)}${ACSHOW_NAAB&&t2.nome?` <small>(${esc(t2.naab)})</small>`:''}`:'—'}</td>
+      <td>${t3?`${esc(t3.nome||t3.naab)}${ACSHOW_NAAB&&t3.nome?` <small>(${esc(t3.naab)})</small>`:''}`:'—'}</td>
     </tr>`;
   };
   $('#t-acas').innerHTML = `<thead><tr>
@@ -6464,6 +6550,8 @@ function rAcas(){
   };
   $('#acas-show-inb').checked = ACINB;
   $('#acas-show-inb').onchange = e => { ACINB = e.target.checked; acasTabela(); if(ACSEL) acasFicha(ACSEL); };
+  $('#acas-show-naab').checked=ACSHOW_NAAB;
+  $('#acas-show-naab').onchange=e=>{ACSHOW_NAAB=e.target.checked;acasTabela();if(ACSEL)acasFicha(ACSEL);};
 
   $('#acas-operacional').hidden = true; $('#acas-operacional').innerHTML = '';
   $('#acas-op-open').onclick = () => acasRenderOperacional(true);
@@ -6529,6 +6617,9 @@ function boot(entrada){
        do cliente só inclui esta seção quando USO.touros já está preenchido. */
     if(APP_CONFIG.uso && Array.isArray(APP_CONFIG.uso.touros) && APP_CONFIG.uso.touros.length){
       USO = APP_CONFIG.uso;
+      if(!Array.isArray(USO.traits) || !USO.traits.length){
+        USO.traits = Object.keys(USO.touros[0]?.v||{}).map(k=>TRAITS.find(t=>t.k===k)).filter(Boolean);
+      }
       USO_TRAIT = APP_CONFIG.usoTrait || 'Leite';
       USO_COLS = Array.isArray(APP_CONFIG.usoCols) ? new Set(APP_CONFIG.usoCols) : null;
       USO_RACA = APP_CONFIG.usoRaca || 'auto';
