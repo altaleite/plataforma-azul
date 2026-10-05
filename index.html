@@ -69,7 +69,7 @@
     position:fixed; inset:0; z-index:50;
     display:flex; align-items:center; justify-content:flex-start;
     padding-left:8vw;
-    background:#05101f url('fundo-plataforma-v2.png') center right/cover no-repeat;
+    background:#05101f url('fundo-plataforma-v2.jpg') center right/cover no-repeat;
     transition:opacity .5s ease, visibility .5s ease;
   }
   /* camada escura à esquerda para o cartão de login ficar sempre legível */
@@ -149,7 +149,7 @@
 
   /* ---------- topbar ---------- */
   header.topbar{
-    background:#0a1730 url('fundo-plataforma-v2.png') 68% 42%/cover no-repeat;
+    background:#0a1730 url('fundo-plataforma-v2.jpg') 68% 42%/cover no-repeat;
     color:#fff; padding:22px 6vw 26px;
     position:relative; overflow:hidden;
     border-bottom:1px solid rgba(111,216,255,.16);
@@ -524,10 +524,10 @@
     navigator.serviceWorker.register('sw.js').catch(function(){ /* sem offline */ });
   }
 
-  var CACHE_OFFLINE = 'plataforma-azul-v2';
+  var CACHE_OFFLINE = 'plataforma-azul-ferramentas'; // fixo: não é apagado quando o sw.js muda de versão
 
   function alvosOffline(){
-    var lista = [location.pathname, 'auth.js', 'fundo-plataforma-v2.png', 'logo-alta-branca.png'];
+    var lista = [location.pathname, 'auth.js', 'fundo-plataforma-v2.jpg', 'logo-alta-branca.png'];
     for (var k in TOOL_URLS) {
       if (TOOL_URLS[k].indexOf('COLOQUE-O-CAMINHO-AQUI') === -1) lista.push(TOOL_URLS[k]);
     }
