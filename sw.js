@@ -14,8 +14,7 @@
  * Ao mudar qualquer arquivo do site, suba o número da versão abaixo. Isso faz
  * todo mundo baixar a versão nova na próxima vez que abrir com internet.
  */
-
-const VERSAO = 'v1';
+const VERSAO = 'v2';
 const CACHE = 'plataforma-azul-' + VERSAO;
 const BASE = '/plataforma-azul/';
 
@@ -25,7 +24,7 @@ const ESSENCIAL = [
   BASE + 'index.html',
   BASE + 'auth.js',
   BASE + 'manifest.webmanifest',
-  BASE + 'fundo-plataforma.jpg',
+  BASE + 'fundo-plataforma-v2.png',
   BASE + 'logo-alta-branca.png',
   BASE + 'logo-alta-azul.png',
   BASE + 'icons/icon-192.png',
@@ -88,6 +87,7 @@ self.addEventListener('fetch', (e) => {
         }
         return resp;
       }).catch(() => guardado);
+
       return guardado || rede;
     })
   );
