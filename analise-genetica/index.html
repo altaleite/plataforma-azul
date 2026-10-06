@@ -1798,10 +1798,10 @@ const TRAITS = [
   {k:'Facilidade de Parto do Touro',   lab:'Facilidade de Parto do Touro',u:'',d:1,dir:-1,g:'parto'},
   {k:'Facilidade no Parto da Filha',   lab:'Facilidade de Parto das Filhas',u:'',d:1,dir:-1,g:'parto'},
   {k:'Touro Natimorto',                lab:'Natimorto do Touro',       u:'', d:1, dir:-1,g:'parto'},
-  {k:'Filha Natimorto',                lab:'Índice de Natimorto da Filha',u:'',d:1,dir:-1,g:'parto'},
+  {k:'Filha Natimorto',                lab:'Natimorto das Filhas',u:'',d:1,dir:-1,g:'parto'},
   {k:'Modern Udder Index',             lab:'Índice Moderno de Úbere (MUI)',u:'',d:1,dir:1,g:'tipo'},
   {k:'Composição do Úbere',            lab:'Composto do Úbere (UDC)',  u:'', d:2, dir:1, g:'tipo'},
-  {k:'Pés Pernas Composição',          lab:'Composto de Pés e Pernas (FLC)',u:'',d:2,dir:1,g:'tipo'},
+  {k:'Pés Pernas Composição',          lab:'Composto de Pernas e Pés (FLS)',u:'',d:2,dir:1,g:'tipo'},
   {k:'Composto de Peso Corporal',      lab:'Composto de Peso Corporal (BWC)',u:'',d:2,dir:1,g:'tipo'},
   {k:'Estatura',                       lab:'Estatura',                  u:'',d:2,dir:1,g:'lin'},
   {k:'Força',                          lab:'Força',                     u:'',d:2,dir:1,g:'lin'},
@@ -3308,13 +3308,13 @@ const PLANO_PERFIS = [
     ['Facilidade de Parto de Touro','Facilidade de Parto do Touro'],
     ['Facilidade de Parto das Filhas','Facilidade no Parto da Filha'],
     ['Índice de Natimorto do Touro','Touro Natimorto'],
-    ['Índice de Natimorto da Filha','Filha Natimorto'],
+    ['Natimorto das Filhas','Filha Natimorto'],
     ['Taxa de Concepção das Vacas','Taxa de Concepção de Vacas'],
     ['Taxa de Concepção das Novilhas','Taxa de Concepção de Novilhas'],
     ['Durabilidade','Habitabilidade']]},
   {id:'conf', lab:'Perfil de Conformação', cor:'#C77F00', itens:[
     ['Composto do Úbere (UDC)','Composição do Úbere'],
-    ['Composto de Pés e Pernas (FLC)','Pés Pernas Composição'],
+    ['Composto de Pernas e Pés (FLS)','Pés Pernas Composição'],
     ['Composto de Peso Corporal (BC)','Composto de Peso Corporal']]}
 ];
 const PLANO_PERFIS_BASE = PLANO_PERFIS.map(p=>({...p,itens:p.itens.map(i=>[...i])}));
@@ -4449,7 +4449,7 @@ const USO_MEDIA_NOME = {'MILK':'Leite','FAT':'Gordura','PROTEIN':'Proteína','FA
   'HCR':'Taxa de Concepção de Novilhas','C-LIV':'Sobrevivência da Vaca',
   'H-LIV':'Sobrevivência da Novilha','SCE':'Facilidade de Parto do Touro',
   'DCE':'Facilidade de Parto das Filhas','SSB':'Natimorto do Touro',
-  'DSB':'Natimorto da Filha','UDC':'Composto do Úbere','FLC':'Composto de Pés e Pernas',
+  'DSB':'Natimorto das Filhas','UDC':'Composto do Úbere','FLC':'Composto de Pernas e Pés (FLS)',
   'BWC':'Composto de Peso Corporal'};
 function nomeCaracteristicaUso(v){const x=normCab(v);return Object.entries(USO_MEDIA_NOME).find(([a])=>normCab(a)===x)?.[1]||traitUsoBull(v)?.lab||String(v||'');}
 function lerPlanilhaUso(buf, nomeArquivo){
@@ -5531,16 +5531,21 @@ function rPlano(){
   const gens = CATS_TEMPO().filter(c=>D.rows.some(r=>r.cat===c));
   const dist = gens.map(g=>{ const sub = R.filter(r=>r.cat===g);
     return {g, n:sub.length, q:[0,1,2,3].map(i=>sub.filter(r=>qOf.get(r)===i).length)}; });
-  const qc = ['#17305C','#295097','#6F94CC','#B4C8E7'];
+  /* Eixo X = quartis; as cores representam as gerações / ordens de lactação.
+     Cada coluna soma 100% e mostra a composição daquele quartil. */
   const qlabs = ['Q1 · topo','Q2','Q3','Q4 · fundo'];
-  chart('c-qgen',{type:'bar', data:{labels:dist.map(d=>d.g), datasets:qlabs.map((lab,qi)=>({
-    label:lab, stack:'quartis', data:dist.map(d=>d.n?d.q[qi]/d.n*100:0),
-    backgroundColor:qc[qi], borderWidth:0, borderRadius:qi===3?3:0, _qi:qi}))},
+  const genColors = ['#17305C','#295097','#4A7FD4','#8FAEDC','#C6D6EE'];
+  const quartTot = [0,1,2,3].map(qi=>dist.reduce((acc,d)=>acc+d.q[qi],0));
+  chart('c-qgen',{type:'bar', data:{labels:qlabs, datasets:dist.map((d,gi)=>({
+    label:d.g, stack:'geracoes',
+    data:[0,1,2,3].map(qi=>quartTot[qi]?d.q[qi]/quartTot[qi]*100:0),
+    backgroundColor:genColors[gi%genColors.length], borderWidth:0,
+    borderRadius:gi===dist.length-1?3:0, _g:gi}))},
     options:{plugins:{legend:{position:'bottom'}, tooltip:{callbacks:{
-      title:c=>`${c[0]?.label||''} (n=${fmt(dist[c[0]?.dataIndex]?.n||0)})`,
-      label:c=>`${c.dataset.label}: ${fmt(c.raw,1)}% · ${fmt(dist[c.dataIndex]?.q[c.dataset._qi]||0)} animais`}}},
-      scales:{x:{stacked:true,grid:{display:false},title:{display:true,text:'Geração / ordem de lactação'}},
-              y:{stacked:true,beginAtZero:true,max:100,grid:{color:C.line},title:{display:true,text:'Composição da geração (%)'},ticks:{callback:v=>v+'%'}}}}});
+      title:c=>`${c[0]?.label||''} (n=${fmt(quartTot[c[0]?.dataIndex]||0)})`,
+      label:c=>`${c.dataset.label}: ${fmt(c.raw,1)}% · ${fmt(dist[c.dataset._g]?.q[c.dataIndex]||0)} animais`}}},
+      scales:{x:{stacked:true,grid:{display:false},title:{display:true,text:'Quartil do Plano Genético'}},
+              y:{stacked:true,beginAtZero:true,max:100,grid:{color:C.line},title:{display:true,text:'Composição do quartil (%)'},ticks:{callback:v=>v+'%'}}}}});
 
   const gi = [];
   const nova = dist[dist.length-1], velha = dist[0];
