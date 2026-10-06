@@ -1046,6 +1046,45 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
 @media(min-width:761px) and (max-width:900px){
   .hmeta{display:none!important}.hbar{grid-template-columns:auto 1fr auto;grid-template-areas:"brand identity actions"}
 }
+
+
+/* ===== Ajustes 2026-10-06 · nomenclatura, Touros em uso e PDF relatório ===== */
+#uso-hint,#uso-hint *{font-family:Arial,system-ui,sans-serif!important;letter-spacing:0!important}
+#uso-hint{font-size:12px!important;font-weight:400!important;line-height:1.45!important;color:var(--ink-3)!important}
+#uso-hint b{font-weight:600!important;color:var(--alta-deep)!important}
+
+@media print{
+  @page{size:A4 landscape;margin:7mm}
+  body.report .view,body.report .rep-sec{width:100%!important;max-width:283mm!important;box-sizing:border-box!important;margin-left:auto!important;margin-right:auto!important;padding:6mm 7mm 5mm!important;border-top-width:3px!important}
+  body.report .sec-h,body.report .rep-sec .sec-h{width:100%!important;box-sizing:border-box!important;margin-bottom:3.5mm!important;padding-bottom:2.5mm!important}
+  body.report .sec-h h2,body.report .rep-sec .sec-h h2{font-size:20px!important;line-height:1.1!important}
+  body.report .rep-lead{max-width:none!important;margin:0 auto 4mm!important;font-size:13px!important;line-height:1.55!important}
+  body.report #rep-resumo{min-height:190mm!important;display:flex!important;flex-direction:column!important;justify-content:center!important}
+  body.report #rep-resumo>.sec-h,body.report #rep-resumo>.rep-lead,body.report #rep-resumo>#rep-achados{width:100%!important;max-width:255mm!important;margin-left:auto!important;margin-right:auto!important}
+  body.report .grid.g4{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:3mm!important}
+  body.report .grid.g3{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:3mm!important}
+  body.report .grid.g2{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:3mm!important}
+  body.report .kpi{min-height:24mm!important;padding:3.5mm!important;display:flex!important;flex-direction:column!important;justify-content:center!important}
+  body.report .kpi .val{font-size:21px!important;line-height:1.05!important}
+  body.report .kpi .lab{font-size:10px!important}
+  body.report .kpi .sub{font-size:10px!important;line-height:1.35!important}
+  body.report .card{margin-left:auto!important;margin-right:auto!important;width:100%!important;box-sizing:border-box!important}
+  body.report .card-h{padding:2.2mm 3.5mm!important}
+  body.report .card-b{padding:3mm 3.5mm!important}
+  body.report .chart-wrap,body.report .chart-sm,body.report .tchart{height:68mm!important;max-width:258mm!important;margin-left:auto!important;margin-right:auto!important}
+  body.report #v-plano .chart-sm{height:78mm!important}
+  body.report .uso-disp{height:74mm!important;max-width:258mm!important;margin-left:auto!important;margin-right:auto!important}
+  body.report .evo-cards{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:3mm!important}
+  body.report .evo-card{padding:3mm!important}
+  body.report table{width:100%!important;margin-left:auto!important;margin-right:auto!important;font-size:10.5px!important}
+  body.report th,body.report td{padding:3.4px 4.5px!important}
+  body.report .tabela-fixa{width:100%!important;max-width:none!important}
+  body.report #acas-card-lista{break-inside:auto!important;page-break-inside:auto!important}
+  body.report #acas-card-lista .card-b{overflow:visible!important}
+  body.report #t-acas tr{break-inside:avoid!important;page-break-inside:avoid!important}
+  body.report #v-acas .grid.g4{margin-bottom:3mm!important}
+}
+
 </style>
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAC5klEQVR42u2XbUjdVRzHP+ec///em16umivJsDYaWWBT2txWmhUiTAlxiqxCmzUZjLWxvZgyEUFEUcSCeiH4osGCBnuiBxi0EXsoy1hRgRKCJBcZZOTT3d19+j+cXlhCb+Le5r0S+YXz+vs5v++Pw/kKEBK0K5SZk11Q0uUNFNUbvkAxIFhfaTsWmo6H5j69Nz85oB1rBYQUAIY3UBx4vOJDMyu/nAzIiizcDgXHW+14aFoI5cl9cHvNDeOBvFK0ayGkkYbbr00B7doIadrRpZ8WZ669pPyP7Oj15T7W9Ke5mUZzAIEQCu1a0swqRCBVoGjvmFRmDkJIECITESAQgFZm1qOG8vi3kXEJCaA8/m0S0GyctExz5smNYiO1CfDfAxBCYBoKgIHON+jvaAXANBTiXzwjRqrmSkos26H7+AGqK0vxeEzuReMMvH8eQykc10Vrvf4Af5nbjkPfqRbqXt5JQ3s/0ViCrz8ZxjQVve+cSxlCpmo+2NVGRfnTjH30OV1vNxMKR3hhfyev1lfRd6oF23FQUiYdh0zFfKTnELvLnuTcx7eorixlJvgrowNHWQqFqWrspLH2OQZPH0wJIgkAsB2H4e632PHUVs5e/IKaqjKu3vyBZ0ue4MepXxgbOsbC8l121Z2kurJ0DSKZISQVwUjPIWqqyrh4ZZy25mpufTvFaw0v8s33P9Owby+T00G+vDTEzme2c/DEuzTVPc9QV1tyu1VQ1vKP29JxpIljb77C7Nw8D+fnsHI3gj/bRyQax+f1YFk2Wmvycv0kEja/LaxgKElR4UO8d+Yzhkcv3x/A5ku4CZAJgP/5l8xJhGdBu6snYxd3QbtOIjwrY8vBCyAkWjuZ89cOCBlbDl5QVmTxO2+gsFaaWYWr7UikM5a/VbPQ3ES7QjsxKzx/3czeskd5sosyUc1Wy+lXr7tW5I4CIV0n/ntsOXgeIaRUvnxpePPTVc+jizMfhOYmDrtW9A4I+QdruijYi4/PtQAAAABJRU5ErkJggg==">
 <link rel="icon" type="image/png" sizes="192x192" href="data:image/png;base64,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">
@@ -1728,56 +1767,61 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
    -1=menor melhor, 0=intermediário/neutro (não colorir). ------------------ */
 const TRAITS = [
   {k:'Meu Índice',                     lab:'Plano Genético',            u:'US$', pre:1, d:0, dir:1, g:'plano'},
-  {k:'Leite',                          lab:'Leite',                     u:'libras', d:0, dir:1, g:'prod'},
-  {k:'Gordura',                        lab:'Gordura',                   u:'libras', d:0, dir:1, g:'prod'},
-  {k:'Proteína',                       lab:'Proteína',                  u:'libras', d:0, dir:1, g:'prod'},
-  {k:'Feed Saved',                     lab:'Feed Saved',                u:'libras', d:0, dir:1, g:'eficiencia'},
-  {k:'Residual Feed Intake',           lab:'Consumo Alimentar Residual',u:'libras', d:0, dir:-1,g:'eficiencia'},
-  {k:'Vida Produtiva',                 lab:'Vida Produtiva',            u:''    ,  d:1, dir:1, g:'saude'},
-  {k:'Taxa de Gravidez da Filha',      lab:'Taxa de Prenhez da Filha',  u:''    ,      d:1, dir:1, g:'saude'},
-  {k:'Pontuação de Células Somáticas', lab:'Escore de Células Somáticas',u:''    ,d:2, dir:-1,g:'saude'},
-  {k:'Taxa de Concepção de Vacas',     lab:'Taxa de Concepção de Vacas',u:''    ,      d:1, dir:1, g:'saude'},
-  {k:'Taxa de Concepção de Novilhas',  lab:'Taxa de Concepção de Novilhas',u:''    ,   d:1, dir:1, g:'saude'},
-  /* "Habitabilidade" é tradução automática de Livability no BlueLink. Identificado
-     empiricamente: regressão pai->filha contra C-LIV deu r=0,995 e slope=0,46
-     (contra H-LIV: r=0,334). É Cow Livability — a chance da vaca continuar VIVA
-     no rebanho, em pontos percentuais sobre a base da raça. Não é sobre "habitar". */
-  {k:'Habitabilidade',                 lab:'Sobrevivência da Vaca (LIV)',u:''    ,     d:1, dir:1, g:'saude'},
-  {k:'Repro Efficiency Index',         lab:'Índice de Eficiência Reprodutiva',u:'', d:1, dir:1, g:'repro'},
-  {k:'Early First Calving',            lab:'Parto Precoce',             u:'',d:1,dir:-1,g:'repro'},
-  {k:'First Service Conception',       lab:'Concepção no Primeiro Serviço',u:'',d:1,dir:1,g:'repro'},
-  {k:'Mastitis',                       lab:'Mastite',                   u:'',d:1,dir:-1,g:'saude'},
-  {k:'Milking Speed',                  lab:'Velocidade de Ordenha',     u:'',d:1,dir:1, g:'saude'},
-  {k:'Heifer Livability',              lab:'Sobrevivência da Novilha',  u:'',d:1,dir:1, g:'saude'},
+
+  /* PRODUÇÃO — ordem oficial dos filtros */
+  {k:'Leite',                          lab:'Leite',                     u:'', d:0, dir:1, g:'prod'},
+  {k:'Gordura',                        lab:'Gordura',                   u:'', d:0, dir:1, g:'prod'},
+  {k:'Proteína',                       lab:'Proteína',                  u:'', d:0, dir:1, g:'prod'},
+  {k:'Feed Saved',                     lab:'Feed Saved',                u:'', d:0, dir:1, g:'prod'},
+  {k:'Residual Feed Intake',           lab:'Consumo Alimentar Residual',u:'', d:0, dir:-1,g:'prod'},
+
+  /* SAÚDE E EFICIÊNCIA — ordem oficial dos filtros */
+  {k:'Vida Produtiva',                 lab:'Vida Produtiva',            u:'', d:1, dir:1, g:'saude'},
+  {k:'Pontuação de Células Somáticas', lab:'Escore de Células Somáticas',u:'',d:2, dir:-1,g:'saude'},
+  {k:'Milking Speed',                  lab:'Velocidade de Ordenha',     u:'', d:1, dir:1, g:'saude'},
+  {k:'Mastitis',                       lab:'Mastite',                   u:'', d:1, dir:-1,g:'saude'},
+  {k:'Heifer Livability',              lab:'Sobrevivência da Novilha', u:'', d:1, dir:1, g:'saude'},
+  /* "Habitabilidade" é Cow Livability no BlueLink. */
+  {k:'Habitabilidade',                 lab:'Sobrevivência da Vaca',     u:'', d:1, dir:1, g:'saude'},
   {k:'Resistance To Respiratory Disease',lab:'Resistência à Doença Respiratória',u:'',d:1,dir:1,g:'saude'},
-  {k:'Resistance To Diarrhea',         lab:'Resistência à Diarreia',    u:'',d:1,dir:1, g:'saude'},
+  {k:'Resistance To Diarrhea',         lab:'Resistência à Diarreia',    u:'', d:1, dir:1, g:'saude'},
+
+  /* FERTILIDADE — ordem oficial dos filtros */
+  {k:'Repro Efficiency Index',         lab:'Índice de Eficiência Reprodutiva',u:'', d:1, dir:1, g:'repro'},
+  {k:'Taxa de Gravidez da Filha',      lab:'Taxa de Prenhez da Filha', u:'', d:1, dir:1, g:'repro'},
+  {k:'First Service Conception',       lab:'Concepção no Primeiro Serviço',u:'',d:1,dir:1,g:'repro'},
+  {k:'Taxa de Concepção de Vacas',     lab:'Taxa de Concepção de Vacas',u:'', d:1, dir:1, g:'repro'},
+  {k:'Taxa de Concepção de Novilhas',  lab:'Taxa de Concepção de Novilhas',u:'',d:1, dir:1, g:'repro'},
+  {k:'Early First Calving',            lab:'Parto Precoce',            u:'', d:1, dir:-1,g:'repro'},
+
+  /* Demais grupos mantidos na mesma sequência */
   {k:'Facilidade de Parto do Touro',   lab:'Facilidade de Parto do Touro',u:'',d:1,dir:-1,g:'parto'},
-  {k:'Facilidade no Parto da Filha',   lab:'Facilidade de Parto de Filha',u:'',    d:1, dir:-1,g:'parto'},
-  {k:'Touro Natimorto',                lab:'Natimorto do Touro',        u:''    ,d:1,dir:-1,g:'parto'},
-  {k:'Filha Natimorto',                lab:'Índice de Natimorto da Filha',u:'' ,    d:1, dir:-1,g:'parto'},
-  {k:'Modern Udder Index',             lab:'Índice Moderno de Úbere',   u:'',d:1,dir:1,g:'tipo'},
-  {k:'Composição do Úbere',            lab:'Composto do Úbere (UDC)',   u:'',       d:2, dir:1, g:'tipo'},
-  {k:'Pés Pernas Composição',          lab:'Composto de Pés e Pernas (FLC)',u:'',   d:2, dir:1, g:'tipo'},
-  {k:'Composto de Peso Corporal',      lab:'Composto de Peso Corporal (BWC)',u:'',  d:2, dir:1, g:'tipo'},
+  {k:'Facilidade no Parto da Filha',   lab:'Facilidade de Parto das Filhas',u:'',d:1,dir:-1,g:'parto'},
+  {k:'Touro Natimorto',                lab:'Natimorto do Touro',       u:'', d:1, dir:-1,g:'parto'},
+  {k:'Filha Natimorto',                lab:'Índice de Natimorto da Filha',u:'',d:1,dir:-1,g:'parto'},
+  {k:'Modern Udder Index',             lab:'Índice Moderno de Úbere (MUI)',u:'',d:1,dir:1,g:'tipo'},
+  {k:'Composição do Úbere',            lab:'Composto do Úbere (UDC)',  u:'', d:2, dir:1, g:'tipo'},
+  {k:'Pés Pernas Composição',          lab:'Composto de Pés e Pernas (FLC)',u:'',d:2,dir:1,g:'tipo'},
+  {k:'Composto de Peso Corporal',      lab:'Composto de Peso Corporal (BWC)',u:'',d:2,dir:1,g:'tipo'},
   {k:'Estatura',                       lab:'Estatura',                  u:'',d:2,dir:1,g:'lin'},
   {k:'Força',                          lab:'Força',                     u:'',d:2,dir:1,g:'lin'},
-  {k:'Profundidade Corporal',          lab:'Profundidade Corporal',     u:'',d:2,dir:1,g:'lin'},
-  {k:'Angularidade da Forma Láctea',   lab:'Angulosidade',              u:'',d:2,dir:1,g:'lin'},
-  {k:'Ângulo da Alcatra',              lab:'Ângulo de Garupa',          u:'',d:2,dir:1,g:'lin'},
-  {k:'Largura da Alcatra',             lab:'Largura de Garupa',         u:'',d:2,dir:1,g:'lin'},
-  {k:'Ângulo do pé',                   lab:'Ângulo de Casco',           u:'',d:2,dir:1,g:'lin'},
-  {k:'Vista Lateral da Perna Traseira',lab:'Pernas Vista Lateral',      u:'',d:2,dir:1,g:'lin'},
-  {k:'Vista Traseira da Perna Traseira',lab:'Pernas Vista Posterior',   u:'',d:2,dir:1,g:'lin'},
+  {k:'Profundidade Corporal',          lab:'Profundidade Corporal',    u:'',d:2,dir:1,g:'lin'},
+  {k:'Angularidade da Forma Láctea',   lab:'Forma Leiteira',           u:'',d:2,dir:1,g:'lin'},
+  {k:'Ângulo da Alcatra',              lab:'Ângulo de Garupa',         u:'',d:2,dir:1,g:'lin'},
+  {k:'Largura da Alcatra',             lab:'Largura de Garupa',        u:'',d:2,dir:1,g:'lin'},
+  {k:'Ângulo do pé',                   lab:'Ângulo de Casco',          u:'',d:2,dir:1,g:'lin'},
+  {k:'Vista Lateral da Perna Traseira',lab:'Pernas Vista Lateral',     u:'',d:2,dir:1,g:'lin'},
+  {k:'Vista Traseira da Perna Traseira',lab:'Pernas Vista Posterior',  u:'',d:2,dir:1,g:'lin'},
   {k:'Fixação do Úbere',               lab:'Inserção Anterior',        u:'',d:2,dir:1,g:'lin'},
-  {k:'Altura do Úbere',                lab:'Altura de Úbere Posterior', u:'',d:2,dir:1,g:'lin'},
+  {k:'Altura do Úbere',                lab:'Altura de Úbere Posterior',u:'',d:2,dir:1,g:'lin'},
   {k:'Largura do Úbere',               lab:'Largura de Úbere Posterior',u:'',d:2,dir:1,g:'lin'},
-  {k:'Fenda do Úbere',                 lab:'Ligamento Central',       u:'',d:2,dir:1,g:'lin'},
-  {k:'Profundidade do Úbere',          lab:'Profundidade de Úbere',     u:'',d:2,dir:1,g:'lin'},
+  {k:'Fenda do Úbere',                 lab:'Ligamento Central',        u:'',d:2,dir:1,g:'lin'},
+  {k:'Profundidade do Úbere',          lab:'Profundidade de Úbere',    u:'',d:2,dir:1,g:'lin'},
   {k:'Posicionamento da Teta',         lab:'Colocação de Tetos Anteriores',u:'',d:2,dir:1,g:'lin'},
   {k:'Posicionamento da Teta Traseira',lab:'Colocação de Tetos Posteriores',u:'',d:2,dir:1,g:'lin'},
-  {k:'Comprimento da Teta',            lab:'Comprimento de Tetos',      u:'',d:2,dir:1,g:'lin'},
+  {k:'Comprimento da Teta',            lab:'Comprimento de Tetos',     u:'',d:2,dir:1,g:'lin'},
 ];
-const GRP = {plano:'Plano Genético', prod:'Produção', eficiencia:'Eficiência e Sustentabilidade', repro:'Fertilidade', saude:'Saúde e Longevidade', parto:'Parto', tipo:'Compostos de Tipo', lin:'Lineares de Tipo'};
+const GRP = {plano:'Plano Genético', prod:'Produção', saude:'Saúde e Eficiência', repro:'Fertilidade', parto:'Parto', tipo:'Compostos de Tipo', lin:'Lineares de Tipo'};
 
 /* Padronização decidida: categorias do BlueLink, inclusive nas análises do POP.
    As novilhas ficam partidas em 0-12 e >12 meses em TODA a plataforma —
@@ -1804,8 +1848,8 @@ const BMAP = {
 /* Características que só existem no touro — viram análise exclusiva desta aba. */
 const BONLY = [
   {k:'TPI', lab:'TPI', d:0, dir:1}, {k:'NM$', lab:'NM$', d:0, dir:1},
-  {k:'CM$', lab:'CM$', d:0, dir:1}, {k:'FM$', lab:'FM$', d:0, dir:1},
-  {k:'GM$', lab:'GM$', d:0, dir:1}, {k:'CFP', lab:'CFP', d:0, dir:1},
+  {k:'CM$', lab:'Mérito Queijo (CM$)', d:0, dir:1}, {k:'FM$', lab:'Mérito Fluido (FM$)', d:0, dir:1},
+  {k:'GM$', lab:'Mérito Pastejo (GM$)', d:0, dir:1}, {k:'CFP', lab:'CFP', d:0, dir:1},
   {k:'PTAT', lab:'PTAT', d:2, dir:1}, {k:'Feed Saved', lab:'Feed Saved', d:0, dir:1},
   {k:'Prot%', lab:'Proteína %', d:2, dir:1}, {k:'Fat %', lab:'Gordura %', d:2, dir:1},
 ];
@@ -1826,7 +1870,7 @@ const mean = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : null;
 const sd = a => { if(a.length<2) return 0; const m=mean(a); return Math.sqrt(a.reduce((s,x)=>s+(x-m)**2,0)/(a.length-1)); };
 const fmt = (v,d=0) => v===null||v===undefined||!isFinite(v) ? '—' :
   v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
-const sgn = (v,d=0) => v===null||!isFinite(v) ? '—' : (v>0?'+':'')+fmt(v,d);
+const sgn = (v,d=0) => v===null||!isFinite(v) ? '—' : (v<0?'-':'')+fmt(Math.abs(v),d);
 
 /* Valor com unidade, na ordem certa. Moeda vem antes do número; o resto vem
    depois; quem não tem unidade não ganha espaço sobrando. */
@@ -1834,7 +1878,7 @@ function uv(v, t, abs){
   if(v === null || v === undefined || !isFinite(v)) return '—';
   const d = t.d ?? 0;
   if(t.pre){
-    const sig = abs ? '' : (v < 0 ? '−' : '+');
+    const sig = abs ? '' : (v < 0 ? '-' : '');
     return `${sig}${t.u}\u00a0${fmt(Math.abs(v), d)}`;
   }
   const n = abs ? fmt(Math.abs(v), d) : sgn(v, d);
@@ -1842,7 +1886,7 @@ function uv(v, t, abs){
 }
 /* Plano Genético avulso (fora de um trait). */
 const RS = (v, d=0, abs) => v===null||!isFinite(v) ? '—'
-  : `${abs?'':(v<0?'−':'+')}US$\u00a0${fmt(Math.abs(v), d)}`;
+  : `${abs?'':(v<0?'-':'')}US$\u00a0${fmt(Math.abs(v), d)}`;
 const RSa = (v, d=0) => RS(v, d, true);
 function linreg(xs,ys){
   const n=xs.length; if(n<2) return null;
@@ -2610,7 +2654,7 @@ function ordenavel(id){
           if(Number.isFinite(ds)) return ds;
           return String(c.dataset.sort).toLowerCase();
         }
-        const txt = c.textContent.trim().replace(/\s*(libras|meses|pts|%|escore)\s*$/,'').replace(/^([+−-]?)R\$\u00a0?/,'$1').trim();
+        const txt = c.textContent.trim().replace(/\s*(meses|pts|%|escore)\s*$/,'').replace(/^([+−-]?)R\$\u00a0?/,'$1').trim();
         const n = +txt.replace(/\./g,'').replace(',','.').replace('+','');
         return (txt !== '—' && txt !== '' && isFinite(n) && /[\d]/.test(txt)) ? n : txt.toLowerCase();
       };
@@ -3262,7 +3306,7 @@ const PLANO_PERFIS = [
     ['Taxa de Prenhez da Filha','Taxa de Gravidez da Filha'],
     ['Células Somáticas','Pontuação de Células Somáticas'],
     ['Facilidade de Parto de Touro','Facilidade de Parto do Touro'],
-    ['Facilidade de Parto de Filha','Facilidade no Parto da Filha'],
+    ['Facilidade de Parto das Filhas','Facilidade no Parto da Filha'],
     ['Índice de Natimorto do Touro','Touro Natimorto'],
     ['Índice de Natimorto da Filha','Filha Natimorto'],
     ['Taxa de Concepção das Vacas','Taxa de Concepção de Vacas'],
@@ -3900,7 +3944,7 @@ function paintEvol(){
   const ref = cdcbRef(k,racaRef);
 
   $('#evol-kpis').innerHTML = [
-    kpi('Ganho médio anual', tr? uv(tr.slope,{...t,d:t.d+1})+'/ano' : '—',
+    kpi('Ganho médio anual', tr? uv(tr.slope,{...t,d:t.d})+'/ano' : '—',
         tr? `desde ${desde} · ${use.length} períodos · ${tr.qual.lab}`:'sem períodos suficientes',
         !tr ? '' : tr.qual.nivel==='fraca' ? 'k-amber' : ((tr.slope*(t.dir||1)>0)?'k-green':(t.dir?'k-red':''))),
     kpi('Ganho acumulado', total!==null? uv(total,t) : '—', tr? `${tr.pts[0].ano} → ${tr.pts[tr.pts.length-1].ano}`:'—', ''),
@@ -3916,7 +3960,7 @@ function paintEvol(){
     {type:'line', label:`Média de ${t.lab}`, data:all.map(p=>p.m), borderColor:C.alta, backgroundColor:'rgba(41,80,151,.06)',
      fill:true, tension:.25, spanGaps:true, borderWidth:2.5, pointRadius:all.map(p=>Math.min(11,3.5+Math.sqrt(p.n)*1.1)),
      pointBackgroundColor:all.map(p=>p.ano>=desde?C.alta:'#B6C4DC'), pointBorderColor:'#fff', pointBorderWidth:1.5},
-    ...(tr?[{type:'line', label:`Tendência ${sgn(tr.slope,t.d+1)} ${t.u||''}/ano`.trim(), data:all.map(p=>p.ano>=desde? tr.int+tr.slope*p.ano : null),
+    ...(tr?[{type:'line', label:`Tendência ${sgn(tr.slope,t.d)} ${t.u||''}/ano`.trim(), data:all.map(p=>p.ano>=desde? tr.int+tr.slope*p.ano : null),
      borderColor:tr.slope*t.dir>=0?C.alta:C.red, borderDash:[6,4], borderWidth:2, pointRadius:0, spanGaps:true}]:[]),
     {type:'bar', label:'nº de fêmeas', data:all.map(p=>p.n), backgroundColor:'rgba(74,127,212,.16)', yAxisID:'y2', borderRadius:3, order:9}]},
     options:{interaction:{mode:'index',intersect:false},
@@ -3953,7 +3997,7 @@ function paintEvol(){
         {type:'line', label:'Média CDCB −1 DP', _tipo:'ref', data:[{x:minX-.03,y:ref.media-ref.sd},{x:maxX+.03,y:ref.media-ref.sd}], borderColor:'#C89500', borderDash:[5,4], borderWidth:2.2, pointRadius:0, order:0}
       ] : [])
     ];
-    const dsTrend = trCmp ? [{type:'line', label:`Tendência do rebanho (${sgn(trCmp.slope,t.d+1)} ${t.u||''}/ano)`.trim(), _tipo:'trend',
+    const dsTrend = trCmp ? [{type:'line', label:`Tendência do rebanho (${sgn(trCmp.slope,t.d)} ${t.u||''}/ano)`.trim(), _tipo:'trend',
       data:[{x:minX,y:trCmp.int+trCmp.slope*minX},{x:maxX,y:trCmp.int+trCmp.slope*maxX}],
       borderColor:'#46505E', borderDash:[4,4], borderWidth:2.1, pointRadius:0, tension:0, order:1}] : [];
 
@@ -4000,7 +4044,7 @@ function paintEvol(){
     const selo = q.nivel==='fraca' ? `<span class="pill a" title="${esc(q.txt)}">${esc(q.lab)}</span>`
                : q.nivel==='media' ? `<span class="pill" title="${esc(q.txt)}">${esc(q.lab)}</span>`
                                    : `<span class="pill g" title="${esc(q.txt)}">${esc(q.lab)}</span>`;
-    h += `<tr><td>${x.lab}</td><td>${uv(m,x)}</td><td class="${q.nivel==='fraca'?'':(ok===null?'':(ok?'pos':'neg'))}">${sgn(r.slope,x.d+1)}</td><td>${sgn(r.slope*r.span,x.d)}</td>${colsRef}</tr>`;
+    h += `<tr><td>${x.lab}</td><td>${uv(m,x)}</td><td class="${q.nivel==='fraca'?'':(ok===null?'':(ok?'pos':'neg'))}">${sgn(r.slope,x.d)}</td><td>${sgn(r.slope*r.span,x.d)}</td>${colsRef}</tr>`;
   });
   $('#t-bal').innerHTML = h+'</tbody>';
   ordenavel('t-bal');
@@ -4333,28 +4377,28 @@ const normCab = t => String(t??'').toUpperCase().normalize('NFD').replace(/[\u03
                        .replace(/[^A-Z0-9]+/g,' ').trim();
 
 const USO_BULL_EXTRA = {
-  'DWP$':['DWP$',1], 'CM$':['CM$',1], 'FM$':['FM$',1], 'GM$':['GM$',1],
-  'TPI':['TPI',1], 'NM$':['NM$',1], 'HCC':['HCC',1],
-  'CFP':['Gordura + proteína (CFP)',1], 'PTAT':['Tipo (PTAT)',1], 'FE':['Eficiência alimentar (FE)',1],
-  'REI':['Índice de eficiência reprodutiva (REI)',1], 'EFC':['Parto precoce (EFC)',-1],
-  'FSC':['Concepção no primeiro serviço (FSC)',1], 'FI':['Índice de fertilidade (FI)',1],
-  'MAST':['Mastite (MAST)',-1], 'MUI':['Índice moderno de úbere (MUI)',1],
-  'MSPD':['Velocidade de ordenha (MSPD)',1], 'H-LIV':['Sobrevivência da novilha (H-LIV)',1],
-  'SSB':['Natimorto do touro (SSB)',-1], 'SCE':['Facilidade de parto do touro (SCE)',-1],
-  'DCE':['Facilidade de parto da filha (DCE)',-1], 'DSB':['Natimorto da filha (DSB)',-1],
-  'RSP':['Resistência à doença respiratória (RSP)',1], 'DIA':['Resistência à diarreia (DIA)',1],
-  'GL':['Duração da gestação (GL)',-1], 'KET':['Resistência à cetose (KET)',1],
-  'RP':['Resistência à retenção de placenta (RP)',1], 'MET':['Resistência à metrite (MET)',1],
-  'DA':['Resistência ao deslocamento de abomaso (DA)',1], 'MF':['Fertilidade masculina (MF)',1],
-  'MS':['Velocidade de ordenha (MS)',1], 'DC':['Composto leiteiro (DC)',1],
-  'PROT%':['Proteína (%)',1], 'FAT %':['Gordura (%)',1],
-  'STATURE':['Estatura',1], 'STRENGTH':['Força',1], 'BODY DEPTH':['Profundidade corporal',1],
-  'DAIRY FORM':['Angulosidade',1], 'RUMP ANGLE':['Ângulo de garupa',1],
-  'THURL WIDTH':['Largura de garupa',1], 'FOOT ANGLE':['Ângulo de casco',1],
-  'FLS':['Composto de membros anteriores (FLS)',1], 'F. UDDER ATT.':['Inserção anterior do úbere',1],
-  'R UDDER HEIGHT':['Altura de úbere posterior',1], 'REAR UDDER WIDTH':['Largura de úbere posterior',1],
-  'UDDER CLEFT':['Ligamento central',1], 'UDDER DEPTH':['Profundidade do úbere',1],
-  'TEAT LENGTH':['Comprimento de tetos',1], 'RFI':['Consumo alimentar residual (RFI)',-1]
+  'DWP$':['DWP$',1,1], 'CM$':['Mérito Queijo (CM$)',1,0], 'FM$':['Mérito Fluido (FM$)',1,0], 'GM$':['Mérito Pastejo (GM$)',1,0],
+  'TPI':['TPI',1,0], 'NM$':['NM$',1,0], 'HCC':['Composto de Conformação Holandês (HCC)',1,1],
+  'CFP':['Gordura + proteína (CFP)',1,1], 'PTAT':['Tipo (PTAT)',1,2], 'FE':['Eficiência alimentar (FE)',1,0],
+  'REI':['Índice de eficiência reprodutiva (REI)',1,1], 'EFC':['Parto precoce (EFC)',-1,1],
+  'FSC':['Concepção no primeiro serviço (FSC)',1,1], 'FI':['Índice de fertilidade (FI)',1,1],
+  'MAST':['Mastite (MAST)',-1,1], 'MUI':['Índice Moderno de Úbere (MUI)',1,1],
+  'MSPD':['Velocidade de ordenha (MSPD)',1,1], 'H-LIV':['Sobrevivência da novilha (H-LIV)',1,1],
+  'SSB':['Natimorto do touro (SSB)',-1,1], 'SCE':['Facilidade de parto do touro (SCE)',-1,1],
+  'DCE':['Facilidade de Parto das Filhas',-1,1], 'DSB':['Natimorto da filha (DSB)',-1,1],
+  'RSP':['Resistência à doença respiratória (RSP)',1,1], 'DIA':['Resistência à diarreia (DIA)',1,1],
+  'GL':['Comprimento da Gestação (GL)',-1,1], 'KET':['Resistência à cetose (KET)',1,1],
+  'RP':['Resistência à retenção de placenta (RP)',1,1], 'MET':['Resistência à metrite (MET)',1,1],
+  'DA':['Resistência ao deslocamento de abomaso (DA)',1,1], 'MF':['Resistência a febre do leite (MF)',1,1],
+  'MS':['Velocidade de ordenha (MS)',1,1], 'DC':['Composto leiteiro (DC)',1,1],
+  'PROT%':['Proteína (%)',1,2], 'FAT %':['Gordura (%)',1,2],
+  'STATURE':['Estatura',1,2], 'STRENGTH':['Força',1,2], 'BODY DEPTH':['Profundidade corporal',1,2],
+  'DAIRY FORM':['Forma Leiteira',1,2], 'RUMP ANGLE':['Ângulo de garupa',1,2],
+  'THURL WIDTH':['Largura de garupa',1,2], 'FOOT ANGLE':['Ângulo de casco',1,2],
+  'FLS':['Composto de Pernas e Pés (FLS)',1,2], 'F. UDDER ATT.':['Inserção anterior do úbere',1,2],
+  'R UDDER HEIGHT':['Altura de úbere posterior',1,2], 'REAR UDDER WIDTH':['Largura de úbere posterior',1,2],
+  'UDDER CLEFT':['Ligamento central',1,2], 'UDDER DEPTH':['Profundidade do úbere',1,2],
+  'TEAT LENGTH':['Comprimento de tetos',1,2], 'RFI':['Consumo alimentar residual (RFI)',-1,0]
 };
 const USO_BULL_ALIASES = {
   'INDEX':'Meu Índice', 'MILK':'Leite', 'FAT':'Gordura', 'PROTEIN':'Proteína',
@@ -4387,14 +4431,24 @@ function traitUsoBull(h){
   if(k){const t=TRAITS.find(z=>z.k===k);if(t)return t;}
   if([...USO_BULL_SKIP].some(a=>normCab(a)===x)||/^(CP C|CP H|CP 511)/.test(x)||/ REL$/.test(x))return null;
   const extra=Object.entries(USO_BULL_EXTRA).find(([a])=>normCab(a)===x)?.[1];
-  return extra?{k:'bull:'+x,lab:extra[0],d:1,dir:extra[1],u:''}:null;
+  return extra?{k:'bull:'+x,lab:extra[0],d:(extra[2]??1),dir:extra[1],u:''}:null;
+}
+
+const TRAIT_ORDER = new Map(TRAITS.map((t,i)=>[t.k,i]));
+function ordenarTraitsUso(lista){
+  const extras = new Map(Object.keys(USO_BULL_EXTRA).map((k,i)=>['bull:'+normCab(k), i]));
+  return [...lista].sort((a,b)=>{
+    const ia = TRAIT_ORDER.has(a.k) ? TRAIT_ORDER.get(a.k) : 1000 + (extras.get(a.k) ?? 900);
+    const ib = TRAIT_ORDER.has(b.k) ? TRAIT_ORDER.get(b.k) : 1000 + (extras.get(b.k) ?? 900);
+    return ia-ib || String(a.lab).localeCompare(String(b.lab),'pt-BR');
+  });
 }
 const USO_MEDIA_NOME = {'MILK':'Leite','FAT':'Gordura','PROTEIN':'Proteína','FAT %':'Gordura (%)',
   'PROT%':'Proteína (%)','PL':'Vida Produtiva','DPR':'Taxa de Prenhez da Filha',
   'SCS':'Escore de Células Somáticas','CCR':'Taxa de Concepção de Vacas',
   'HCR':'Taxa de Concepção de Novilhas','C-LIV':'Sobrevivência da Vaca',
   'H-LIV':'Sobrevivência da Novilha','SCE':'Facilidade de Parto do Touro',
-  'DCE':'Facilidade de Parto da Filha','SSB':'Natimorto do Touro',
+  'DCE':'Facilidade de Parto das Filhas','SSB':'Natimorto do Touro',
   'DSB':'Natimorto da Filha','UDC':'Composto do Úbere','FLC':'Composto de Pés e Pernas',
   'BWC':'Composto de Peso Corporal'};
 function nomeCaracteristicaUso(v){const x=normCab(v);return Object.entries(USO_MEDIA_NOME).find(([a])=>normCab(a)===x)?.[1]||traitUsoBull(v)?.lab||String(v||'');}
@@ -4450,11 +4504,11 @@ function lerPlanilhaUso(buf, nomeArquivo){
     if(iCab < 0) return;
     const cab = L[iCab].map(x => String(x??'').trim());
     const linhasM = L.slice(iCab+1).filter(r => r && r[0] && num(r[1])!==null)
-      .map(r => ({trait:nomeCaracteristicaUso(String(r[0]).trim()), a:num(r[1]), b:num(r[2])}));
+      .map(r => { const raw=String(r[0]).trim(), meta=traitUsoBull(raw); return {trait:nomeCaracteristicaUso(raw), a:num(r[1]), b:num(r[2]), d:meta?.d ?? 1}; });
     if(linhasM.length) medias = {aba:nome, colA:cab[1]||'Alta', colB:'Outros', linhas:linhasM};
   });
 
-  return {touros, medias, traits:[...traitMap.values()], aba:melhor.nome, colunas:Object.keys(idx).length, total:hdr.length};
+  return {touros, medias, traits:ordenarTraitsUso([...traitMap.values()]), aba:melhor.nome, colunas:Object.keys(idx).length, total:hdr.length};
 }
 
 function montarDropUso(){
@@ -4511,7 +4565,7 @@ function rUso(){
 
   /* A característica precisa existir na planilha dos touros e no relatório do
      rebanho. O CDCB de touros entra somente para a mesma raça selecionada. */
-  const disp = (USO.traits||[]).filter(t => T.some(b => b.v[t.k] !== null && b.v[t.k] !== undefined));
+  const disp = ordenarTraitsUso((USO.traits||[]).filter(t => T.some(b => b.v[t.k] !== null && b.v[t.k] !== undefined)));
   if(!disp.some(t => t.k === USO_TRAIT)) USO_TRAIT = disp[0] ? disp[0].k : 'Meu Índice';
   const sel = $('#uso-trait');
   sel.innerHTML = disp.map(t => `<option value="${esc(t.k)}" ${t.k===USO_TRAIT?'selected':''}>${esc(t.lab)}</option>`).join('');
@@ -4629,8 +4683,8 @@ function rUso(){
       `<thead><tr><th>Característica</th><th>${esc(M.colA)}</th><th>${esc(M.colB)}</th><th>Diferença</th></tr></thead><tbody>`+
       M.linhas.map(l => {
         const d = (l.a!==null && l.b!==null) ? l.a-l.b : null;
-        return `<tr><td>${esc(l.trait)}</td><td><b>${fmt(l.a,0)}</b></td><td>${l.b===null?'—':fmt(l.b,0)}</td>`+
-               `<td>${d===null?'—':sgn(d,0)}</td></tr>`;
+        return `<tr><td>${esc(l.trait)}</td><td><b>${fmt(l.a,l.d??1)}</b></td><td>${l.b===null?'—':fmt(l.b,l.d??1)}</td>`+
+               `<td>${d===null?'—':sgn(d,l.d??1)}</td></tr>`;
       }).join('')+`</tbody>`;
     ordenavel('t-uso-avg');
   } else $('#uso-avg-card').hidden = true;
@@ -5398,7 +5452,8 @@ function paintPop(){
 
   // --- tendência dos pais por período: PTA médio dos touros ponderado por filha
   const disp = Object.keys(BMAP).filter(x=>B.cols.includes(x)).concat(BONLY.filter(b=>B.cols.includes(b.k)).map(b=>b.k));
-  let ht = `<thead><tr><th>Nascimento da fêmea</th><th>Nº touros</th><th>Nº filhas</th><th>Cobertura</th>${disp.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>`;
+  const metaPai = x => D.traits.find(t=>t.k===BMAP[x]) || BONLY.find(b=>b.k===x) || {lab:x,d:1};
+  let ht = `<thead><tr><th>Nascimento da fêmea</th><th>Nº touros</th><th>Nº filhas</th><th>Cobertura</th>${disp.map(x=>`<th>${esc(metaPai(x).lab)}</th>`).join('')}</tr></thead><tbody>`;
   const linhas = [];
   D.anos.slice().reverse().forEach(a=>{
     const Pa = paisCruzados(String(a)), ok = Pa.filter(p=>p.bull);
@@ -5412,13 +5467,13 @@ function paintPop(){
     const dc = nfo/nf;
     ht += `<tr><td>${a}</td><td>${ok.length}/${Pa.length}</td><td>${nf}</td>
       <td class="${dc<0.8?'neg':'pos'}">${fmt(dc*100,0)}%</td>
-      ${disp.map(x=>`<td>${med[x]===null?'—':sgn(med[x], (D.traits.find(t=>t.k===BMAP[x])||BONLY.find(b=>b.k===x)||{d:1}).d)}</td>`).join('')}</tr>`;
+      ${disp.map(x=>`<td>${med[x]===null?'—':sgn(med[x], metaPai(x).d)}</td>`).join('')}</tr>`;
   });
   if(linhas.length>1){
     const p0 = linhas[linhas.length-1], p1 = linhas[0], span = p1.a-p0.a;
     ht += `<tr class="total"><td>Ganho médio/ano</td><td>—</td><td>—</td><td>—</td>${disp.map(x=>{
       const v = (p0.med[x]!==null && p1.med[x]!==null && span) ? (p1.med[x]-p0.med[x])/span : null;
-      return `<td>${v===null?'—':sgn(v,1)}</td>`; }).join('')}</tr>`;
+      return `<td>${v===null?'—':sgn(v,metaPai(x).d)}</td>`; }).join('')}</tr>`;
   }
   $('#t-tend').innerHTML = ht+'</tbody>';
   ordenavel('t-tend');
@@ -5476,15 +5531,16 @@ function rPlano(){
   const gens = CATS_TEMPO().filter(c=>D.rows.some(r=>r.cat===c));
   const dist = gens.map(g=>{ const sub = R.filter(r=>r.cat===g);
     return {g, n:sub.length, q:[0,1,2,3].map(i=>sub.filter(r=>qOf.get(r)===i).length)}; });
-  const qc = ['#17305C','#295097','#4A7FD4','#80A6DD','#B4C8E7'];
-  chart('c-qgen',{type:'bar', data:{labels:['Q1 · topo','Q2','Q3','Q4 · fundo'], datasets:dist.map((d,gi)=>({
-    label:`${d.g} (n=${d.n})`, data:d.q.map(n=>d.n?n/d.n*100:0),
-    backgroundColor:qc[gi%qc.length], borderRadius:3, _q:d.q, _grupo:d.g, _n:d.n}))},
+  const qc = ['#17305C','#295097','#6F94CC','#B4C8E7'];
+  const qlabs = ['Q1 · topo','Q2','Q3','Q4 · fundo'];
+  chart('c-qgen',{type:'bar', data:{labels:dist.map(d=>d.g), datasets:qlabs.map((lab,qi)=>({
+    label:lab, stack:'quartis', data:dist.map(d=>d.n?d.q[qi]/d.n*100:0),
+    backgroundColor:qc[qi], borderWidth:0, borderRadius:qi===3?3:0, _qi:qi}))},
     options:{plugins:{legend:{position:'bottom'}, tooltip:{callbacks:{
-      title:c=>c[0]?.label||'',
-      label:c=>`${c.dataset._grupo}: ${fmt(c.raw,1)}% da geração · ${fmt(c.dataset._q[c.dataIndex])} animais (n=${fmt(c.dataset._n)})`}}},
-      scales:{x:{grid:{display:false},title:{display:true,text:'Quartil do Plano Genético'}},
-              y:{beginAtZero:true,max:100,grid:{color:C.line},title:{display:true,text:'Animais da geração (%)'},ticks:{callback:v=>v+'%'}}}}});
+      title:c=>`${c[0]?.label||''} (n=${fmt(dist[c[0]?.dataIndex]?.n||0)})`,
+      label:c=>`${c.dataset.label}: ${fmt(c.raw,1)}% · ${fmt(dist[c.dataIndex]?.q[c.dataset._qi]||0)} animais`}}},
+      scales:{x:{stacked:true,grid:{display:false},title:{display:true,text:'Geração / ordem de lactação'}},
+              y:{stacked:true,beginAtZero:true,max:100,grid:{color:C.line},title:{display:true,text:'Composição da geração (%)'},ticks:{callback:v=>v+'%'}}}}});
 
   const gi = [];
   const nova = dist[dist.length-1], velha = dist[0];
