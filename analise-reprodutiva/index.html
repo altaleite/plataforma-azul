@@ -1,10 +1,6 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<!-- Proteção Plataforma Azul — NÃO REMOVER. Deve ser a primeira coisa no <head>. -->
-<script src="https://altaleite.github.io/plataforma-azul/auth.js"></script>
-<script>PlataformaAzulAuth.guard();</script>
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#295097">
@@ -27,8 +23,6 @@
     .brand img{width:104px;height:35px;object-fit:contain;object-position:left center}
     .brand-sep{width:1px;height:28px;background:var(--line)}
     .brand-title{font-size:13px;font-weight:700;color:var(--deep);white-space:nowrap}
-    .top-note{font-size:11px;color:var(--ink3);text-align:right}
-    .top-note b{display:block;color:var(--alta);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
     .shell{max-width:1280px;margin:0 auto;padding:24px}
     .hero{background:linear-gradient(112deg,#17305c 0%,#295097 62%,#4a7fd4 100%);border-radius:12px;color:#fff;padding:30px 32px;display:grid;grid-template-columns:1.35fr .65fr;gap:32px;overflow:hidden;position:relative;box-shadow:0 12px 30px rgba(23,48,92,.16)}
     .hero:after{content:"";position:absolute;width:400px;height:400px;border:58px solid rgba(255,255,255,.08);border-radius:50%;right:-145px;top:-235px}
@@ -114,6 +108,20 @@
     .gain-row b{text-align:right;color:var(--deep);font:700 11px "Consolas",monospace}
     .status-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;background:var(--greenwash);color:#4f7f23;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
     .status-pill.pending{background:#f1f3f6;color:#6d7787}
+    .data-tag{display:inline-flex;align-items:center;padding:3px 6px;border-radius:999px;font-size:8px;font-weight:800;letter-spacing:.055em;text-transform:uppercase;margin-left:6px;vertical-align:1px}
+    .data-tag.current{background:#edf2fa;color:var(--alta)}
+    .data-tag.target{background:#f3f8ee;color:#4f7f23}
+    .data-tag.estimated{background:#fff9ee;color:#9c6500}
+    .data-tag.assumption{background:#f1f3f6;color:#687386}
+    .diagnosis-card{border:1px solid #c7d8ee;border-left:5px solid var(--alta);background:#f8fbff;border-radius:9px;padding:14px 16px;margin-bottom:16px}
+    .diagnosis-card .title{font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--alta);margin-bottom:6px}
+    .diagnosis-card strong{color:var(--deep);font-size:17px}
+    .diagnosis-card p{margin:7px 0 0;color:var(--ink2);font-size:11.5px;line-height:1.55}
+    .diagnosis-card.positive{border-color:#cfe1bf;border-left-color:var(--green);background:var(--greenwash)}
+    .diagnosis-card.positive .title{color:#4f7f23}
+    .diagnosis-card.warn{border-color:#ead3a7;border-left-color:var(--amber);background:var(--amberwash)}
+    .diagnosis-card.warn .title{color:#9c6500}
+    .compact-note{font-size:10px;color:var(--ink3);line-height:1.4;margin-top:4px}
     .tech-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
     .tech-title{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px}
     .tech-title h3{margin:0;color:var(--deep);font-size:16px}
@@ -149,7 +157,7 @@
       .step-flow{grid-template-columns:repeat(3,1fr)}.tech-kpis{grid-template-columns:1fr 1fr}
     }
     @media(max-width:760px){
-      .top{height:auto;padding:13px 16px}.top-note{display:none}.brand img{width:83px}.brand-title{font-size:11px}
+      .top{height:auto;padding:13px 16px}.brand img{width:83px}.brand-title{font-size:11px}
       .shell{padding:14px}.hero{grid-template-columns:1fr;padding:22px 19px;gap:18px}.hero h1{font-size:25px}
       .hero-note{border-top:1px solid rgba(255,255,255,.28);border-left:0;padding:11px 0 0}
       .tool-tabs{top:64px}.scenario-head{align-items:flex-start;flex-direction:column}
@@ -174,7 +182,6 @@
       <span class="brand-sep"></span>
       <span class="brand-title">Plataforma Azul — Reprodução</span>
     </div>
-    <div class="top-note"><b>Ferramenta independente</b>Motor reprodutivo e econômico local · versão 1.0</div>
   </header>
 
   <main class="shell">
@@ -182,20 +189,20 @@
       <div>
         <div class="eyebrow">Eficiência reprodutiva</div>
         <h1>Reprodução que vira resultado</h1>
-        <p>Simule a evolução da taxa de prenhez, das perdas gestacionais, do intervalo entre partos e do retorno econômico do rebanho, preservando a lógica validada da planilha.</p>
+        <p>Avalie o cenário reprodutivo, defina metas e estime efeitos sobre perdas gestacionais, intervalo entre partos, leite, fêmeas e resultado econômico, com auditoria de compatibilidade da planilha original.</p>
       </div>
       <div class="hero-note"><b>Da taxa ao caixa</b>Serviço × concepção → prenhez → período de serviço → DEL → leite e fêmeas.</div>
     </section>
 
     <nav class="tool-tabs" aria-label="Áreas da análise de reprodução">
       <button class="on" data-tab="resumo">Visão geral</button>
-      <button data-tab="simulacao">Simulação</button>
-      <button data-tab="prenhez">Taxa de prenhez</button>
-      <button data-tab="perdas">Perda de prenhez</button>
+      <button data-tab="prenhez">Diagnóstico reprodutivo</button>
+      <button data-tab="perdas">Perdas gestacionais</button>
+      <button data-tab="simulacao">Metas e simulação</button>
       <button data-tab="economico">Impacto econômico</button>
       <button data-tab="tecnicas">Técnicas</button>
       <button data-tab="estrategia">Estratégia do rebanho</button>
-      <button data-tab="custos">Custos e premissas</button>
+      <button data-tab="custos">Premissas</button>
       <button data-tab="metodo">Método e validação</button>
     </nav>
 
@@ -209,8 +216,10 @@
     </div>
 
     <section class="module-view on" id="view-resumo">
-      <div class="subhero"><h2>Visão geral</h2><p>Leitura executiva do cenário atual, da meta reprodutiva e do efeito adicional da redução das perdas gestacionais.</p></div>
+      <div class="subhero"><h2>Visão geral</h2><p>Primeiro o diagnóstico do cenário atual; depois a meta, a resposta esperada e o benefício econômico potencial.</p></div>
       <div id="summary-metrics" class="metrics"></div>
+      <div id="summary-diagnosis" class="diagnosis-card"></div>
+      <div id="summary-impact-metrics" class="metrics"></div>
       <div class="grids">
         <article class="card"><div class="card-h"><h3>Atual × Meta</h3><span class="hint">principais indicadores</span></div><div class="card-b"><div id="summary-bars" class="compare-list"></div></div></article>
         <article class="card"><div class="card-h"><h3>Formação do resultado</h3><span class="hint">ganho anual</span></div><div class="card-b"><div id="summary-gains" class="gain-stack"></div></div></article>
@@ -219,7 +228,7 @@
     </section>
 
     <section class="module-view" id="view-simulacao">
-      <div class="subhero"><h2>Simulação do rebanho</h2><p>Altere os parâmetros azuis. Todos os indicadores e impactos econômicos são recalculados no navegador.</p></div>
+      <div class="subhero"><h2>Metas e simulação</h2><p>Defina a meta após revisar o diagnóstico. Todos os indicadores e impactos econômicos são recalculados no navegador.</p></div>
       <div class="input-layout three section-gap">
         <article class="card"><div class="card-h"><h3>Fazenda e rebanho</h3><span class="hint">base produtiva</span></div><div class="card-b"><div class="fieldgrid">
           <div class="field wide"><label for="farm">Fazenda / cliente</label><input id="farm" data-field="farm" type="text"></div>
@@ -231,23 +240,26 @@
         <article class="card"><div class="card-h"><h3>Cenário atual</h3><span class="hint">ponto de partida</span></div><div class="card-b"><div class="fieldgrid">
           <div class="field"><label for="serviceNow">Taxa de serviço, %</label><input id="serviceNow" data-field="serviceNow" type="number" min="1" max="100" step="0.1"></div>
           <div class="field"><label for="conceptionNow">Taxa de concepção, %</label><input id="conceptionNow" data-field="conceptionNow" type="number" min="1" max="100" step="0.1"></div>
-          <div class="field"><label for="lossNow">Perda de prenhez, %</label><input id="lossNow" data-field="lossNow" type="number" min="0" max="80" step="0.1"></div>
-          <div class="field"><label>Taxa de prenhez modelada</label><input id="prNowOut" type="text" readonly><small>Produto arredondado como no Excel.</small></div>
+          <div class="field"><label for="lossNow">Perda gestacional, %</label><input id="lossNow" data-field="lossNow" type="number" min="0" max="80" step="0.1"></div>
+          <div class="field"><label for="lossWindow">Janela da perda gestacional (Dias)</label><input id="lossWindow" data-field="lossWindow" type="number" min="1" max="280" step="1"><small>Dias entre o diagnóstico inicial e o desfecho considerado.</small></div>
+          <div class="field"><label>Taxa de prenhez modelada</label><input id="prNowOut" type="text" readonly><small>Serviço × concepção, sem arredondamento intermediário.</small></div>
         </div></div></article>
         <article class="card"><div class="card-h"><h3>Meta</h3><span class="hint">cenário projetado</span></div><div class="card-b"><div class="fieldgrid">
           <div class="field"><label for="serviceTarget">Taxa de serviço, %</label><input id="serviceTarget" data-field="serviceTarget" type="number" min="1" max="100" step="0.1"></div>
           <div class="field"><label for="conceptionTarget">Taxa de concepção, %</label><input id="conceptionTarget" data-field="conceptionTarget" type="number" min="1" max="100" step="0.1"></div>
-          <div class="field"><label for="lossTarget">Perda de prenhez futura, %</label><input id="lossTarget" data-field="lossTarget" type="number" min="0" max="80" step="0.1"></div>
-          <div class="field"><label>Taxa de prenhez modelada</label><input id="prTargetOut" type="text" readonly><small>Produto arredondado como no Excel.</small></div>
+          <div class="field"><label for="lossTarget">Perda gestacional meta, %</label><input id="lossTarget" data-field="lossTarget" type="number" min="0" max="80" step="0.1"></div>
+          <div class="field"><label>Taxa de prenhez modelada</label><input id="prTargetOut" type="text" readonly><small>Serviço × concepção, sem arredondamento intermediário.</small></div>
         </div></div></article>
       </div>
       <div id="simulation-flow" class="step-flow section-gap"></div>
       <div id="range-warning"></div>
+      <div id="simulation-guidance" class="diagnosis-card"></div>
     </section>
 
     <section class="module-view" id="view-prenhez">
-      <div class="subhero"><h2>Efeito da taxa de prenhez</h2><p>Compara atual e meta mantendo a perda de prenhez atual, exatamente como no primeiro bloco da planilha.</p></div>
+      <div class="subhero"><h2>Diagnóstico reprodutivo</h2><p>Decompõe a taxa de prenhez em serviço e concepção, mostra o principal desvio para a meta e estima o efeito da melhoria mantendo a perda gestacional atual.</p></div>
       <div id="pr-metrics" class="metrics"></div>
+      <div id="pr-action" class="diagnosis-card"></div>
       <div class="grids">
         <article class="card"><div class="card-h"><h3>Cadeia reprodutiva</h3><span class="hint">atual × meta</span></div><div class="card-b"><div id="pr-flow" class="step-flow"></div></div></article>
         <article class="card"><div class="card-h"><h3>Memória resumida</h3><span class="hint">motor local</span></div><div class="card-b"><div id="pr-formula" class="formula"></div></div></article>
@@ -256,8 +268,9 @@
     </section>
 
     <section class="module-view" id="view-perdas">
-      <div class="subhero"><h2>Efeito da perda de prenhez</h2><p>Apresenta o ganho adicional da redução das perdas e o cenário final acumulado, preservando o resultado consolidado da planilha.</p></div>
+      <div class="subhero"><h2>Perdas gestacionais</h2><p>Apresenta o ganho adicional da redução das perdas gestacionais e o cenário final acumulado. A interpretação depende da janela diagnóstica utilizada pela fazenda.</p></div>
       <div id="loss-metrics" class="metrics"></div>
+      <div id="loss-action" class="diagnosis-card"></div>
       <div class="grids equal">
         <article class="card"><div class="card-h"><h3>Distribuição temporal</h3><span class="hint">Vasconcelos et al. (1997)</span></div><div class="card-b"><div id="loss-distribution" class="gain-stack"></div></div></article>
         <article class="card"><div class="card-h"><h3>Leitura do resultado</h3><span class="hint">adicional × acumulado</span></div><div class="card-b"><div id="loss-reading"></div></div></article>
@@ -266,8 +279,9 @@
     </section>
 
     <section class="module-view" id="view-economico">
-      <div class="subhero"><h2>Impacto econômico</h2><p>Leite e fêmeas são demonstrados separadamente. A margem de contribuição é aplicada como percentual da receita do leite.</p></div>
+      <div class="subhero"><h2>Impacto econômico</h2><p>Estimativa de benefício econômico potencial. Leite e fêmeas são demonstrados separadamente; não representa lucro líquido sem descontar o custo incremental das intervenções.</p></div>
       <div id="economic-metrics" class="metrics"></div>
+      <div id="economic-reading" class="diagnosis-card positive"></div>
       <div class="grids">
         <article class="card"><div class="card-h"><h3>Ponte de valor</h3><span class="hint">do DEL ao resultado</span></div><div class="card-b"><div id="economic-flow" class="step-flow"></div></div></article>
         <article class="card"><div class="card-h"><h3>Composição anual</h3><span class="hint">taxa de prenhez + perda futura</span></div><div class="card-b"><div id="economic-gains" class="gain-stack"></div></div></article>
@@ -300,15 +314,15 @@
     </section>
 
     <section class="module-view" id="view-custos">
-      <div class="subhero"><h2>Custos e premissas</h2><p>Entradas econômicas e produtivas utilizadas no resultado. Os custos das técnicas isoladas podem ser atualizados sem alterar o motor.</p></div>
+      <div class="subhero"><h2>Premissas do modelo</h2><p>Entradas econômicas e produtivas utilizadas no resultado. Os custos das técnicas isoladas podem ser atualizados sem alterar o motor.</p></div>
       <div class="input-layout section-gap">
         <article class="card"><div class="card-h"><h3>Economia do rebanho</h3><span class="hint">entradas editáveis</span></div><div class="card-b"><div class="fieldgrid">
           <div class="field"><label for="milkPrice">Preço do leite, R$/L</label><input id="milkPrice" data-field="milkPrice" type="number" min="0" step="0.01"></div>
           <div class="field"><label for="marginPct">Margem de contribuição, %</label><input id="marginPct" data-field="marginPct" type="number" min="0" max="100" step="0.1"></div>
-          <div class="field"><label for="years">Permanência após parto, anos</label><input id="years" data-field="years" type="number" min="0.5" max="12" step="0.1"></div>
           <div class="field"><label for="femaleRate">Fêmeas nascidas vivas, %</label><input id="femaleRate" data-field="femaleRate" type="number" min="0" max="100" step="0.1"></div>
           <div class="field"><label for="calfValue">Valor da bezerra, R$</label><input id="calfValue" data-field="calfValue" type="number" min="0" step="10"></div>
           <div class="field"><label for="notInseminated">Vacas não inseminadas, %</label><input id="notInseminated" data-field="notInseminated" type="number" min="0" max="100" step="0.1"></div>
+          <div class="field"><label for="dryPeriod">Período seco do modelo (Dias)</label><input id="dryPeriod" data-field="dryPeriod" type="number" min="0" max="120" step="1"><small>Padrão: 60 dias. Recalcula a lactação e o DEL estimado.</small></div>
         </div></div></article>
         <article class="card"><div class="card-h"><h3>Técnicas isoladas</h3><span class="hint">valores por serviço</span></div><div class="card-b"><div class="fieldgrid">
           <div class="field"><label for="iaCost">IA conv. — custo/serviço, R$</label><input id="iaCost" data-field="iaCost" type="number" min="0" step="0.01"></div>
@@ -316,7 +330,7 @@
           <div class="field"><label for="fivCost">FIV sexada — custo/serviço, R$</label><input id="fivCost" data-field="fivCost" type="number" min="0" step="0.01"></div>
           <div class="field"><label for="fivFemale">FIV sexada — fêmeas vivas, %</label><input id="fivFemale" data-field="fivFemale" type="number" min="0" max="100" step="0.1"></div>
           <div class="field"><label for="techCows">Animais na estratégia</label><input id="techCows" data-field="techCows" type="number" min="1" step="1"></div>
-          <div class="field"><label>Período seco do modelo</label><input value="60 dias" type="text" readonly></div>
+
         </div></div></article>
       </div>
       <article class="card"><div class="card-h"><h3>Níveis de produção</h3><span class="hint">curva utilizada no Excel</span></div><div class="card-b tw"><table id="production-table"></table></div></article>
@@ -326,15 +340,15 @@
       <div class="subhero"><h2>Método e validação</h2><p>Memória técnica do motor, fontes e reconciliação dos resultados com a planilha original.</p></div>
       <div class="grids">
         <article class="card"><div class="card-h"><h3>Motor reprodutivo</h3><span class="hint">rastreabilidade</span></div><div class="card-b method">
-          <details open><summary>Taxa de prenhez</summary><p>Taxa de serviço × taxa de concepção. O resultado é arredondado para pontos percentuais inteiros, repetindo a regra da planilha.</p></details>
+          <details open><summary>Taxa de prenhez</summary><p>Taxa de serviço × taxa de concepção. O motor principal mantém a precisão contínua para evitar degraus artificiais de arredondamento. A conferência histórica da planilha permanece disponível em modo de compatibilidade.</p></details>
           <details><summary>Período de serviço</summary><p>O modelo estima o ponto de 50% de vacas prenhes após três ciclos de 21 dias a partir do PEV e adiciona o efeito temporal das perdas gestacionais.</p></details>
-          <details><summary>IEP e DEL</summary><p>IEP = (período de serviço + 280) ÷ 30,5. O modelo mantém período seco de 60 dias e calcula o DEL médio como metade da lactação projetada.</p></details>
-          <details><summary>Leite e fêmeas</summary><p>A diferença de DEL é multiplicada pela perda diária da faixa produtiva. Partos e fêmeas seguem permanência produtiva, tamanho do rebanho e percentual de vacas não inseminadas.</p></details>
+          <details><summary>IEP e DEL</summary><p>IEP = (período de serviço + 280) ÷ 30,5. O período seco é uma premissa editável, com padrão de 60 dias. A lactação projetada é calculada a partir do IEP menos o período seco, e o DEL médio estimado corresponde à metade dessa lactação. Estes valores são projeções do motor, não medições observadas do rebanho.</p></details>
+          <details><summary>Leite e fêmeas</summary><p>A diferença de DEL é multiplicada pela perda diária da faixa produtiva. Partos e fêmeas anuais são estimados a partir do IEP projetado, tamanho do rebanho e percentual de vacas não inseminadas.</p></details>
         </div></article>
         <article class="card"><div class="card-h"><h3>Conferência da base</h3><span class="hint">cenário padrão</span></div><div class="card-b">
           <div id="validation-results"></div>
-          <div class="check">Fonte da distribuição das perdas: Vasconcelos et al. (1997).</div>
-          <div class="check">Faixas produtivas: Ideagri. Período de serviço ideal: De Vries (2011).</div>
+          <div class="check">Fonte da distribuição das perdas: Vasconcelos et al. (1997). As faixas são exibidas como classes exclusivas (≤60; 61–70; 71–100; >100 dias até o parto) para evitar sobreposição visual.</div>
+          <div class="check">Faixas produtivas: Ideagri. Período de serviço ideal: De Vries (2011). Parâmetros de técnicas e premissas econômicas devem ser validados para cada fazenda.</div>
           <div class="check warn">IA sexada, TE convencional e TE sexada permanecem fora dos cálculos até a definição dos dados de entrada.</div>
         </div></article>
       </div>
@@ -350,7 +364,7 @@
       </table></div></article>
     </section>
 
-    <div class="footer"><b>Plataforma Azul — Reprodução.</b> Aplicação independente, executada localmente no navegador. Não lê nem altera os demais módulos da Plataforma Azul.</div>
+    <div class="footer"><b>Plataforma Azul — Reprodução · v1.2 veterinária.</b> Aplicação independente, executada localmente no navegador. Resultados marcados como estimados são projeções do modelo e devem ser interpretados em conjunto com os dados observados da fazenda.</div>
   </main>
   <div id="toast" class="toast" role="status"></div>
 
@@ -365,16 +379,16 @@
       {id:7,range:"Maior que 10.500",peakDel:108,peak:58,lactation:541.2459081836328,dryMilk:19,decline:.09001816119511905,ideal:120}
     ];
     const LOSS_DISTRIBUTION=[
-      {label:"Até 60 dias",share:.6446280991735538,delay:60},
-      {label:"Até 70 dias",share:.07851239669421488,delay:70},
-      {label:"Até 100 dias",share:.07024793388429752,delay:100},
-      {label:"Até o parto",share:.2066115702479339,delay:220}
+      {label:"≤ 60 dias",share:.6446280991735538,delay:60},
+      {label:"61–70 dias",share:.07851239669421488,delay:70},
+      {label:"71–100 dias",share:.07024793388429752,delay:100},
+      {label:"> 100 dias até o parto",share:.2066115702479339,delay:220}
     ];
     const DEFAULT={
-      farm:"Fazenda VAM",cows:70,pev:60,prodLevel:6,
+      farm:"Fazenda VAM",lossWindow:250,dryPeriod:60,cows:70,pev:60,prodLevel:6,
       serviceNow:48,conceptionNow:35,lossNow:33,
       serviceTarget:68,conceptionTarget:37,lossTarget:26,
-      milkPrice:2.8,marginPct:50,years:3,femaleRate:45,calfValue:300,notInseminated:2.1367521367521367,
+      milkPrice:2.8,marginPct:50,femaleRate:45,calfValue:300,notInseminated:2.1367521367521367,
       techCows:500,iaCost:40.39795918367347,iaFemale:42.75,
       fivCost:211.41960784313727,fivFemale:80.75,mixIa:64,mixFiv:36
     };
@@ -385,11 +399,15 @@
     let state={...DEFAULT};
     const $=id=>document.getElementById(id);
     const clamp=(n,min,max)=>Math.min(max,Math.max(min,Number.isFinite(n)?n:min));
-    const pct=n=>(n*100).toLocaleString("pt-BR",{minimumFractionDigits:0,maximumFractionDigits:1})+"%";
+    const pct=n=>(n*100).toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1})+"%";
     const num=(n,d=1)=>Number(n||0).toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
     const integer=n=>Math.round(Number(n||0)).toLocaleString("pt-BR");
+    const approxInteger=n=>"≈ "+integer(n);
     const money=n=>Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:0,maximumFractionDigits:0});
     const money2=n=>Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:2,maximumFractionDigits:2});
+    const moneyCompact=n=>{const v=Number(n||0);return Math.abs(v)>=1000?"R$ "+(v/1000).toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1})+" mil":money(v)};
+    const pp=n=>(n>=0?"+":"")+num(n,1)+" p.p.";
+    const tag=(text,cls)=>'<span class="data-tag '+cls+'">'+text+'</span>';
     const weightedDelay=LOSS_DISTRIBUTION.reduce((sum,x)=>sum+x.share*x.delay,0);
     function metric(label,value,detail,cls=""){
       return '<article class="metric '+cls+'"><span class="k">'+label+'</span><strong>'+value+'</strong><small>'+detail+'</small></article>';
@@ -399,6 +417,9 @@
     }
     function mini(label,value){return '<div class="mini"><span>'+label+'</span><b>'+value+'</b></div>'}
     function modeledPregnancyRate(service,conception,utilization=100){
+      return (service/100)*(conception/100)*(utilization/100);
+    }
+    function modeledPregnancyRateLegacy(service,conception,utilization=100){
       return Math.round((service/100)*(conception/100)*(utilization/100)*100)/100;
     }
     function baseServiceThreeCycles(pr,pev){
@@ -426,12 +447,12 @@
     function reproScenario(pr,loss){
       const service=serviceWithLoss(pr,state.pev,loss/100);
       const iep=(service+280)/30.5;
-      const lactation=iep*30.5-60;
+      const lactation=Math.max(0,iep*30.5-state.dryPeriod);
       const del=lactation/2;
-      const birthsPerCow=((state.years*365)/30.5)/iep;
-      const annualBirths=birthsPerCow*state.cows/state.years*(1-state.notInseminated/100);
+      const birthsPerCowYear=(365/30.5)/iep;
+      const annualBirths=birthsPerCowYear*state.cows*(1-state.notInseminated/100);
       const females=annualBirths*state.femaleRate/100;
-      return {pr,loss,service,iep,lactation,del,birthsPerCow,annualBirths,females,calfValue:females*state.calfValue};
+      return {pr,loss,service,iep,lactation,del,birthsPerCowYear,annualBirths,females,calfValue:females*state.calfValue};
     }
     function compareScenarios(a,b){
       const level=PRODUCTION_LEVELS[state.prodLevel-1];
@@ -456,9 +477,21 @@
       const lossOnly=compareScenarios(targetSameLoss,targetFutureLoss);
       return {prNow,prTarget,current,targetSameLoss,targetFutureLoss,prEffect,fullEffect,lossOnly};
     }
+    function calculateLegacy(){
+      const prNow=modeledPregnancyRateLegacy(state.serviceNow,state.conceptionNow);
+      const prTarget=modeledPregnancyRateLegacy(state.serviceTarget,state.conceptionTarget);
+      const current=reproScenario(prNow,state.lossNow);
+      const targetSameLoss=reproScenario(prTarget,state.lossNow);
+      const targetFutureLoss=reproScenario(prTarget,state.lossTarget);
+      const prEffect=compareScenarios(current,targetSameLoss);
+      const fullEffect=compareScenarios(current,targetFutureLoss);
+      const lossOnly=compareScenarios(targetSameLoss,targetFutureLoss);
+      return {prNow,prTarget,current,targetSameLoss,targetFutureLoss,prEffect,fullEffect,lossOnly};
+    }
     function techniqueCalc(kind){
       const t=TECH[kind];
       const prRaw=(t.conception/100)*(t.service/100)*(t.utilization/100);
+      const serviceRate=t.service;
       const service=techniqueService(prRaw,t.pev,t.loss/100);
       const iep=(service+280)/30.5;
       const femaleLive=(kind==="ia"?state.iaFemale:state.fivFemale)/100;
@@ -467,7 +500,7 @@
       const costBorn=costPregnancy/(1-t.loss/100);
       const costFemale=costBorn/femaleLive;
       const femalesPerAnimal=12/((service+280)/30.42)*femaleLive;
-      return {...t,prRaw,service,iep,femaleLive,costService,costPregnancy,costBorn,costFemale,femalesPerAnimal};
+      return {...t,serviceRate,prRaw,service,iep,femaleLive,costService,costPregnancy,costBorn,costFemale,femalesPerAnimal};
     }
     function gainRow(label,value,max,green=false){
       const width=Math.max(1,Math.abs(value)/(max||1)*100);
@@ -481,116 +514,154 @@
       return '<thead><tr>'+headers.map(x=>'<th>'+x+'</th>').join("")+'</tr></thead><tbody>'+rows.map((r,i)=>'<tr class="'+(i===rows.length-1?"total":"")+'">'+r.map(x=>'<td>'+x+'</td>').join("")+'</tr>').join("")+'</tbody>';
     }
     function renderInputs(c){
+      const displayDecimals={lossWindow:0,dryPeriod:0,cows:0,pev:0,techCows:0,notInseminated:1,iaCost:2,fivCost:2,iaFemale:1,fivFemale:1,milkPrice:2,marginPct:1,femaleRate:1,calfValue:0,serviceNow:1,conceptionNow:1,lossNow:1,serviceTarget:1,conceptionTarget:1,lossTarget:1};
       document.querySelectorAll("[data-field]").forEach(el=>{
         const key=el.dataset.field;
-        if(document.activeElement!==el) el.value=state[key];
+        if(document.activeElement===el)return;
+        if(el.type==="number"&&displayDecimals[key]!=null&&state[key]!==""&&Number.isFinite(Number(state[key]))) el.value=Number(state[key]).toFixed(displayDecimals[key]);
+        else el.value=state[key]??"";
       });
       $("farm-context").textContent=state.farm||"Fazenda";
       $("prNowOut").value=pct(c.prNow);
       $("prTargetOut").value=pct(c.prTarget);
-      $("milkDecline").value=num(PRODUCTION_LEVELS[state.prodLevel-1].decline,4)+" L/dia";
+      $("milkDecline").value=num(PRODUCTION_LEVELS[state.prodLevel-1].decline,3)+" L/dia";
       $("mixIaRange").value=state.mixIa;
       $("mixFivRange").value=state.mixFiv;
     }
     function renderSummary(c){
+      const serviceGap=state.serviceTarget-state.serviceNow;
+      const conceptionGap=state.conceptionTarget-state.conceptionNow;
+      const lossGap=state.lossNow-state.lossTarget;
+      const serviceOpportunity=Math.max(0,serviceGap), conceptionOpportunity=Math.max(0,conceptionGap), lossOpportunity=Math.max(0,lossGap);
+      const opportunities=[
+        {key:"service",label:"Taxa de serviço",gap:serviceOpportunity,detail:"revisar elegibilidade, identificação de cio, cumprimento de protocolos e cobertura das vacas aptas"},
+        {key:"conception",label:"Taxa de concepção",gap:conceptionOpportunity,detail:"revisar execução da IA, manejo do sêmen, momento da inseminação e fatores de vaca/ambiente"},
+        {key:"loss",label:"Perdas gestacionais",gap:lossOpportunity,detail:"revisar momento das perdas, sanidade, gemelaridade, estresse e fatores de manejo"}
+      ].sort((a,b)=>b.gap-a.gap);
+      const main=opportunities[0];
       $("summary-metrics").innerHTML=
-        metric("Taxa de prenhez",pct(c.prTarget),pct(c.prNow)+" no cenário atual","positive")+
-        metric("IEP projetado",num(c.targetFutureLoss.iep,2)+" meses","Atual: "+num(c.current.iep,2)+" meses","positive")+
-        metric("Ganho de leite",integer(c.fullEffect.milkYear)+" L/ano",num(c.fullEffect.milkCowDay,2)+" L/vaca/dia","positive")+
-        metric("Fêmeas adicionais",num(c.fullEffect.extraFemales,2),money(c.fullEffect.calves)+" em valor","positive")+
-        metric("Ganho anual total",money(c.fullEffect.total),"taxa de prenhez + perda futura","positive");
+        metric("Taxa de prenhez "+tag("atual","current"),pct(c.prNow),"")+
+        metric("Taxa de serviço "+tag("atual","current"),num(state.serviceNow,1)+"%","Meta "+num(state.serviceTarget,1)+"% · "+pp(serviceGap)) +
+        metric("Taxa de concepção "+tag("atual","current"),num(state.conceptionNow,1)+"%","Meta "+num(state.conceptionTarget,1)+"% · "+pp(conceptionGap)) +
+        metric("Perda gestacional "+tag("atual","current"),num(state.lossNow,1)+"%","Meta "+num(state.lossTarget,1)+"% · redução de "+num(lossGap,1)+" p.p.") +
+        metric("Período de serviço "+tag("estimado","estimated"),integer(c.current.service)+" dias","Estimativa do modelo no cenário atual");
+      $("summary-diagnosis").innerHTML=main.gap>0?'<div class="title">Principal oportunidade reprodutiva</div><strong>'+main.label+'</strong><p>É a maior distância operacional entre o cenário atual e a meta ('+num(main.gap,1)+' p.p.). Como roteiro de investigação, '+main.detail+'. O dashboard sinaliza prioridade; não atribui causa clínica automaticamente.</p>':'<div class="title">Leitura do cenário</div><strong>Metas informadas já atingidas</strong><p>Não há distância positiva entre os indicadores atuais e as metas cadastradas. Revise as metas antes de interpretar ganho incremental.</p>';
+      $("summary-impact-metrics").innerHTML=
+        metric("Taxa de prenhez meta "+tag("meta","target"),pct(c.prTarget),"Atual "+pct(c.prNow),"positive")+
+        metric("IEP projetado "+tag("estimado","estimated"),num(c.targetFutureLoss.iep,1)+" meses","Atual estimado: "+num(c.current.iep,1)+" meses","positive")+
+        metric("Redução do DEL "+tag("estimado","estimated"),integer(c.fullEffect.delGain)+" dias","Impacto modelado sobre a curva de leite","positive")+
+        metric("Fêmeas adicionais "+tag("estimado","estimated"),"+"+num(c.fullEffect.extraFemales,1)+"/ano",money(c.fullEffect.calves)+" em valor estimado","positive")+
+        metric("Benefício econômico "+tag("estimado","estimated"),moneyCompact(c.fullEffect.total)+"/ano","Potencial; não equivale a lucro líquido","positive");
       $("summary-bars").innerHTML=
         compareRow("Período de serviço",c.current.service,c.targetFutureLoss.service," d")+
         compareRow("IEP",c.current.iep,c.targetFutureLoss.iep," m")+
-        compareRow("DEL médio",c.current.del,c.targetFutureLoss.del," d")+
-        compareRow("Partos/ano",c.current.annualBirths,c.targetFutureLoss.annualBirths,"")+
-        compareRow("Fêmeas vivas",c.current.females,c.targetFutureLoss.females,"");
+        compareRow("DEL médio estimado",c.current.del,c.targetFutureLoss.del," d")+
+        compareRow("Partos/ano estimados",c.current.annualBirths,c.targetFutureLoss.annualBirths,"")+
+        compareRow("Fêmeas vivas estimadas",c.current.females,c.targetFutureLoss.females,"");
       const max=Math.max(c.prEffect.milkMargin,c.lossOnly.milkMargin,c.fullEffect.calves,1);
       $("summary-gains").innerHTML=
-        gainRow("Leite · taxa de prenhez",c.prEffect.milkMargin,max)+
+        gainRow("Leite · eficiência reprodutiva",c.prEffect.milkMargin,max)+
         gainRow("Leite · redução de perdas",c.lossOnly.milkMargin,max,true)+
         gainRow("Fêmeas adicionais",c.fullEffect.calves,max);
-      $("summary-insight").innerHTML="<b>Resultado consolidado:</b> a melhoria da taxa de prenhez representa "+money(c.prEffect.total)+" por ano. A redução da perda de prenhez adiciona mais "+money(c.lossOnly.total)+", levando o cenário completo a <b>"+money(c.fullEffect.total)+" por ano</b>.";
+      const windowNote=' Janela de perda gestacional: '+integer(state.lossWindow)+' dias.';
+      $("summary-insight").innerHTML="<b>Benefício econômico potencial:</b> a melhoria da eficiência reprodutiva representa "+money(c.prEffect.total)+" por ano. A redução das perdas gestacionais adiciona "+money(c.lossOnly.total)+", levando o cenário completo a <b>"+money(c.fullEffect.total)+" por ano</b>. Este valor é uma estimativa de benefício e não lucro líquido, pois não desconta custos incrementais de intervenção."+windowNote;
     }
     function renderSimulation(c){
       $("simulation-flow").innerHTML=
         step("Serviço",num(state.serviceTarget,1)+"%","Meta de animais servidos")+
         step("Concepção",num(state.conceptionTarget,1)+"%","Meta por serviço")+
         step("Prenhez",pct(c.prTarget),"Taxa modelada")+
-        step("IEP",num(c.targetFutureLoss.iep,2)+" m","Com perda futura")+
-        step("Resultado",money(c.fullEffect.total)+"/ano","Ganho consolidado");
+        step("IEP",num(c.targetFutureLoss.iep,1)+" m","Estimado com perda meta")+
+        step("Benefício",moneyCompact(c.fullEffect.total)+"/ano","Potencial econômico estimado");
       const out=c.prNow<.05||c.prNow>.30||c.prTarget<.05||c.prTarget>.30;
       $("range-warning").innerHTML=out?'<div class="insight warn"><b>Atenção:</b> a taxa modelada saiu da faixa de 5% a 30% usada na tabela original. O motor continua calculando pela mesma equação, mas o cenário deve ser interpretado com cautela.</div>':"";
+      const worsens=state.serviceTarget<state.serviceNow||state.conceptionTarget<state.conceptionNow||state.lossTarget>state.lossNow;
+      $("simulation-guidance").className='diagnosis-card '+(worsens?'warn':'positive');
+      $("simulation-guidance").innerHTML=worsens?'<div class="title">Revisar meta</div><strong>Há pelo menos uma meta pior que o cenário atual</strong><p>Confira serviço, concepção e perda gestacional. A ferramenta permite simular qualquer cenário, mas sinaliza metas que não representam melhoria operacional.</p>':'<div class="title">Meta coerente</div><strong>'+pct(c.prNow)+' → '+pct(c.prTarget)+' de taxa de prenhez</strong><p>Com perda gestacional de '+num(state.lossTarget,1)+'%, o cenário final projeta IEP de '+num(c.targetFutureLoss.iep,1)+' meses e benefício econômico potencial de '+moneyCompact(c.fullEffect.total)+'/ano.</p>';
     }
     function renderPrenhez(c){
+      const serviceGap=state.serviceTarget-state.serviceNow, conceptionGap=state.conceptionTarget-state.conceptionNow;
       $("pr-metrics").innerHTML=
-        metric("Prenhez atual",pct(c.prNow),num(state.serviceNow,1)+"% serviço × "+num(state.conceptionNow,1)+"% concepção")+
-        metric("Prenhez meta",pct(c.prTarget),num(state.serviceTarget,1)+"% serviço × "+num(state.conceptionTarget,1)+"% concepção","positive")+
-        metric("Redução no IEP",num(c.current.iep-c.targetSameLoss.iep,2)+" meses","mantendo perda em "+num(state.lossNow,1)+"%","positive")+
-        metric("Leite adicional",integer(c.prEffect.milkYear)+" L/ano","efeito da taxa de prenhez","positive")+
-        metric("Ganho anual",money(c.prEffect.total),"leite + fêmeas","positive");
+        metric("Taxa de serviço "+tag("atual","current"),num(state.serviceNow,1)+"%","Meta "+num(state.serviceTarget,1)+"% · "+pp(serviceGap))+
+        metric("Taxa de concepção "+tag("atual","current"),num(state.conceptionNow,1)+"%","Meta "+num(state.conceptionTarget,1)+"% · "+pp(conceptionGap))+
+        metric("Taxa de prenhez atual "+tag("estimado","estimated"),pct(c.prNow),"Serviço × concepção")+
+        metric("Taxa de prenhez meta "+tag("meta","target"),pct(c.prTarget),"Ganho de "+pp((c.prTarget-c.prNow)*100),"positive")+
+        metric("Benefício anual "+tag("estimado","estimated"),moneyCompact(c.prEffect.total),"efeito da melhoria da eficiência reprodutiva","positive");
+      const primaryGap=serviceGap>=conceptionGap?{label:"Taxa de serviço",gap:serviceGap,text:"Priorize vacas elegíveis efetivamente servidas: identificação de cio, adesão aos protocolos, cobertura das vacas aptas e execução no momento correto."}:{label:"Taxa de concepção",gap:conceptionGap,text:"Priorize qualidade da inseminação e fatores que determinam fertilidade: manejo do sêmen, momento da IA, condição da vaca, ambiente e execução técnica."};
+      $("pr-action").className='diagnosis-card '+(primaryGap.gap>0?'':'positive');
+      $("pr-action").innerHTML=primaryGap.gap>0?'<div class="title">Prioridade técnica</div><strong>'+primaryGap.label+' · '+num(primaryGap.gap,1)+' p.p. até a meta</strong><p>'+primaryGap.text+' O painel indica onde está o maior desvio; a causa deve ser confirmada na investigação da fazenda.</p>':'<div class="title">Prioridade técnica</div><strong>Serviço e concepção já atingem as metas informadas</strong><p>Se o resultado global ainda for insatisfatório, concentre a investigação nas perdas gestacionais e na qualidade dos dados de origem.</p>';
       $("pr-flow").innerHTML=
-        step("Atual",pct(c.prNow),num(c.current.service,1)+" dias de serviço")+
-        step("Meta",pct(c.prTarget),num(c.targetSameLoss.service,1)+" dias de serviço")+
-        step("DEL",num(c.current.del-c.targetSameLoss.del,1)+" dias","redução projetada")+
-        step("Leite",integer(c.prEffect.milkYear)+" L","ganho anual")+
-        step("Valor",money(c.prEffect.total),"resultado anual");
-      $("pr-formula").innerHTML="<b>Taxa de prenhez atual</b> = "+num(state.serviceNow,1)+"% × "+num(state.conceptionNow,1)+"% = "+num(state.serviceNow*state.conceptionNow/100,2)+"% → <b>"+pct(c.prNow)+"</b><br><b>Taxa de prenhez meta</b> = "+num(state.serviceTarget,1)+"% × "+num(state.conceptionTarget,1)+"% = "+num(state.serviceTarget*state.conceptionTarget/100,2)+"% → <b>"+pct(c.prTarget)+"</b><br><b>Comparação</b> = atual e meta com a mesma perda gestacional de "+num(state.lossNow,1)+"%.";
+        step("Prenhez atual",pct(c.prNow),integer(c.current.service)+" dias de serviço estimados")+
+        step("Prenhez meta",pct(c.prTarget),integer(c.targetSameLoss.service)+" dias de serviço estimados")+
+        step("DEL",integer(c.current.del-c.targetSameLoss.del)+" dias","redução estimada")+
+        step("Leite",integer(c.prEffect.milkYear)+" L","ganho anual estimado")+
+        step("Benefício",moneyCompact(c.prEffect.total),"potencial anual");
+      $("pr-formula").innerHTML="<b>Taxa de prenhez atual</b> = "+num(state.serviceNow,1)+"% × "+num(state.conceptionNow,1)+"% = <b>"+pct(c.prNow)+"</b><br><b>Taxa de prenhez meta</b> = "+num(state.serviceTarget,1)+"% × "+num(state.conceptionTarget,1)+"% = <b>"+pct(c.prTarget)+"</b><br><b>Motor principal</b> = utiliza a precisão contínua, sem arredondar a taxa de prenhez antes das projeções.<br><b>Comparação</b> = atual e meta com a mesma perda gestacional de "+num(state.lossNow,1)+"%.";
       $("pr-table").innerHTML=table(["Indicador","Atual","Meta","Diferença"],[
-        ["Período de serviço",num(c.current.service,2)+" dias",num(c.targetSameLoss.service,2)+" dias",num(c.current.service-c.targetSameLoss.service,2)+" dias"],
-        ["IEP projetado",num(c.current.iep,2)+" meses",num(c.targetSameLoss.iep,2)+" meses",num(c.current.iep-c.targetSameLoss.iep,2)+" meses"],
-        ["DEL médio",num(c.current.del,2)+" dias",num(c.targetSameLoss.del,2)+" dias",num(c.current.del-c.targetSameLoss.del,2)+" dias"],
-        ["Nº de partos/ano",num(c.current.annualBirths,2),num(c.targetSameLoss.annualBirths,2),num(c.targetSameLoss.annualBirths-c.current.annualBirths,2)],
-        ["Fêmeas nascidas vivas",num(c.current.females,2),num(c.targetSameLoss.females,2),num(c.prEffect.extraFemales,2)],
-        ["Resultado anual",money(0),money(c.prEffect.total),money(c.prEffect.total)]
+        ["Período de serviço estimado",integer(c.current.service)+" dias",integer(c.targetSameLoss.service)+" dias",integer(c.current.service-c.targetSameLoss.service)+" dias"],
+        ["IEP projetado",num(c.current.iep,1)+" meses",num(c.targetSameLoss.iep,1)+" meses",num(c.current.iep-c.targetSameLoss.iep,1)+" meses"],
+        ["DEL médio estimado",integer(c.current.del)+" dias",integer(c.targetSameLoss.del)+" dias",integer(c.current.del-c.targetSameLoss.del)+" dias"],
+        ["Partos/ano estimados",approxInteger(c.current.annualBirths),approxInteger(c.targetSameLoss.annualBirths),"+"+num(c.targetSameLoss.annualBirths-c.current.annualBirths,1)],
+        ["Fêmeas nascidas vivas estimadas",num(c.current.females,1),num(c.targetSameLoss.females,1),"+"+num(c.prEffect.extraFemales,1)],
+        ["Benefício econômico potencial",money(0),money(c.prEffect.total),money(c.prEffect.total)]
       ]);
     }
     function renderLosses(c){
       $("loss-metrics").innerHTML=
-        metric("Perda atual",num(state.lossNow,1)+"%","base do rebanho")+
-        metric("Perda futura",num(state.lossTarget,1)+"%","meta definida","positive")+
-        metric("Ganho adicional de leite",integer(c.lossOnly.milkYear)+" L/ano","somente redução das perdas","positive")+
-        metric("Ganho adicional",money(c.lossOnly.total),"além do efeito da taxa de prenhez","positive")+
-        metric("Resultado acumulado",money(c.fullEffect.total),"cenário final da planilha","positive");
+        metric("Perda atual "+tag("atual","current"),num(state.lossNow,1)+"%",integer(state.lossWindow)+" dias de janela")+
+        metric("Perda meta "+tag("meta","target"),num(state.lossTarget,1)+"%","Redução de "+num(state.lossNow-state.lossTarget,1)+" p.p.","positive")+
+        metric("Leite adicional "+tag("estimado","estimated"),integer(c.lossOnly.milkYear)+" L/ano","somente redução das perdas","positive")+
+        metric("Benefício adicional "+tag("estimado","estimated"),money(c.lossOnly.total),"além do efeito da taxa de prenhez","positive")+
+        metric("Benefício acumulado "+tag("estimado","estimated"),moneyCompact(c.fullEffect.total),"cenário final modelado","positive");
+      const lossReduction=state.lossNow-state.lossTarget;
+      $("loss-action").className='diagnosis-card '+(lossReduction>0?'':'warn');
+      $("loss-action").innerHTML=lossReduction>0?'<div class="title">Prioridade nas perdas</div><strong>Reduzir '+num(lossReduction,1)+' p.p. em uma janela de '+integer(state.lossWindow)+' dias</strong><p>Use sempre a mesma janela para comparar períodos ou fazendas. Antes de atribuir causa, estratifique as perdas por fase gestacional e confirme o denominador usado na taxa.</p>':'<div class="title">Revisar meta de perdas</div><strong>A meta não reduz a perda gestacional atual</strong><p>Para simular melhoria, informe uma perda meta inferior a '+num(state.lossNow,1)+'%. A janela atual é de '+integer(state.lossWindow)+' dias.</p>';
       const max=Math.max(...LOSS_DISTRIBUTION.map(x=>x.share));
       $("loss-distribution").innerHTML=LOSS_DISTRIBUTION.map(x=>'<div class="gain-row"><label>'+x.label+'</label><div class="track"><div class="bar" style="width:'+(x.share/max*100)+'%"></div></div><b>'+pct(x.share)+'</b></div>').join("");
-      $("loss-reading").innerHTML='<div class="insight positive"><b>Efeito adicional da perda:</b> mantendo a taxa de prenhez meta, reduzir as perdas de '+num(state.lossNow,1)+'% para '+num(state.lossTarget,1)+'% acrescenta '+money(c.lossOnly.total)+' por ano.</div><div class="formula" style="margin-top:12px"><b>Resultado acumulado</b><br>'+money(c.prEffect.total)+' · melhoria da prenhez<br>+ '+money(c.lossOnly.total)+' · redução das perdas<br>= <b>'+money(c.fullEffect.total)+'</b> · cenário final</div>';
+      const windowWarning='Janela considerada: <b>'+integer(state.lossWindow)+' dias</b>.';
+      $("loss-reading").innerHTML='<div class="insight positive">'+windowWarning+'</div><div class="insight positive" style="margin-top:12px"><b>Efeito adicional das perdas:</b> mantendo a taxa de prenhez meta, reduzir as perdas de '+num(state.lossNow,1)+'% para '+num(state.lossTarget,1)+'% acrescenta '+money(c.lossOnly.total)+' por ano.</div><div class="formula" style="margin-top:12px"><b>Benefício acumulado</b><br>'+money(c.prEffect.total)+' · eficiência reprodutiva<br>+ '+money(c.lossOnly.total)+' · redução das perdas<br>= <b>'+money(c.fullEffect.total)+'</b> · potencial estimado</div>';
       $("loss-table").innerHTML=table(["Indicador","Meta c/ perda atual","Meta c/ perda futura","Ganho adicional"],[
-        ["Período de serviço",num(c.targetSameLoss.service,2)+" dias",num(c.targetFutureLoss.service,2)+" dias",num(c.targetSameLoss.service-c.targetFutureLoss.service,2)+" dias"],
-        ["IEP projetado",num(c.targetSameLoss.iep,2)+" meses",num(c.targetFutureLoss.iep,2)+" meses",num(c.targetSameLoss.iep-c.targetFutureLoss.iep,2)+" meses"],
-        ["DEL médio",num(c.targetSameLoss.del,2)+" dias",num(c.targetFutureLoss.del,2)+" dias",num(c.targetSameLoss.del-c.targetFutureLoss.del,2)+" dias"],
-        ["Leite/ano",money(0),integer(c.lossOnly.milkYear)+" L",integer(c.lossOnly.milkYear)+" L"],
-        ["Fêmeas nascidas vivas",num(c.targetSameLoss.females,2),num(c.targetFutureLoss.females,2),num(c.lossOnly.extraFemales,2)],
-        ["Resultado anual",money(c.prEffect.total),money(c.fullEffect.total),money(c.lossOnly.total)]
+        ["Período de serviço estimado",integer(c.targetSameLoss.service)+" dias",integer(c.targetFutureLoss.service)+" dias",integer(c.targetSameLoss.service-c.targetFutureLoss.service)+" dias"],
+        ["IEP projetado",num(c.targetSameLoss.iep,1)+" meses",num(c.targetFutureLoss.iep,1)+" meses",num(c.targetSameLoss.iep-c.targetFutureLoss.iep,1)+" meses"],
+        ["DEL médio estimado",integer(c.targetSameLoss.del)+" dias",integer(c.targetFutureLoss.del)+" dias",integer(c.targetSameLoss.del-c.targetFutureLoss.del)+" dias"],
+        ["Leite/ano","0 L",integer(c.lossOnly.milkYear)+" L",integer(c.lossOnly.milkYear)+" L"],
+        ["Fêmeas nascidas vivas estimadas",num(c.targetSameLoss.females,1),num(c.targetFutureLoss.females,1),"+"+num(c.lossOnly.extraFemales,1)],
+        ["Benefício econômico potencial",money(c.prEffect.total),money(c.fullEffect.total),money(c.lossOnly.total)]
       ]);
     }
     function renderEconomic(c){
       $("economic-metrics").innerHTML=
-        metric("Redução total do DEL",num(c.fullEffect.delGain,1)+" dias","cenário atual × final","positive")+
-        metric("Leite adicional",integer(c.fullEffect.milkYear)+" L/ano",num(c.fullEffect.milkCowDay,2)+" L/vaca/dia","positive")+
-        metric("Receita bruta do leite",money(c.fullEffect.revenue),"preço de "+money2(state.milkPrice)+"/L")+
-        metric("Margem do leite",money(c.fullEffect.milkMargin),num(state.marginPct,1)+"% da receita","positive")+
-        metric("Resultado total",money(c.fullEffect.total),"leite + fêmeas","positive");
+        metric("Redução do DEL "+tag("estimado","estimated"),integer(c.fullEffect.delGain)+" dias","cenário atual × final","positive")+
+        metric("Leite adicional "+tag("estimado","estimated"),integer(c.fullEffect.milkYear)+" L/ano",num(c.fullEffect.milkCowDay,1)+" L/vaca/dia","positive")+
+        metric("Receita bruta do leite "+tag("estimado","estimated"),money(c.fullEffect.revenue),"preço de "+money2(state.milkPrice)+"/L")+
+        metric("Margem do leite "+tag("premissa","assumption"),money(c.fullEffect.milkMargin),num(state.marginPct,1)+"% da receita","positive")+
+        metric("Benefício econômico "+tag("estimado","estimated"),moneyCompact(c.fullEffect.total),"potencial; não é lucro líquido","positive");
+      const benefitPerCow=c.fullEffect.total/Math.max(state.cows,1);
+      const milkShare=c.fullEffect.total>0?c.fullEffect.milkMargin/c.fullEffect.total:0;
+      $("economic-reading").innerHTML='<div class="title">Leitura econômica</div><strong>'+money(benefitPerCow)+' por vaca em lactação/ano</strong><p>'+pct(milkShare)+' do benefício estimado vem da margem adicional do leite; o restante vem do valor das fêmeas adicionais. Como custos incrementais de intervenção não estão descontados, use este valor como teto de benefício potencial, não como lucro líquido.</p>';
       $("economic-flow").innerHTML=
-        step("DEL",num(c.fullEffect.delGain,1)+" dias","redução total")+
-        step("Litros/vaca",num(c.fullEffect.milkCowDay,2),"ganho diário")+
+        step("DEL",integer(c.fullEffect.delGain)+" dias","redução estimada")+
+        step("Litros/vaca",num(c.fullEffect.milkCowDay,1),"ganho diário estimado")+
         step("Litros/ano",integer(c.fullEffect.milkYear),"rebanho")+
         step("Margem leite",money(c.fullEffect.milkMargin),num(state.marginPct,1)+"%")+
-        step("Total",money(c.fullEffect.total),"com fêmeas");
+        step("Benefício",moneyCompact(c.fullEffect.total),"com fêmeas");
       const max=Math.max(c.fullEffect.milkMargin,c.fullEffect.calves,1);
       $("economic-gains").innerHTML=
         gainRow("Margem do leite",c.fullEffect.milkMargin,max)+
         gainRow("Valor das fêmeas",c.fullEffect.calves,max,true)+
-        gainRow("Resultado total",c.fullEffect.total,c.fullEffect.total);
-      $("economic-formula").innerHTML="<b>Margem do leite</b> = "+integer(c.fullEffect.milkYear)+" L × "+money2(state.milkPrice)+"/L × "+num(state.marginPct,1)+"% = <b>"+money(c.fullEffect.milkMargin)+"</b><br><b>Fêmeas adicionais</b> = "+num(c.fullEffect.extraFemales,2)+" × "+money2(state.calfValue)+" = <b>"+money(c.fullEffect.calves)+"</b><br><b>Resultado total</b> = "+money(c.fullEffect.milkMargin)+" + "+money(c.fullEffect.calves)+" = <b>"+money(c.fullEffect.total)+"</b>.";
+        gainRow("Benefício econômico",c.fullEffect.total,c.fullEffect.total);
+      $("economic-formula").innerHTML="<b>Margem do leite</b> = "+integer(c.fullEffect.milkYear)+" L × "+money2(state.milkPrice)+"/L × "+num(state.marginPct,1)+"% = <b>"+money(c.fullEffect.milkMargin)+"</b><br><b>Fêmeas adicionais estimadas</b> = "+num(c.fullEffect.extraFemales,1)+" × "+money2(state.calfValue)+" = <b>"+money(c.fullEffect.calves)+"</b><br><b>Benefício econômico potencial</b> = "+money(c.fullEffect.milkMargin)+" + "+money(c.fullEffect.calves)+" = <b>"+money(c.fullEffect.total)+"</b>.<br><span style=\"color:var(--ink3)\">Não inclui, nesta versão, o custo incremental necessário para atingir as metas; portanto não deve ser interpretado como lucro líquido ou ROI.</span>";
     }
     function renderTechniques(){
       const ia=techniqueCalc("ia"),fiv=techniqueCalc("fiv");
       function techCard(t,key){
         return '<article class="card"><div class="card-b"><div class="tech-title"><div><h3>'+t.name+'</h3><p>Técnica isolada · '+(key==="ia"?"sêmen convencional":"embrião sexado")+'</p></div><span class="status-pill">configurada</span></div><div class="tech-kpis">'+
-          mini("Taxa de prenhez",pct(t.prRaw))+mini("Período de serviço",num(t.service,1)+" d")+mini("IEP",num(t.iep,2)+" m")+
-          mini("Custo/serviço",money2(t.costService))+mini("Custo/prenhez",money(t.costPregnancy))+mini("Custo/fêmea viva",money(t.costFemale))+
-        '</div><div class="formula" style="margin-top:12px"><b>Fêmeas vivas</b> = '+pct(t.femaleLive)+' · <b>Perda de prenhez</b> = '+num(t.loss,1)+'% · <b>Concepção</b> = '+num(t.conception,1)+'%</div></div></article>';
+          mini("Taxa de serviço",num(t.serviceRate,1)+"%")+mini("Concepção",num(t.conception,1)+"%")+mini("Utilização",num(t.utilization,1)+"%")+
+          mini("Taxa de prenhez",pct(t.prRaw))+mini("Perda gestacional",num(t.loss,1)+"%")+mini("PEV",integer(t.pev)+" d")+
+          mini("Período de serviço",integer(t.service)+" d")+mini("IEP",num(t.iep,1)+" m")+mini("Fêmeas vivas",pct(t.femaleLive))+
+          mini("Custo/serviço",money2(t.costService))+mini("Custo/prenhez",money(t.costPregnancy))+mini("Custo/nascimento",money(t.costBorn))+
+          mini("Custo/fêmea viva",money(t.costFemale))+
+        '</div><div class="formula" style="margin-top:12px"><b>Origem dos parâmetros:</b> valores configurados a partir da planilha-base. Devem ser substituídos pelos indicadores observados da fazenda ou pela referência definida para a análise antes de uma decisão de estratégia.</div></div></article>';
       }
       $("tech-grid").innerHTML=techCard(ia,"ia")+techCard(fiv,"fiv");
     }
@@ -622,18 +693,20 @@
     }
     function renderCosts(){
       $("production-table").innerHTML=table(["Nível","Faixa de produção","DEL pico","Pico, L","Perda/dia, L","Serviço ideal"],PRODUCTION_LEVELS.map(x=>[
-        x.id,x.range,num(x.peakDel,0)+" dias",num(x.peak,1),num(x.decline,4),num(x.ideal,0)+" dias"
+        x.id,x.range,num(x.peakDel,0)+" dias",num(x.peak,1),num(x.decline,3),num(x.ideal,0)+" dias"
       ]));
     }
     function renderValidation(c){
+      const legacy=calculateLegacy();
       const checks=[
-        {label:"Taxa de prenhez atual",got:pct(c.prNow),expected:"17,0%",ok:Math.abs(c.prNow-.17)<.0001},
-        {label:"Período de serviço atual",got:num(c.current.service,2)+" dias",expected:"203,11 dias",ok:Math.abs(c.current.service-203.11020655)<.02},
-        {label:"Ganho — taxa de prenhez",got:money(c.prEffect.total),expected:"R$ 81.037",ok:Math.abs(c.prEffect.total-81037.33937)<2},
-        {label:"Resultado consolidado",got:money(c.fullEffect.total),expected:"R$ 97.441",ok:Math.abs(c.fullEffect.total-97440.72845)<2}
+        {label:"Taxa de prenhez atual · compatibilidade",got:pct(legacy.prNow),expected:"17,0%",ok:Math.abs(legacy.prNow-.17)<.0001},
+        {label:"Período de serviço atual · compatibilidade",got:num(legacy.current.service,2)+" dias",expected:"203,11 dias",ok:Math.abs(legacy.current.service-203.11020655)<.02},
+        {label:"Ganho — taxa de prenhez · compatibilidade",got:money(legacy.prEffect.total),expected:"R$ 81.037",ok:Math.abs(legacy.prEffect.total-81037.33937)<2},
+        {label:"Resultado consolidado · compatibilidade",got:money(legacy.fullEffect.total),expected:"R$ 97.441",ok:Math.abs(legacy.fullEffect.total-97440.72845)<2}
       ];
-      const isDefault=Object.keys(DEFAULT).every(k=>typeof DEFAULT[k]==="string"?state[k]===DEFAULT[k]:Math.abs(Number(state[k])-Number(DEFAULT[k]))<.000001);
-      $("validation-results").innerHTML=(isDefault?checks.map(x=>'<div class="check '+(x.ok?"":"warn")+'"><b>'+x.label+':</b> '+x.got+' · planilha '+x.expected+' · '+(x.ok?"conciliado":"revisar")+'</div>').join(""):'<div class="check"><b>Cenário editado.</b> Restaure os valores da planilha para executar a conferência automática da base.</div>');
+      const defaultKeys=Object.keys(DEFAULT).filter(k=>k!=="lossWindow");
+      const isDefault=defaultKeys.every(k=>typeof DEFAULT[k]==="string"?state[k]===DEFAULT[k]:Math.abs(Number(state[k])-Number(DEFAULT[k]))<.000001);
+      $("validation-results").innerHTML='<div class="check"><b>Motor principal:</b> usa taxa de prenhez contínua ('+pct(c.prNow)+' atual; '+pct(c.prTarget)+' meta). A conferência abaixo executa a regra legada de arredondamento apenas para reconciliar a planilha original.</div>'+(isDefault?checks.map(x=>'<div class="check '+(x.ok?"":"warn")+'"><b>'+x.label+':</b> '+x.got+' · planilha '+x.expected+' · '+(x.ok?"conciliado":"revisar")+'</div>').join(""):'<div class="check"><b>Cenário editado.</b> Restaure os valores originais para executar a conferência automática da base legada.</div>');
     }
     function render(){
       const c=calculate();
@@ -642,9 +715,27 @@
     }
     function populate(){
       $("prodLevel").innerHTML=PRODUCTION_LEVELS.map(x=>'<option value="'+x.id+'">Nível '+x.id+' · '+x.range+' L</option>').join("");
+      const normalizeNumberField=el=>{
+        if(el.type!=="number")return;
+        const key=el.dataset.field;
+        let v=Number(el.value);
+        if(!Number.isFinite(v))v=Number(DEFAULT[key]??0);
+        if(el.min!=="")v=Math.max(v,Number(el.min));
+        if(el.max!=="")v=Math.min(v,Number(el.max));
+        const step=Number(el.step);
+        if(Number.isFinite(step)&&step>0){
+          const base=el.min!==""?Number(el.min):0;
+          v=Math.round((v-base)/step)*step+base;
+          const decimals=(String(el.step).split(".")[1]||"").length;
+          v=Number(v.toFixed(decimals));
+        }
+        state[key]=v;
+        el.value=v;
+      };
       document.querySelectorAll("[data-field]").forEach(el=>{
         el.addEventListener("input",()=>{
           const key=el.dataset.field;
+          if(el.type==="number"&&el.value==="")return;
           state[key]=el.type==="text"?el.value:Number(el.value);
           if(key==="mixIa"){
             state.mixIa=clamp(state.mixIa,0,100);state.mixFiv=100-state.mixIa;
@@ -656,17 +747,17 @@
           }
           render();
         });
-        el.addEventListener("change",()=>render());
+        el.addEventListener("change",()=>{normalizeNumberField(el);render()});
       });
       $("mixIaRange").addEventListener("input",e=>{state.mixIa=Number(e.target.value);state.mixFiv=100-state.mixIa;render()});
       $("mixFivRange").addEventListener("input",e=>{state.mixFiv=Number(e.target.value);state.mixIa=100-state.mixFiv;render()});
       document.querySelectorAll(".tool-tabs button").forEach(btn=>btn.addEventListener("click",()=>{
         document.querySelectorAll(".tool-tabs button").forEach(x=>x.classList.toggle("on",x===btn));
         document.querySelectorAll(".module-view").forEach(x=>x.classList.toggle("on",x.id==="view-"+btn.dataset.tab));
-        window.scrollTo({top:document.querySelector(".tool-tabs").offsetTop-72,behavior:"smooth"});
+        window.scrollTo({top:0,behavior:"smooth"});
       }));
-      $("save-btn").addEventListener("click",()=>{localStorage.setItem("plataformaAzulReproducaoV1",JSON.stringify(state));toast("Cenário salvo neste dispositivo.")});
-      $("reset-btn").addEventListener("click",()=>{state={...DEFAULT};localStorage.removeItem("plataformaAzulReproducaoV1");render();toast("Valores originais da planilha restaurados.")});
+      $("save-btn").addEventListener("click",()=>{localStorage.setItem("plataformaAzulReproducaoV13",JSON.stringify(state));toast("Cenário salvo neste dispositivo.")});
+      $("reset-btn").addEventListener("click",()=>{state={...DEFAULT};localStorage.removeItem("plataformaAzulReproducaoV13");localStorage.removeItem("plataformaAzulReproducaoV12");localStorage.removeItem("plataformaAzulReproducaoV11");render();toast("Valores originais da planilha restaurados.")});
       $("print-btn").addEventListener("click",()=>window.print());
     }
     function toast(text){
@@ -674,8 +765,12 @@
       clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>$("toast").classList.remove("on"),2200);
     }
     try{
-      const saved=JSON.parse(localStorage.getItem("plataformaAzulReproducaoV1")||"null");
-      if(saved)state={...DEFAULT,...saved};
+      const saved=JSON.parse(localStorage.getItem("plataformaAzulReproducaoV13")||localStorage.getItem("plataformaAzulReproducaoV12")||localStorage.getItem("plataformaAzulReproducaoV11")||"null");
+      if(saved){
+        state={...DEFAULT,...saved};
+        if(!Number.isFinite(Number(state.lossWindow))||Number(state.lossWindow)<=0)state.lossWindow=DEFAULT.lossWindow;
+        if(!Number.isFinite(Number(state.dryPeriod)))state.dryPeriod=DEFAULT.dryPeriod;
+      }
     }catch(e){}
     populate();render();
   </script>
