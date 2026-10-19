@@ -1592,6 +1592,7 @@ function calcularExtras(registros, ini, fim, envio){
     series: cats.map(c => ({ rotulo:c, celulas: desfechos.map(o => taxa(o.pop.filter(l => chave(l) === c), o.flag)) })) });
   const temAux = coorte.some(l => l.tipoParto === 'Auxiliado');
   const porParto = temAux ? porGrupo(['Normal','Auxiliado'], l=>l.tipoParto) : null;
+  const porOrdem = porGrupo(['Novilha','Vaca'], l=>l.ordemMaeCat);
   const porServico = porGrupo(SERV, l=>l.servico);
   porServico.series = porServico.series.filter(s => s.celulas.some(c => c.n > 0));
   const desfechosSemCaso = DOENCAS_A.filter(d => !temCaso(d.campo)).map(d=>d.nome);
@@ -1633,6 +1634,10 @@ function calcularExtras(registros, ini, fim, envio){
   const gFaixa = l => FAIXA(l.gmd0_desl, BINS_GMD);
   const iaPorGmd = mediaGrupo(popIA, gFaixa, l=>l.idadeIA/DPM_A, BINS_GMD.map(b=>[b[2],b[2]]));
   const partoPorGmd = mediaGrupo(popParto, gFaixa, l=>l.idadeParto/DPM_A, BINS_GMD.map(b=>[b[2],b[2]]));
+  const iaFech = popIA.filter(l => l._fech);
+  const iaResp = iaFech.some(l => l.idadeRespiratoria != null)
+    ? mediaGrupo(iaFech, l => l.idadeRespiratoria!=null ? 's' : 'n', l=>l.idadeIA/DPM_A, [['s','Teve doença respiratória na cria'],['n','Não teve doença respiratória na cria']])
+    : null;
   const partoFech = popParto.filter(l => l._fech);
   const partoResp = partoFech.some(l => l.idadeRespiratoria != null)
     ? mediaGrupo(partoFech, l => l.idadeRespiratoria!=null ? 's' : 'n', l=>l.idadeParto/DPM_A, [['s','Teve doença respiratória na cria'],['n','Não teve doença respiratória na cria']])
@@ -1660,8 +1665,8 @@ function calcularExtras(registros, ini, fim, envio){
   const plOrdem = mediaGrupo(prim, l=>l.ordemMaeCat, l=>l.prod305, [['Novilha','Filhas de novilhas'],['Vaca','Filhas de vacas']]);
 
   const res = { C, CL, nCoorte:coorte.length, nFechada:fech.length, peso60, gmdDoenca, idadeCaso,
-    porParto, porServico, desfechosSemCaso, morteSemana, semanas:SEMANAS, tipVolume, tipOrdem, soroBrix, soroProt,
-    janelaIA: janela(cIA), janelaParto: janela(cParto), iaPorGmd, partoPorGmd, partoResp,
+    porOrdem, porParto, porServico, desfechosSemCaso, morteSemana, semanas:SEMANAS, tipVolume, tipOrdem, soroBrix, soroProt,
+    janelaIA: janela(cIA), janelaParto: janela(cParto), iaPorGmd, iaResp, partoPorGmd, partoResp,
     janelaPL: { ini:iniPL, fim:CL }, nPrim: prim.length, eficiencia, plIdadeIA, plSemen, plServico, plOrdem };
   CACHE_A = { reg:registros, chave, res };
   return res;
@@ -3307,7 +3312,8 @@ function calcular(registros, opcoes){
   };
   const tipPorMes = MESES.map((_,m)=>{
     const g = avaliadas.filter(a=>a.mesNasc===m);
-    return { n:g.length, perc: g.length? g.filter(a=>categoriaTip(a)==='excelente').length/g.length : null };
+    return { n:g.length, perc: g.length? g.filter(a=>categoriaTip(a)==='excelente').length/g.length : null,
+      percRuim: g.length? g.filter(a=>categoriaTip(a)==='ruim').length/g.length : null };
   });
 
   /* -- mortalidade -- */
@@ -3612,14 +3618,16 @@ function calcular(registros, opcoes){
      é série temporal, e ler 5 anos num cartão que o filtro de período não
      move confundia quem apresentava. O que continua em `historico` é só o que
      tem uma barra POR ANO. */
-  const agregadoPorCategoriaPeriodo = (categorias, catFn, fn) => categorias.map(c=>{
-    const vals = coorte.filter(a=>catFn(a)===c).map(fn).filter(v=>v!=null && Number.isFinite(v));
+  const agregadoPorCategoriaPeriodo = (categorias, catFn, fn, populacao=coorte) => categorias.map(c=>{
+    const vals = populacao.filter(a=>catFn(a)===c).map(fn).filter(v=>v!=null && Number.isFinite(v));
     return { categoria:c, n:vals.length,
              media: vals.length? vals.reduce((s,v)=>s+v,0)/vals.length : null };
   });
   const historico = {
     anos: ultimos5,
     nascimentosFemeas: serieAnual(base5, a=>1).map(x=>({...x, n: base5.filter(a=>a.anoNasc===x.ano).length})),
+    nascimentosFemeasOrigem: serieAnualGrupos(a=>1),
+    pesoNascimentoOrigem: serieAnualGrupos(a=>a.p0),
     gestacao: serieAnualGrupos(a=>a.gestacao),
     partoAuxiliado: serieAnualGrupos(auxDe),
     // Colostro: média anual do Brix fornecido e % das categorias TIP, por ano
@@ -3661,6 +3669,21 @@ function calcular(registros, opcoes){
     gestacaoServico: agregadoPorCategoriaPeriodo(SERVICOS, a=>a.servico, a=>a.gestacao),
     gestacaoParto:   agregadoPorCategoriaPeriodo(['Normal','Auxiliado'], a=>a.tipoParto, a=>a.gestacao)
   };
+  const porCategoriaOrigem = {};
+  const recortesCategoria = {
+    pesoNascSemen:[SEMENS, a=>a.tipoSemen, a=>a.p0],
+    pesoNascServico:[SERVICOS, a=>a.servico, a=>a.p0],
+    pesoNascParto:[['Normal','Auxiliado'], a=>a.tipoParto, a=>a.p0],
+    partoAuxSemen:[SEMENS, a=>a.tipoSemen, auxDe],
+    partoAuxServico:[SERVICOS, a=>a.servico, auxDe]
+  };
+  Object.entries(recortesCategoria).forEach(([id, args])=>{
+    porCategoriaOrigem[id] = {
+      geral:porCategoria[id],
+      novilhas:agregadoPorCategoriaPeriodo(...args, novilhas),
+      vacas:agregadoPorCategoriaPeriodo(...args, vacas)
+    };
+  });
 
   // 1) Colostragem (categoria TIP) × produção na 1ª lactação — fecha o ciclo
   //    "investe na bezerra, colhe na vaca". Últimos 5 anos. Só entram bezerras
@@ -4033,6 +4056,11 @@ function calcular(registros, opcoes){
           percNaoReconhecido: coorte.length? desconhecidos/coorte.length : 0
         };
       })(),
+      servicoPorOrigem: {
+        geral:distCategorica(coorte, 'servico', SERVICOS),
+        novilhas:distCategorica(novilhas, 'servico', SERVICOS),
+        vacas:distCategorica(vacas, 'servico', SERVICOS)
+      },
       ordemParto: (()=>{
         const comInfo = coorte.filter(a=>a.ordemMae!=null);
         const defs = [['Novilhas', a=>a.ordemMae===1], ['2º', a=>a.ordemMae===2],
@@ -4095,7 +4123,13 @@ function calcular(registros, opcoes){
       porAno: gestacaoAnos,
       porMes: porMes(coorte, a=>a.gestacao),
       nPorMes: nPorMes(coorte, a=>a.gestacao),
-      nMes: coorte.filter(a=>a.gestacao!=null).length
+      nMes: coorte.filter(a=>a.gestacao!=null).length,
+      porMesNovilhas: porMes(novilhas, a=>a.gestacao),
+      nPorMesNovilhas: nPorMes(novilhas, a=>a.gestacao),
+      nMesNovilhas: novilhas.filter(a=>a.gestacao!=null).length,
+      porMesVacas: porMes(vacas, a=>a.gestacao),
+      nPorMesVacas: nPorMes(vacas, a=>a.gestacao),
+      nMesVacas: vacas.filter(a=>a.gestacao!=null).length
     },
     colostro: {
       /* 'Refrigerado' e 'Refrigerado enriquecido' entraram na lista em 17/08/2026:
@@ -4322,7 +4356,7 @@ function calcular(registros, opcoes){
                 anosAnalise,
                 colostroIdadeServico, colostroIdadeParto, doencaProducaoTotal,
                 sazonalidade, ultimos5 },
-    porCategoria,
+    porCategoria, porCategoriaOrigem,
     historico,
     novilhasGeral: (()=>{
       const comIA = validos.filter(a=>a.idadeIA!=null);
@@ -4758,6 +4792,22 @@ function filtroOrdemPartoHtml(id, nGeral, nNovilha, nVaca, rotuloGeral='Geral'){
     <span class="filtro-serie-n">N: ${Number.isFinite(nGeral)?nf(nGeral):'—'}</span>
   </div>`;
 }
+function filtroBlocoOrigemHtml(id, bloco){
+  return filtroOrdemPartoHtml(id, somaN(bloco.geral), somaN(bloco.novilhas), somaN(bloco.vacas));
+}
+function ligarBlocoOrigem(idFiltro, idGrafico, bloco, render){
+  const grupos = {};
+  [['geral','geral'],['novilha','novilhas'],['vaca','vacas']].forEach(([k,campo])=>{
+    grupos[k] = { amostra:somaN(bloco[campo]), lista:bloco[campo] };
+  });
+  ligarFiltroOrdemParto(idFiltro, grupos, (chave, grupo)=>{
+    prepararGraficoUnico(idGrafico);
+    render(grupo.lista, chave);
+  });
+}
+function ligarCategoriaOrigem(idFiltro, idGrafico, idNota, bloco, cores, opc){
+  ligarBlocoOrigem(idFiltro, idGrafico, bloco, lista=>agregadoBarras(idGrafico, idNota, lista, cores, opc));
+}
 function prepararGraficoUnico(id){
   if(graficos[id]){
     try{ graficos[id].destroy(); }catch(_){}
@@ -5021,6 +5071,7 @@ function barras(id, rotulos, series, opc={}){
       borderSkipped:false, maxBarThickness: opc.grossura || 46, categoryPercentage:.72, barPercentage:.9
     })) },
     options:{
+      interaction:{ mode:'nearest', axis:opc.horizontal?'y':'x', intersect:false },
       indexAxis: opc.horizontal ? 'y' : 'x',
       /* Em barra horizontal os eixos trocam de papel: o X passa a ser o eixo de
          VALOR (sai de cena, o valor já vai impresso na ponta) e o Y o de
@@ -5045,22 +5096,7 @@ function barras(id, rotulos, series, opc={}){
            isso é espaço de gráfico gasto para dizer duas vezes o mesmo. */
         legend: (series.length>1 && !opc.semLegenda) ? { display:true, position:'top', align:'end',
           labels:{ boxWidth:9, boxHeight:9, usePointStyle:true, pointStyle:'rectRounded', padding:14 } } : { display:false },
-        /* Balão enxuto (Rafael, 14/09/2026, item 7): com UMA série só, o nome
-           da série e o rótulo do eixo já estão na tela embaixo do cursor —
-           repeti-los dentro do balão era ruído ("2023 · nascimentos · 187"
-           para dizer 187). Com duas ou mais séries o nome fica, porque aí ele
-           é o que distingue as barras. E o N só aparece quando diz algo que o
-           valor já não diz: num gráfico de contagem N e valor são o mesmo
-           número, e imprimir os dois sugeria duas informações onde há uma. */
-        /* O balão só diz o que NÃO está escrito na tela (Rafael, 15/09/2026:
-           "Temos que evitar repetir a mesma informação"). O valor de cada
-           barra já vai impresso em cima dela pelo plugin rotulosNoTopo; então
-           o balão traz o N, ou "X de Y" quando há numerador e denominador, e
-           some quando não tem nada a acrescentar. O nome da série entra só
-           com duas ou mais séries, porque aí é ele que diz de qual barra o N
-           está falando. O valor volta ao balão apenas quando o rótulo NÃO foi
-           impresso — barra de zero com `ocultarZero`, ou gráfico com os
-           rótulos desligados. */
+        /* O balão sempre informa valor e amostra, mesmo quando valor === N. */
         tooltip:{ callbacks:{
           title: itens => (series.length>1 && itens.length) ? String(itens[0].label||'') : '',
           label: c=>{
@@ -5069,11 +5105,9 @@ function barras(id, rotulos, series, opc={}){
             const casos = s && s.casos ? s.casos[c.dataIndex] : null;
             const v = opc.horizontal ? c.parsed.x : c.parsed.y;
             const nome = series.length>1 ? `${c.dataset.label||''} · ` : '';
-            if(casos!=null && n!=null) return `${nome}${nf(casos)} de ${nf(n)}`;
-            if(n!=null && n!==v)       return `${nome}N: ${nf(n)}`;
-            const impresso = opc.rotulos!==false
-              && !(v===0 && opc.ocultarZero!==false) && v!=null;
-            return impresso ? '' : `${nome}${fmt(v)}`;
+            if(casos!=null && n!=null) return `${nome}${fmt(v)} · ${nf(casos)} de ${nf(n)}`;
+            if(n!=null) return `${nome}${fmt(v)} · N: ${nf(n)}`;
+            return `${nome}${fmt(v)}`;
           }
         } },
         rotulosNoTopo:{ ativo: opc.rotulos!==false, ocultarZero: opc.ocultarZero!==false }
@@ -5134,29 +5168,31 @@ function agregadoBarras(id, idNota, bloco, cores, opc={}){
 /* Linha — só onde a leitura é de tendência */
 function linha(id, rotulos, dados, opc={}){
   const fmt = opc.fmt || (v=>nf(v));
-  /* Mesma regra das barras: o valor já vai impresso em cima do ponto. */
+  /* Valor e amostra sempre disponíveis no balão. */
   const plugins = { tooltip:{ callbacks:{ label:c=>{
     const n = opc.n ? opc.n[c.dataIndex] : null;
-    if(n!=null && n!==c.parsed.y) return `N: ${nf(n)}`;
-    return '';
+    const casos = opc.casos ? opc.casos[c.dataIndex] : null;
+    if(casos!=null && n!=null) return `${fmt(c.parsed.y)} · ${nf(casos)} de ${nf(n)}`;
+    return `${fmt(c.parsed.y)}${n!=null ? ' · N: '+nf(n) : ''}`;
   } } },
         rotulosNoTopo:{ ativo:true, ocultarZero:true } };
   const cfg = { __fmt:fmt,
     type:'line',
-    data:{ labels:rotulos, datasets:[{ data:dados, borderColor:COR.azul, borderWidth:2.5,
+    data:{ labels:rotulos, datasets:[{ data:dados, borderColor:opc.cor || COR.azul, borderWidth:2.5,
       pointBackgroundColor:COR.ambar, pointBorderColor:'#fff', pointBorderWidth:2,
       pointRadius:5, pointHoverRadius:7, tension:.28, spanGaps:true,
       fill:true, backgroundColor:ctx=>{ const g=ctx.chart.ctx.createLinearGradient(0,0,0,260);
         g.addColorStop(0,'rgba(21,61,136,.16)'); g.addColorStop(1,'rgba(21,61,136,0)'); return g; } }] },
-    options:{ layout:{ padding:{ top:22 } },
+    options:{ interaction:{ mode:'nearest', axis:'x', intersect:false }, layout:{ padding:{ top:22 } },
       scales:{ x:eixoX(), y:eixoY(Object.assign({ beginAtZero: opc.y&&opc.y.beginAtZero===false?false:true }, opc.y||{}), !!(opc.mostrarY)) },
       plugins }
   };
   // linha de corte (ex.: 50% na categoria excelente) — só a referência, sem grade
-  if(opc.corte50){
-    cfg.__corte = 0.5;
+  if(opc.corte50 || opc.corte!=null){
+    const corte = opc.corte!=null ? opc.corte : 0.5;
+    cfg.__corte = corte;
     cfg.plugins = [{ id:'corte50', afterDraw(gr){
-      const y = gr.scales.y.getPixelForValue(0.5); if(!isFinite(y)) return;
+      const y = gr.scales.y.getPixelForValue(corte); if(!isFinite(y)) return;
       const {left,right} = gr.chartArea; const ctx=gr.ctx;
       ctx.save(); ctx.strokeStyle=COR.ambar; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
       ctx.beginPath(); ctx.moveTo(left+30,y); ctx.lineTo(right,y); ctx.stroke();
@@ -5164,7 +5200,7 @@ function linha(id, rotulos, dados, opc={}){
       // O valor do corte fica escrito na própria linha, à esquerda — dispensa
       // repetir "corte de 50%" no cabeçalho do cartão (Rafael, 11/08/2026).
       ctx.fillStyle=COR.ambarForte; ctx.font="700 11.5px 'Archivo',system-ui,sans-serif";
-      ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText('50%', left, y);
+      ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(pf(corte,0), left, y);
       ctx.restore();
     }}];
   }
@@ -5261,7 +5297,9 @@ function dispersao(id, pontos, opc={}){
         y:eixoY(Object.assign({
           border:{ display:!!opc.linhaY, color:COR.linha, width:1 },
           title:{ display:!!opc.tituloY, text:opc.tituloY||'', font:{ size:11.5, weight:700 } }
-        }, opc.maxY!=null ? { max:opc.maxY, grace:0 } : {}), true)
+        }, opc.maxY!=null ? { max:opc.maxY, grace:0 } : {},
+          opc.minY!=null ? { min:opc.minY, beginAtZero:false } : {},
+          opc.passoY!=null ? { ticks:{ stepSize:opc.passoY, autoSkip:false } } : {}), true)
       },
       plugins:{ tooltip:{ callbacks:{ label:c=>{
           /* O identificador do animal entra na primeira linha do tooltip: é o
@@ -5603,6 +5641,8 @@ function htmlExtrasSanidade(){
     : cartao('Doenças e mortalidade por tipo de serviço', '', semCasoHtml('Só um tipo de serviço lançado no período — sem grupo para comparar.'));
   return `<div class="subpainel" data-painel="san-fatores">
       <p class="nota-rodape" style="margin-bottom:12px">Bezerras nascidas no período que já completaram o aleitamento (na mortalidade até 24 h, as que já tinham 24 h de vida). ${NOTA_RACAS_FAZ} Associações observacionais, não causa.</p>
+      <div class="grade">${cartao('Doenças e mortalidade por ordem de parto',null,
+        '<div class="grafico" id="gxSanOrdem"></div><p class="nota-rodape">Filhas de novilhas × filhas de vacas. Mães sem ordem de parto informada ficam fora desta comparação.</p>'+semCasoTxt+'<p class="nota-rodape" id="notaSanOrdem"></p>')}</div>
       <div class="grade">${serv}</div>
       <div class="grade">${parto}</div>
     </div>`;
@@ -5615,21 +5655,11 @@ function htmlExtrasIdadeCaso(id){
     base: d.n ? `${nf(d.n)} bezerras que já desaleitaram, com caso` : 'nenhum caso lançado no período' });
 }
 /* Colostragem e sanidade · mortes por semana de vida, Excelente × Ruim (R49: saiu de Sanidade) */
-function htmlExtrasMorteTip(){
-  const ex = extrasAtual(); if(!ex) return '';
-  const ms = ex.morteSemana, mortes = ms.reduce((t,g)=>t+g.nComIdade,0);
-  const t = 'Mortes após 24 h por semana de vida — colostragem Excelente × Ruim';
-  return `<div class="grade" style="margin-top:16px">${mortes
-    ? cartao(t, `N: ${nf(mortes)} mortes com data`,
-        `<div class="grafico" id="gxMorteTip"></div><p class="nota-rodape">${ms.map(g=>`Colostragem ${g.rotulo.toLowerCase()}: mortalidade de ${g.perc==null?'—':pf(g.perc,1)} (${nf(g.mortes)} de ${nf(g.n)} bezerras)`).join(' · ')}. Cada barra é o percentual das mortes daquele grupo que aconteceu na semana.${mortes < N_MINIMO_CARTAO ? ` <b>Amostra pequena</b> (${nf(mortes)} mortes) — leia como indício.` : ''}</p>`)
-    : cartao(t, '', semCasoHtml('Nenhuma morte após 24 h, com data, entre as bezerras de colostragem excelente ou ruim no período.'))}</div>`;
-}
 /* Colostro · transferência de imunidade — um cartão por vez, no lugar certo da sequência (R49) */
 function htmlExtrasColostroCard(k, solto){
   const ex = extrasAtual(); if(!ex) return '';
   const D = { ordem:['Eficiência de colostragem por ordem de parto da mãe', ex.tipOrdem, 'gxTipOrdem'],
               vol:['Eficiência de colostragem por quantidade de colostro (% do peso ao nascer)', ex.tipVolume, 'gxTipVol'],
-              soroBrix:['Brix sérico por faixa de Brix do colostro', ex.soroBrix, 'gxSoroBrix'],
               soroProt:['Proteína total sérica por faixa de Brix do colostro', ex.soroProt, 'gxSoroProt'] }[k];
   if(!D || !somaG(D[1])) return '';
   const c = cartao(D[0], `N: ${nf(somaG(D[1]))}`, `<div class="grafico baixo" id="${D[2]}"></div><p class="nota-rodape" id="nota_${D[2]}"></p>`);
@@ -5637,9 +5667,14 @@ function htmlExtrasColostroCard(k, solto){
 }
 /* Novilhas */
 function htmlExtrasNovServico(){
-  const ex = extrasAtual(); if(!ex || !somaG(ex.iaPorGmd)) return '';
-  return `<div class="grade">${cartao('Idade ao primeiro serviço por GMD do nascimento ao desaleitamento', `N: ${nf(somaG(ex.iaPorGmd))}`,
+  const ex = extrasAtual(); if(!ex) return '';
+  let h = '';
+  if(somaG(ex.iaPorGmd)) h += `<div class="grade">${cartao('Idade ao primeiro serviço por GMD do nascimento ao desaleitamento', `N: ${nf(somaG(ex.iaPorGmd))}`,
     `<div class="grafico baixo" id="gxIAGmd"></div><p class="nota-rodape">Novilhas nascidas de ${ex.janelaIA.ini} a ${ex.janelaIA.fim} — gerações que já tiveram tempo de chegar ao primeiro serviço. ${NOTA_RACAS_FAZ}</p><p class="nota-rodape" id="nota_gxIAGmd"></p>`)}</div>`;
+  h += `<div class="grade">${cartao('Idade ao primeiro serviço: com × sem doença respiratória na cria', ex.iaResp ? `N: ${nf(somaG(ex.iaResp))}` : '',
+    ex.iaResp ? `<div class="grafico baixo" id="gxIAResp"></div><p class="nota-rodape">Novilhas nascidas de ${ex.janelaIA.ini} a ${ex.janelaIA.fim}, com primeiro serviço registrado e aleitamento concluído. Idade em meses. ${NOTA_RACAS_FAZ} Leitura observacional. Sem caso registrado não confirma ausência de doença.</p><p class="nota-rodape" id="nota_gxIAResp"></p>`
+      : semCasoHtml(ex.janelaIA ? 'Nenhum caso de doença respiratória lançado nas gerações com primeiro serviço — sem grupo para comparar.' : 'Sem gerações com primeiro serviço elegível para esta análise.'))}</div>`;
+  return h;
 }
 function htmlExtrasNovParto(){
   const ex = extrasAtual(); if(!ex) return '';
@@ -5662,13 +5697,6 @@ function htmlExtrasProdOrigem(){
   if(!corpo) return '';
   return `<div class="cabeca prod-subcabeca"><div><div class="sobrescrito">Origem da primípara</div>
       <h2 style="font-size:18px">Sêmen, serviço e mãe</h2></div><p>${notaPL(ex)}</p></div>${corpo}`;
-}
-function htmlExtrasProdIA(){
-  const ex = extrasAtual(); if(!ex || !ex.nPrim) return '';
-  const c = cardPL('Produção no primeiro parto, corrigida para 305 dias, por idade ao primeiro serviço', ex.plIdadeIA, 'gxPLIdadeIA');
-  if(!c) return '';
-  return `<div class="cabeca prod-subcabeca"><div><div class="sobrescrito">Recria</div>
-      <h2 style="font-size:18px">Idade ao primeiro serviço</h2></div><p>${notaPL(ex)}</p></div>${c}`;
 }
 function htmlExtrasProdEfic(){
   const ex = extrasAtual(); if(!ex || !ex.nPrim) return '';
@@ -5731,28 +5759,23 @@ function desenharExtras(aba){
       });
     }
     if(aba === 'sanidade'){
+      taxaGrupos('gxSanOrdem', 'notaSanOrdem', ex.porOrdem, [COR_NOVILHA, COR_VACA]);
       if(ex.porParto) taxaGrupos('gxSanParto', 'notaSanParto', ex.porParto, [COR.azul, COR.ruim]);
       if(ex.porServico.series.length >= 2) taxaGrupos('gxSanServ', 'notaSanServ', ex.porServico, [COR.azul, COR.roxo, COR.laranja]);
     }
     if(aba === 'colostro'){
-      if(document.getElementById('gxMorteTip')){
-        barras('gxMorteTip', ex.semanas.map(s => s === '9 ou mais' ? '9ª ou mais' : s+'ª'), ex.morteSemana.map((g,i) => ({
-          rotulo:`${g.rotulo} (${nf(g.nComIdade)} mortes)`, dados:g.dist, n:g.dist.map(()=>g.nComIdade), casos:g.cont, cor: i===0 ? COR.azul : COR.ruim })),
-          { fmt:v=>pf(v,0), ocultarZero:false, x:{ title:{ display:true, text:'Semana de vida' } } });
-      }
       exRuimBarras('gxTipVol', ex.tipVolume);
       exRuimBarras('gxTipOrdem', ex.tipOrdem);
-      mediasBarras('gxSoroBrix', ex.soroBrix, [COR.ruim, COR.ambar, COR.azul], v=>nf(v,1));
       mediasBarras('gxSoroProt', ex.soroProt, [COR.ruim, COR.ambar, COR.azul], v=>nf(v,1));
     }
     if(aba === 'novilhas'){
       const rampa = ['#9BB4E4','#6E92D8','#3A6BD0','#153D88'];
+      if(ex.iaResp) mediasBarras('gxIAResp', ex.iaResp, [COR.ruim, COR.azul], v=>nf(v,1));
       mediasBarras('gxIAGmd', ex.iaPorGmd, rampa, v=>nf(v,1));
       mediasBarras('gxPartoGmd', ex.partoPorGmd, rampa, v=>nf(v,1));
       if(ex.partoResp) mediasBarras('gxPartoResp', ex.partoResp, [COR.ruim, COR.azul], v=>nf(v,1));
     }
     if(aba === 'producao'){
-      mediasBarras('gxPLIdadeIA', ex.plIdadeIA, ['#C8D6F0','#9BB4E4','#6E92D8','#3A6BD0','#224E9E','#153D88','#0F2F68'], v=>nf(v,0));
       mediasBarras('gxPLSemen', ex.plSemen, [COR.azulClaro, COR.rosa], v=>nf(v,0));
       mediasBarras('gxPLServico', ex.plServico, [COR.azul, COR.roxo, COR.laranja], v=>nf(v,0));
       mediasBarras('gxPLOrdem', ex.plOrdem, [COR.roxo, COR.laranja], v=>nf(v,0));
@@ -5857,14 +5880,14 @@ function painelVisaoGeral(r){
     <p><b>Nascimentos no período: ${nf(r.nascimentos.total)}</b>. Os indicadores abaixo trazem o seu próprio N e as faixas comparam a fazenda com o grupo <b>${esc(grupoRot)}</b> do benchmarking Alta CRIA ${esc(BENCH_REF.referencia)}, selecionável na aba Benchmarking.</p></div>
     <div class="grade g4">${kpisPrincipais.map(indicador).join('')}</div>
 
-    <div class="grade" style="margin-top:16px">
-      ${cartao('Leitura técnica','Interpretação dos principais resultados',`<div class="leitura">${avisosTecnicos.join('')}</div>`)}
-    </div>
-
     <div class="cabeca" style="margin-top:26px"><div><div class="sobrescrito">Desenvolvimento das bezerras</div>
       <h2 style="font-size:20px">Crescimento e desaleitamento</h2></div>
     <p>Indicadores complementares para acompanhar o ritmo de crescimento e o resultado ao desaleitamento.</p></div>
     <div class="grade g5">${kpisCrescimento.map(indicador).join('')}</div>
+    <div class="grade" style="margin-top:16px">
+      ${cartao('Leitura técnica','Interpretação dos principais resultados',`<div class="leitura">${avisosTecnicos.join('')}</div>`)}
+    </div>
+
     ${blocoQualidade}`;
 }
 function desenharVisaoGeral(){}
@@ -6025,8 +6048,8 @@ function painelNascimentos(r){
            <span class="filtro-serie-n" id="nFiltroNascMes">N: ${nf(r.nascimentos.total)}</span>
          </div>` +
         '<div class="grafico" id="gNascMes"></div>')}</div>
-      <div class="grade">${cartao('Histórico de nascimentos de fêmeas',nCartao(r.historico.nascimentosFemeas),
-        '<div class="grafico" id="gHistNascFemeas"></div>'+notaAnos('gHistNascFemeas'))}</div>
+      <div class="grade">${cartao('Histórico de nascimentos de fêmeas',null,
+        filtroBlocoOrigemHtml('filtroHistNascFemeas', r.historico.nascimentosFemeasOrigem) + '<div class="grafico" id="gHistNascFemeas"></div>'+notaAnos('gHistNascFemeas'))}</div>
       <div class="grade">${cartao('Tipo de sêmen que gerou as bezerras',null,
         `<div class="trio-graficos cinco">
            ${roscaSemen('Geral', 'Geral', s.geral.n)}
@@ -6037,14 +6060,16 @@ function painelNascimentos(r){
          </div>
          <p class="nota-rodape">Percentuais sobre as bezerras com o tipo de sêmen informado.</p>`)}</div>
       <div class="grade g2">
-        ${cartao('Tipo de serviço que gerou as bezerras',`N: ${nf(sv.nInformado)}`,
-          '<div class="grafico" id="gServico"></div>'+semInfo(sv,'bezerras'))}
+        ${cartao('Tipo de serviço que gerou as bezerras',null,
+          filtroOrdemPartoHtml('filtroServico', sv.nInformado, r.nascimentos.servicoPorOrigem.novilhas.nInformado, r.nascimentos.servicoPorOrigem.vacas.nInformado) +
+          '<div class="grafico" id="gServico"></div><p class="nota-rodape" id="notaServico"></p>')}
         ${cartao('Ordem de parto das mães',`N: ${nf(op.nInformado)}`,
           '<div class="grafico" id="gOrdem"></div>'+semInfo(op,'mães'))}
       </div>
     </div>
     <div class="subpainel" data-painel="nasc-gest">
-      <div class="grade">${cartao('Duração da gestação por mês',`N: ${nf(r.gestacao.nMes)}`,
+      <div class="grade">${cartao('Duração da gestação por mês',null,
+        filtroOrdemPartoHtml('filtroGestMes', r.gestacao.nMes, r.gestacao.nMesNovilhas, r.gestacao.nMesVacas) +
         '<div class="grafico" id="gGestMes"></div>')}</div>
       <div class="grade">${cartao('Histórico da duração da gestação por ano', null,
         filtroOrdemPartoHtml('filtroHistGestacao', somaN(r.historico.gestacao.geral), somaN(r.historico.gestacao.novilhas), somaN(r.historico.gestacao.vacas)) +
@@ -6062,7 +6087,6 @@ function painelNascimentos(r){
         <b>Cobertura do tipo de parto: ${pf(1-r.nascimentos.parto.avisoNaoInformado.perc)}.</b>
         Os percentuais abaixo consideram apenas os nascimentos com essa informação disponível.</div>` : ''}
       <div class="grade">${cartao('Parto auxiliado', null,
-        filtroOrdemPartoHtml('filtroTipoNasc', classificaveis(po.geral), classificaveis(po.novilhas), classificaveis(po.vacas)) +
         '<div class="grafico" id="gTipoNasc"></div>' +
         '<p class="nota-rodape">Percentual sobre as bezerras com <b>tipo de parto informado</b>. Passe o mouse na barra para ver quantos casos de quantas bezerras.</p>')}</div>
       <div class="grade">${cartao('Partos auxiliados por mês', null,
@@ -6071,10 +6095,10 @@ function painelNascimentos(r){
       <div class="grade">${cartao('Histórico de partos auxiliados','% de parto auxiliado, por ano',
         filtroOrdemPartoHtml('filtroHistTipoNasc', somaN(r.historico.partoAuxiliado.geral), somaN(r.historico.partoAuxiliado.novilhas), somaN(r.historico.partoAuxiliado.vacas)) +
         '<div class="grafico" id="gHistTipoNasc"></div>'+notaAnos('gHistTipoNasc'))}</div>
-      <div class="grade">${cartao('Parto auxiliado por tipo de sêmen',nCartao(r.porCategoria.partoAuxSemen),
-        '<div class="grafico" id="gHistSemenAux"></div><p class="nota-rodape" id="notaHistSemenAux"></p>')}</div>
-      <div class="grade">${cartao('Parto auxiliado por tipo de serviço',nCartao(r.porCategoria.partoAuxServico),
-        '<div class="grafico" id="gHistServicoAux"></div><p class="nota-rodape" id="notaHistServicoAux"></p>')}</div>
+      <div class="grade">${cartao('Parto auxiliado por tipo de sêmen',null,
+        filtroBlocoOrigemHtml('filtroSemenAux', r.porCategoriaOrigem.partoAuxSemen) + '<div class="grafico" id="gHistSemenAux"></div><p class="nota-rodape" id="notaHistSemenAux"></p>')}</div>
+      <div class="grade">${cartao('Parto auxiliado por tipo de serviço',null,
+        filtroBlocoOrigemHtml('filtroServicoAux', r.porCategoriaOrigem.partoAuxServico) + '<div class="grafico" id="gHistServicoAux"></div><p class="nota-rodape" id="notaHistServicoAux"></p>')}</div>
     </div>`;
 }
 /* Rampa de uma matiz para a composição racial — raça é eixo ORDINAL (do
@@ -6167,15 +6191,36 @@ function desenharNascimentos(r){
   roscaSemen('gSemenC3',    sm.cria3);
   roscaSemen('gSemenC4',    sm.cria4);
   // Tipo de serviço e ordem de parto: % sempre sobre quem tem a informação
-  const sv = r.nascimentos.servico.itens, op = r.nascimentos.ordemParto.itens;
-  barras('gServico', sv.map(x=>x.rotulo),
-    [{ rotulo:'% das bezerras informadas', dados:sv.map(x=>x.perc), n:sv.map(x=>x.n), cor:COR.azul }],
+  const opI = r.nascimentos.ordemParto.itens;
+  const gruposServico = {};
+  [['geral','geral'],['novilha','novilhas'],['vaca','vacas']].forEach(([k,campo])=>{
+    const bloco = r.nascimentos.servicoPorOrigem[campo];
+    gruposServico[k] = { amostra:bloco.nInformado, bloco };
+  });
+  ligarFiltroOrdemParto('filtroServico', gruposServico, (_chave, grupo)=>{
+    prepararGraficoUnico('gServico');
+    const itens = grupo.bloco.itens;
+    barras('gServico', itens.map(x=>x.rotulo),
+      [{ rotulo:'% das bezerras informadas', dados:itens.map(x=>x.perc), n:itens.map(()=>grupo.amostra), casos:itens.map(x=>x.n), cor:COR.azul }],
+      { fmt:v=>pf(v), y:{ max:1 }, ocultarZero:false });
+    const faltam = (grupo.bloco.naoInformado||0)+(grupo.bloco.naoReconhecido||0);
+    notaEm('notaServico', faltam ? `${nf(faltam)} bezerras sem tipo de serviço classificável — fora do denominador.` : 'Todas as bezerras deste recorte têm tipo de serviço classificável.');
+  });
+  barras('gOrdem', opI.map(x=>x.rotulo),
+    [{ rotulo:'% das mães informadas', dados:opI.map(x=>x.perc), n:opI.map(x=>x.n), cor:COR.azul }],
     { fmt:v=>pf(v), y:{ max:1 }, ocultarZero:false });
-  barras('gOrdem', op.map(x=>x.rotulo),
-    [{ rotulo:'% das mães informadas', dados:op.map(x=>x.perc), n:op.map(x=>x.n), cor:COR.azul }],
-    { fmt:v=>pf(v), y:{ max:1 }, ocultarZero:false });
-  barras('gGestMes', MESES, [{ rotulo:'Dias', dados:r.gestacao.porMes, n:r.gestacao.nPorMes, cor:COR.azul }],
-    { fmt:v=>nf(v,0) });
+  const gest = r.gestacao;
+  const gruposGestMes = {
+    geral: { amostra:gest.nMes, rotulo:'Geral', dados:gest.porMes, n:gest.nPorMes, cor:COR_GERAL },
+    novilha: { amostra:gest.nMesNovilhas, rotulo:'Filhas de novilhas', dados:gest.porMesNovilhas, n:gest.nPorMesNovilhas, cor:COR_NOVILHA },
+    vaca: { amostra:gest.nMesVacas, rotulo:'Filhas de vacas', dados:gest.porMesVacas, n:gest.nPorMesVacas, cor:COR_VACA }
+  };
+  const tetoGestMes = Math.max(1, Math.ceil(Math.max(0, ...Object.values(gruposGestMes).flatMap(g=>g.dados).filter(Number.isFinite))*1.18));
+  ligarFiltroOrdemParto('filtroGestMes', gruposGestMes, (_chave, grupo)=>{
+    prepararGraficoUnico('gGestMes');
+    barras('gGestMes', MESES, [{ rotulo:grupo.rotulo, dados:grupo.dados, n:grupo.n, cor:grupo.cor }],
+      { fmt:v=>nf(v,0), semLegenda:true, y:{ max:tetoGestMes } });
+  });
   // Históricos últimos 5 anos (coorte de nascimento)
   const h = r.historico;
   const anosStr = h.anos.map(String);
@@ -6189,9 +6234,11 @@ function desenharNascimentos(r){
   const pctAux = bloco => ({ fmt:v=>pf(v,1), ocultarZero:false,
     y:{ max: Math.max(.05, Math.max(0, ...bloco.flatMap(c=>c.serie.map(x=>x.media||0)))*1.5) } });
   void serieCat;   // segue disponível para os históricos que continuam anuais
-  barrasHistorico('gHistNascFemeas', anosStr,
-    [{ rotulo:'Nascimentos', dados:h.nascimentosFemeas.map(x=>x.n), cor:COR.azul }],
-    { fmt:v=>nf(v,0) });
+  ligarBlocoOrigem('filtroHistNascFemeas', 'gHistNascFemeas', h.nascimentosFemeasOrigem, lista=>{
+    barrasHistorico('gHistNascFemeas', anosStr,
+      [{ rotulo:'Nascimentos', dados:lista.map(x=>x.n), n:lista.map(x=>x.n), cor:COR.azul }],
+      { fmt:v=>nf(v,0) });
+  });
   const gruposHistGestacao = {
     geral:  { amostra:somaN(h.gestacao.geral), serie:{ rotulo:'Geral', dados:h.gestacao.geral.map(x=>x.media), n:h.gestacao.geral.map(x=>x.n), cor:COR_GERAL } },
     novilha:{ amostra:somaN(h.gestacao.novilhas), serie:{ rotulo:'Filhas de novilhas', dados:h.gestacao.novilhas.map(x=>x.media), n:h.gestacao.novilhas.map(x=>x.n), cor:COR_NOVILHA } },
@@ -6223,13 +6270,14 @@ function desenharNascimentos(r){
     prepararGraficoUnico('gHistTipoNasc');
     barrasHistorico('gHistTipoNasc', anosStr, [grupo.serie], opcHistPartoAux);
   });
-  agregado('gHistSemenAux', 'notaHistSemenAux', pc.partoAuxSemen,
-    [COR_CONVENCIONAL, COR_SEXADO], { fmt:v=>pf(v,1), grossura:56, ocultarZero:false,
-      y:{ max: Math.max(.05, Math.max(0, ...pc.partoAuxSemen.map(x=>x.media||0))*1.5) } });
-  agregado('gHistServicoAux', 'notaHistServicoAux', pc.partoAuxServico,
-    [COR.azul, COR.roxo, COR.laranja], { fmt:v=>pf(v,1), grossura:56, ocultarZero:false,
-      y:{ max: Math.max(.05, Math.max(0, ...pc.partoAuxServico.map(x=>x.media||0))*1.5) } });
-  // Nascimento auxílio: o filtro troca a população inteira; nunca há três séries simultâneas.
+  const pcOrigem = r.porCategoriaOrigem;
+  const opAuxCat = bloco => ({ fmt:v=>pf(v,1), grossura:56, ocultarZero:false,
+    y:{ max:Math.max(.05, ...Object.values(bloco).flatMap(lista=>lista.map(x=>(x.media||0)*1.5))) } });
+  ligarCategoriaOrigem('filtroSemenAux', 'gHistSemenAux', 'notaHistSemenAux', pcOrigem.partoAuxSemen,
+    [COR_CONVENCIONAL, COR_SEXADO], opAuxCat(pcOrigem.partoAuxSemen));
+  ligarCategoriaOrigem('filtroServicoAux', 'gHistServicoAux', 'notaHistServicoAux', pcOrigem.partoAuxServico,
+    [COR.azul, COR.roxo, COR.laranja], opAuxCat(pcOrigem.partoAuxServico));
+  // Comparação simultânea dos três grupos de origem materna.
   const po = r.nascimentos.parto.porOrigem;
   const percAux = o => classificaveis(o) ? o.auxiliado/classificaveis(o) : null;
   const gruposTipoNasc = {
@@ -6238,12 +6286,10 @@ function desenharNascimentos(r){
     vaca:   { amostra:classificaveis(po.vacas), rotulo:'Filhas de vacas', valor:percAux(po.vacas), casos:po.vacas.auxiliado, cor:COR_VACA }
   };
   const tetoTipoNasc = Math.max(.05, Math.max(0, ...Object.values(gruposTipoNasc).map(x=>x.valor||0))*1.5);
-  ligarFiltroOrdemParto('filtroTipoNasc', gruposTipoNasc, (_chave, grupo)=>{
-    prepararGraficoUnico('gTipoNasc');
-    barras('gTipoNasc', [grupo.rotulo], [
-      { rotulo:'% auxiliado', dados:[grupo.valor], n:[grupo.amostra], casos:[grupo.casos], cor:grupo.cor }
-    ], { semLegenda:true, fmt:v=>pf(v,1), y:{ max:tetoTipoNasc }, ocultarZero:false });
-  });
+  const gruposAux = Object.values(gruposTipoNasc);
+  barras('gTipoNasc', gruposAux.map(g=>g.rotulo), [{ rotulo:'% auxiliado',
+    dados:gruposAux.map(g=>g.valor), n:gruposAux.map(g=>g.amostra), casos:gruposAux.map(g=>g.casos), cores:gruposAux.map(g=>g.cor)
+  }], { semLegenda:true, fmt:v=>pf(v,1), y:{ max:tetoTipoNasc }, ocultarZero:false });
   const pa = r.nascimentos.parto;
   const casosMes = (perc, n) => perc.map((v,i)=> (v!=null && n[i]) ? Math.round(v*n[i]) : null);
   const valoresAuxMes = [pa.percAuxMes, pa.percAuxNovilhasMes, pa.percAuxVacasMes].flat().filter(x=>x!=null);
@@ -6396,6 +6442,8 @@ function painelColostro(r){
           blocoCategorias)}
         ${cartao('Percentual na categoria Excelente por mês de nascimento',`N: ${nf(cat.n)}`,'<div class="grafico alto" id="gTipMes"></div>')}
       </div>
+      <div class="grade">${cartao('Percentual na categoria Ruim por mês de nascimento',`N: ${nf(cat.n)}`,
+        '<div class="grafico" id="gTipRuimMes"></div><p class="nota-rodape">Ponto de corte: 5%. Percentual entre as bezerras avaliadas em cada mês de nascimento.</p>')}</div>
       <div class="grade">${cartao('Histórico das categorias excelente e ruim',nCartao(r.historico.tipExcelente),
         '<div class="grafico" id="gHistTipCat"></div>'+notaAnos('gHistTipCat'))}</div>
       ${(()=>{
@@ -6424,7 +6472,7 @@ function painelColostro(r){
       <div class="grade">
         ${cartao('Eficiência de colostragem por Brix do colostro',nCartao(r.tip.porBrixFaixa),'<div class="grafico" id="gTipBrixFaixa"></div><p class="nota-rodape" id="notaTipBrixFaixa"></p>')}
       </div>
-      ${htmlExtrasColostroCard('soroBrix')}${htmlExtrasColostroCard('soroProt')}
+      ${htmlExtrasColostroCard('soroProt')}
       ${htmlExtrasColostroCard('vol')}
       <div class="grade">
         ${cartao('Eficiência de colostragem por forma de fornecimento',nCartao(r.tip.porFornecimento),'<div class="grafico" id="gTipForn"></div><p class="nota-rodape" id="notaTipForn"></p>')}
@@ -6456,7 +6504,7 @@ function painelColostro(r){
           
         </article>
       </div>
-      ${htmlExtrasMorteTip()}
+      
     </div>
     <div class="subpainel" data-painel="col-impacto">
       <p class="nota-rodape">* Animais que receberam somente colostro em pó não são considerados nas análises desta subaba.</p>
@@ -6467,29 +6515,6 @@ function painelColostro(r){
           <div class="grafico" id="gColostroGmd"></div>
           <p class="nota-rodape">Dos animais com peso ao nascimento e aos 30 dias, GMD médio por categoria de colostragem.</p>
           ${notaAnosFixa(anosAnalise.colostroGmd)}
-        </article>
-      </div>
-      <div class="grade g2">
-        <article class="cartao">
-          <div class="cartao-cabeca"><h4>Eficiência de colostragem × idade ao primeiro serviço</h4>
-            <span>N: ${nf(r.avancado.colostroIdadeServico.reduce((s,g)=>s+g.n,0))}</span></div>
-          <div class="grafico baixo" id="gColostroIdadeServ"></div>
-          ${notaAnosFixa(anosAnalise.colostroIdadeServico)}
-        </article>
-        <article class="cartao">
-          <div class="cartao-cabeca"><h4>Eficiência de colostragem × idade ao primeiro parto</h4>
-            <span>N: ${nf(r.avancado.colostroIdadeParto.reduce((s,g)=>s+g.n,0))}</span></div>
-          <div class="grafico baixo" id="gColostroIdadeParto"></div>
-          ${notaAnosFixa(anosAnalise.colostroIdadeParto)}
-        </article>
-      </div>
-      <div class="grade">
-        <article class="cartao">
-          <div class="cartao-cabeca"><h4>Produção de leite no primeiro parto, corrigida para 305 dias, por eficiência de colostragem</h4>
-            <span>N: ${nf(r.avancado.colostroProducao.grupos.reduce((s,g)=>s+g.n,0))}</span></div>
-          <div class="grafico" id="gColostroProd"></div>
-          <p class="nota-rodape" id="notaColostroProd"></p>
-          ${notaAnosFixa(anosAnalise.colostroProducao)}
         </article>
       </div>
     </div>`;
@@ -6523,6 +6548,7 @@ function desenharColostro(r){
   }
   const tipMes = r.tip.porMes.map(x=>x.perc);
   linha('gTipMes', MESES, tipMes, { fmt:v=>pf(v), y:{ max:1 }, corte50:true, n:r.tip.porMes.map(x=>x.n) });
+  linha('gTipRuimMes', MESES, r.tip.porMes.map(x=>x.percRuim), { fmt:v=>pf(v,1), y:{ max:Math.min(1, Math.max(.1, ...r.tip.porMes.map(x=>(x.percRuim||0)*1.2))) }, corte:.05, cor:COR.ruim, n:r.tip.porMes.map(x=>x.n), casos:r.tip.porMes.map(x=>x.percRuim==null ? null : Math.round(x.percRuim*x.n)) });
   barrasHistorico('gHistTipCat', r.historico.anos.map(String), [
     { rotulo:'Excelente', dados:r.historico.tipExcelente.map(x=>x.media), n:r.historico.tipExcelente.map(x=>x.n), cor:COR.azul },
     { rotulo:'Ruim', dados:r.historico.tipRuim.map(x=>x.media), n:r.historico.tipRuim.map(x=>x.n), cor:COR.ruim }
@@ -6552,7 +6578,7 @@ function desenharColostro(r){
   cruz('gTipBrixFaixa', 'notaTipBrixFaixa', r.tip.porBrixFaixa, { grossura:34 });
   const eixoPeriodo = { inicio:estado.filtros.inicio, fim:estado.filtros.fim, linhaY:true, solido:true };
   // Só desenha o que existe no cartão — o outro cartão nem foi montado.
-  if(r.tip.dispersao.length)   dispersao('gDispBrix', r.tip.dispersao, Object.assign({ tituloY:'% Brix', maxY:20 }, eixoPeriodo));
+  if(r.tip.dispersao.length)   dispersao('gDispBrix', r.tip.dispersao, Object.assign({ tituloY:'% Brix', minY:6, maxY:16, passoY:2 }, eixoPeriodo));
   if(r.tip.dispersaoPT.length) dispersao('gDispPT', r.tip.dispersaoPT, Object.assign({ tituloY:'PT (g/dL)', maxY:15 }, eixoPeriodo));
 
   // Categoria TIP × GMD / doenças / mortalidade — mesmas 4 cores da eficiência
@@ -6569,23 +6595,11 @@ function desenharColostro(r){
     : semMedicao(id, 'Nenhuma bezerra do arquivo tem ' + (oQue||'os dados desta análise')
         + ' junto com a categoria de colostragem — não há o que cruzar.');
   porCatChart('gColostroGmd', r.avancado.colostroGmd, v=>nf(v,0)+' g/d', 'peso ao nascimento e aos 30 dias');
-  porCatChart('gColostroIdadeServ', r.avancado.colostroIdadeServico, v=>nf(v,1)+' m', 'idade ao primeiro serviço');
-  porCatChart('gColostroIdadeParto', r.avancado.colostroIdadeParto, v=>nf(v,1)+' m', 'idade ao primeiro parto');
   porCatChart('gColDiarreia', r.avancado.colostroDiarreia, v=>pf(v,0));
   porCatChart('gColResp', r.avancado.colostroRespiratoria, v=>pf(v,0));
   porCatChart('gColMort', r.avancado.colostroMortalidade, v=>pf(v,0));
 
-  // Colostro × produção — cores fixas por categoria (mesma paleta da eficiência)
-  const cp = r.avancado.colostroProducao.grupos;
-  if(!cp.length) semMedicao('gColostroProd',
-    'Nenhuma novilha do arquivo tem produção corrigida para 305 dias elegível junto com a categoria de colostragem — não há o que cruzar.');
-  else barras('gColostroProd', cp.map(g=>nomeCat[g.categoria]),
-    [{ rotulo:'Produção corrigida para 305 dias', dados:cp.map(g=>g.prod305), n:cp.map(g=>g.n), cores:cp.map(g=>corCat[g.categoria]) }],
-    { fmt:v=>nf(v,0)+' kg', grossura:56 });
-  const nBaixo = cp.filter(g=>g.n<10);
-  $('#notaColostroProd').innerHTML = nBaixo.length
-    ? `<b>Atenção:</b> ${nBaixo.map(g=>nomeCat[g.categoria]+' tem só '+g.n+' bezerras').join('; ')} — leia como indício, não conclusão.`
-    : '';
+
 }
 
 function painelCrescimento(r){
@@ -6611,26 +6625,25 @@ function painelCrescimento(r){
         ${indicador({ rotulo:'Peso médio ao nascimento', valor:nf(c.nascimento.media,0)+' kg', base:`N: ${c.nascimento.n}`, principal:true })}
       </div>
       <div class="grade">
+        ${cartao('Peso ao nascimento por ordem de parto da mãe', null,
+          '<div class="grafico" id="gP0Grupo"></div>')}
+      </div>
+      <div class="grade">
         ${cartao('Peso ao nascimento por mês', null,
           filtroOrdemPartoHtml('filtroP0Mes', c.nascimento.n, c.nascimento.nNovilhas, c.nascimento.nVacas) +
           '<div class="grafico" id="gP0Mes"></div>')}
       </div>
       <div class="grade">${cartao('Distribuição individual do peso ao nascimento por mês',`N: ${nf(r.crescimento.nascimento.dispersao.length)}`,'<div class="grafico alto" id="gDispP0"></div>')}</div>
-      <div class="grade">${cartao('Histórico de peso ao nascimento',nCartao(r.historico.pesoNascimento),
-        '<div class="grafico" id="gHistP0"></div>'+notaAnos('gHistP0'))}</div>
+      <div class="grade">${cartao('Histórico de peso ao nascimento',null,
+        filtroBlocoOrigemHtml('filtroHistP0', r.historico.pesoNascimentoOrigem) + '<div class="grafico" id="gHistP0"></div>'+notaAnos('gHistP0'))}</div>
       <div class="cabeca" style="margin-top:22px"><div><div class="sobrescrito">Fatores associados</div>
         <h2 style="font-size:20px">Fatores associados ao peso ao nascimento</h2></div></div>
-      <div class="grade">${cartao('Peso ao nascimento por tipo de sêmen',nCartao(r.porCategoria.pesoNascSemen),
-        '<div class="grafico" id="gHistP0Semen"></div><p class="nota-rodape" id="notaHistP0Semen"></p>')}</div>
-      <div class="grade">${cartao('Peso ao nascimento por tipo de serviço',nCartao(r.porCategoria.pesoNascServico),
-        '<div class="grafico" id="gHistP0Servico"></div><p class="nota-rodape" id="notaHistP0Servico"></p>')}</div>
-      <div class="grade">${cartao('Peso ao nascimento por tipo de nascimento',nCartao(r.porCategoria.pesoNascParto),
-        '<div class="grafico" id="gHistP0Parto"></div><p class="nota-rodape" id="notaHistP0Parto"></p>')}</div>
-      <div class="grade">
-        ${cartao('Peso ao nascimento por ordem de parto da mãe', null,
-          filtroOrdemPartoHtml('filtroP0Grupo', c.nascimento.n, c.nascimento.nNovilhas, c.nascimento.nVacas) +
-          '<div class="grafico" id="gP0Grupo"></div>')}
-      </div>
+      <div class="grade">${cartao('Peso ao nascimento por tipo de sêmen',null,
+        filtroBlocoOrigemHtml('filtroP0Semen', r.porCategoriaOrigem.pesoNascSemen) + '<div class="grafico" id="gHistP0Semen"></div><p class="nota-rodape" id="notaHistP0Semen"></p>')}</div>
+      <div class="grade">${cartao('Peso ao nascimento por tipo de serviço',null,
+        filtroBlocoOrigemHtml('filtroP0Servico', r.porCategoriaOrigem.pesoNascServico) + '<div class="grafico" id="gHistP0Servico"></div><p class="nota-rodape" id="notaHistP0Servico"></p>')}</div>
+      <div class="grade">${cartao('Peso ao nascimento por tipo de nascimento',null,
+        filtroBlocoOrigemHtml('filtroP0Parto', r.porCategoriaOrigem.pesoNascParto) + '<div class="grafico" id="gHistP0Parto"></div><p class="nota-rodape" id="notaHistP0Parto"></p>')}</div>
     </div>
     <div class="subpainel" data-painel="cre-30">
       <div class="grade g2">
@@ -6715,11 +6728,10 @@ function desenharCrescimento(r){
   const tetoPesoGrupo = Math.max(1, Math.ceil(Math.max(0,...valoresPesoGrupo)*1.18));
   const valoresPesoMes = Object.values(gruposPesoNasc).flatMap(x=>x.dados||[]).filter(Number.isFinite);
   const tetoPesoMes = Math.max(1, Math.ceil(Math.max(0,...valoresPesoMes)*1.18));
-  ligarFiltroOrdemParto('filtroP0Grupo', gruposPesoNasc, (_chave, grupo)=>{
-    prepararGraficoUnico('gP0Grupo');
-    barras('gP0Grupo', [grupo.rotulo], [{ rotulo:'kg', dados:[grupo.valor], n:[grupo.amostra], cor:grupo.cor }],
-      { semLegenda:true, fmt:v=>nf(v,0), y:{ max:tetoPesoGrupo } });
-  });
+  const gruposP0 = Object.values(gruposPesoNasc);
+  barras('gP0Grupo', gruposP0.map(g=>g.rotulo), [{ rotulo:'kg',
+    dados:gruposP0.map(g=>g.valor), n:gruposP0.map(g=>g.amostra), cores:gruposP0.map(g=>g.cor)
+  }], { semLegenda:true, fmt:v=>nf(v,0), y:{ max:tetoPesoGrupo } });
   ligarFiltroOrdemParto('filtroP0Mes', gruposPesoNasc, (_chave, grupo)=>{
     prepararGraficoUnico('gP0Mes');
     barras('gP0Mes', MESES, [{ rotulo:grupo.rotulo, dados:grupo.dados, n:grupo.n, cor:grupo.cor }],
@@ -6732,9 +6744,10 @@ function desenharCrescimento(r){
      ela informa — nos gráficos de PRODUÇÃO, e nos dois combos, que misturam
      kg e meses no mesmo desenho e sem a unidade ficariam ambíguos. */
   const opcKgCat = { fmt:v=>nf(v,0), grossura:56 };
-  agregadoBarras('gHistP0Semen','notaHistP0Semen', r.porCategoria.pesoNascSemen, [COR_CONVENCIONAL, COR_SEXADO], opcKgCat);
-  agregadoBarras('gHistP0Servico','notaHistP0Servico', r.porCategoria.pesoNascServico, [COR.azul, COR.roxo, COR.laranja], opcKgCat);
-  agregadoBarras('gHistP0Parto','notaHistP0Parto', r.porCategoria.pesoNascParto, [COR.azul, COR.ambar], opcKgCat);
+  const pco = r.porCategoriaOrigem;
+  ligarCategoriaOrigem('filtroP0Semen', 'gHistP0Semen', 'notaHistP0Semen', pco.pesoNascSemen, [COR_CONVENCIONAL, COR_SEXADO], opcKgCat);
+  ligarCategoriaOrigem('filtroP0Servico', 'gHistP0Servico', 'notaHistP0Servico', pco.pesoNascServico, [COR.azul, COR.roxo, COR.laranja], opcKgCat);
+  ligarCategoriaOrigem('filtroP0Parto', 'gHistP0Parto', 'notaHistP0Parto', pco.pesoNascParto, [COR.azul, COR.ambar], opcKgCat);
   barras('gP30', MESES, [{ rotulo:'kg', dados:c.d30.pesoMes, n:c.d30.nPesoMes, cor:COR.azul }], kg);
   barras('gG030', MESES, [{ rotulo:'g/d', dados:c.d30.gmdMes, n:c.d30.nGmdMes, cor:COR.azul }], gd);
   barras('gP60', MESES, [{ rotulo:'kg', dados:c.d60.pesoMes, n:c.d60.nPesoMes, cor:COR.azul }], kg);
@@ -6767,7 +6780,7 @@ function desenharCrescimento(r){
      casa é informação, que é a idade em meses. */
   const histBarra = (id, serie, opc) => barrasHistorico(id, anosStr,
     [{ rotulo:'', dados:serie.map(x=>x.media), n:serie.map(x=>x.n), cor:COR.azul }], opc);
-  histBarra('gHistP0', h.pesoNascimento, kg);
+  ligarBlocoOrigem('filtroHistP0', 'gHistP0', h.pesoNascimentoOrigem, lista=>histBarra('gHistP0', lista, kg));
   histBarra('gHistP30', h.peso30, kg);
   histBarra('gHistG030', h.gmd0_30, gd);
   histBarra('gHistP60', h.peso60, kg);
@@ -7251,7 +7264,7 @@ function painelProducao(r){
       '<p class="nota-rodape" style="margin:0 0 6px"><b>Compare os grupos de maior produção dentro do próprio rebanho.</b></p><p class="nota-rodape" style="margin:0 0 10px">Grupos cumulativos dentro de cada ano: o Top 10% inclui os animais do Top 5%, e assim sucessivamente.</p><div id="tBenchProd"></div>')}</div>
     <div class="grade">${cartao('Histórico — Top 5% das maiores produções no primeiro parto, corrigidas para 305 dias','', '<div id="tTop5Prod"></div>')}</div>
     ${htmlExtrasProdOrigem()}
-    ${htmlExtrasProdIA()}
+    
     <div class="cabeca prod-subcabeca"><div><div class="sobrescrito">Relação com a idade ao parto</div>
       <h2 style="font-size:18px">Idade e peso ao primeiro parto</h2></div></div>
     <div class="grade">
