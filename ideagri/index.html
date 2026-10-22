@@ -1655,10 +1655,20 @@ function calcularExtras(registros, ini, fim, envio){
   const hol = prim.filter(l => l.raca === 'Holandês' && l.idadeParto != null);
   const quad = l => { const p = l.idadeParto/DPM_A <= M.idadePartoMediana + 1e-6, a = l.prod305 >= M.pl305Mediana - 1e-6;
     return p && a ? 'precoceAlta' : p ? 'precoceBaixa' : a ? 'tardiaAlta' : 'tardiaBaixa'; };
-  const eficiencia = { n: hol.length, quad: {} };
+  const eficiencia = { n: hol.length, quad: {}, porAno: {} };
   ['precoceAlta','tardiaAlta','precoceBaixa','tardiaBaixa'].forEach(k => { const g = hol.filter(l => quad(l) === k);
     eficiencia.quad[k] = { n:g.length, perc: hol.length ? g.length/hol.length : null,
       idade: med(g.map(l=>l.idadeParto/DPM_A)), pl: med(g.map(l=>l.prod305)) }; });
+  [...new Set(hol.map(l=>dParto(l).getFullYear()))].sort((a,b)=>a-b).forEach(ano=>{
+    const grupoAno = hol.filter(l=>dParto(l).getFullYear()===ano);
+    const obj = { n:grupoAno.length, quad:{} };
+    ['precoceAlta','tardiaAlta','precoceBaixa','tardiaBaixa'].forEach(k=>{
+      const g=grupoAno.filter(l=>quad(l)===k);
+      obj.quad[k]={ n:g.length, perc:grupoAno.length?g.length/grupoAno.length:null,
+        idade:med(g.map(l=>l.idadeParto/DPM_A)), pl:med(g.map(l=>l.prod305)) };
+    });
+    eficiencia.porAno[ano]=obj;
+  });
   const plIdadeIA = mediaGrupo(prim, l => l.idadeIA!=null ? FAIXA(l.idadeIA/DPM_A, BINS_IA) : null, l=>l.prod305, BINS_IA.map(b=>[b[2],b[2]]));
   const plSemen = mediaGrupo(prim.filter(l => l.servico === 'IA'), l=>l.tipoSemen, l=>l.prod305, [['Convencional','Convencional'],['Sexado de fêmea','Sexado de fêmea']]);
   const plServico = mediaGrupo(prim, l=>l.servico, l=>l.prod305, SERV.map(s=>[s,s]));
@@ -5701,21 +5711,27 @@ function htmlExtrasProdOrigem(){
 function htmlExtrasProdEfic(){
   const ex = extrasAtual(); if(!ex || !ex.nPrim) return '';
   const E = ex.eficiencia, N = BENCH_REF.eficiencia.quadrantes, M = BENCH_REF.eficiencia.medianas;
-  const q = (k, titulo, cls) => { const f = E.quad[k], n = N[k];
-    return `<div class="quad-card ${cls}"><b>${titulo}</b><strong>${f.perc==null?'—':pf(f.perc,1)}</strong>
-      <span>das primíparas da fazenda · nacional ${pf(n.perc,1)}</span>
-      <div class="quad-med"><div><em>Idade média ao 1º parto</em><b>${f.idade==null?'—':nf(f.idade,1)+' meses'}</b></div><div><em>Produção média em 305 dias</em><b>${f.pl==null?'—':nf(f.pl,0)+' kg'}</b></div></div>
-      <small>${nf(f.n)} primíparas</small></div>`; };
-  const efic = E.n ? `<div class="quad-grid">
-      ${q('precoceAlta','Pariram cedo e produziram bem','q-verde')}
-      ${q('tardiaAlta','Pariram tarde e produziram bem','q-ambar')}
-      ${q('precoceBaixa','Pariram cedo e produziram menos','q-azul')}
-      ${q('tardiaBaixa','Pariram tarde e produziram menos','q-cinza')}
-    </div><p class="nota-rodape">Primíparas Holandesas da fazenda que pariram de ${dBrD(ex.janelaPL.ini)} a ${dBrD(ex.janelaPL.fim)}, classificadas pelas duas medianas nacionais: parto com até ${nf(M.idadePartoMediana,1)} meses e ${nf(M.pl305Mediana,0)} kg ou mais em 305 dias. No Brasil, cada grupo tem cerca de um quarto das primíparas. N: ${nf(E.n)}.</p>`
+  const anos = Object.keys(E.porAno || {}).sort((a,b)=>Number(b)-Number(a));
+  const escolhas = `<div class="linha-seletor" style="margin:12px 0"><label for="selAnoQuadProd">Ano do primeiro parto</label><select id="selAnoQuadProd" class="campo-filtro" onchange="atualizarQuadrantesProd(this.value)"><option value="">Geral · últimos 5 anos</option>${anos.map(a=>`<option value="${a}">${a}</option>`).join('')}</select></div>`;
+  const render = (dados, ano) => {
+    const q = (k, titulo, cls) => { const f = dados.quad[k], n = N[k];
+      return `<div class="quad-card ${cls}"><b>${titulo}</b><strong>${f.perc==null?'—':pf(f.perc,1)}</strong>
+        <span>da fazenda · benchmarking nacional ${pf(n.perc,1)}</span>
+        <div class="quad-med"><div><em>Idade média ao 1º parto</em><b>${f.idade==null?'—':nf(f.idade,1)+' meses'}</b></div><div><em>Produção média em 305 dias</em><b>${f.pl==null?'—':nf(f.pl,0)+' kg'}</b></div></div>
+        <small>N: ${nf(f.n)} primíparas</small></div>`; };
+    return `<div class="quad-grid">${q('precoceAlta','Pariram cedo e produziram bem','q-verde')}${q('tardiaAlta','Pariram tarde e produziram bem','q-ambar')}${q('precoceBaixa','Pariram cedo e produziram menos','q-azul')}${q('tardiaBaixa','Pariram tarde e produziram menos','q-cinza')}</div>
+      <p class="nota-rodape"><b>População da fazenda:</b> ${ano?'partos de '+esc(String(ano)):'partos de '+dBrD(ex.janelaPL.ini)+' a '+dBrD(ex.janelaPL.fim)} · <b>raça:</b> Holandesa · <b>N avaliados:</b> ${nf(dados.n)} primíparas com idade ao parto e produção corrigida para 305 dias elegíveis. <b>Critérios nacionais fixos:</b> idade ao primeiro parto ≤ ${nf(M.idadePartoMediana,1)} meses; produção ≥ ${nf(M.pl305Mediana,0)} kg/305 dias. <b>Referência:</b> benchmarking Alta CRIA (medianas nacionais; o N de animais da base nacional não consta dos metadados deste painel). Categorias mutuamente exclusivas; grupos da referência nacional representam aproximadamente um quarto cada.</p>`;
+  };
+  const ef = E.n ? `${escolhas}<p class="nota-rodape" style="margin:0 0 14px;padding:12px;border-left:4px solid #153D88;background:#EEF3FB"><b>BENCHMARKING NACIONAL · HOLANDESAS</b><br>Parto precoce: até ${nf(M.idadePartoMediana,1)} meses · Alta produção: ${nf(M.pl305Mediana,0)} kg ou mais em 305 dias. Os cortes são fixos; o filtro de ano altera somente a amostra da fazenda.</p><div id="resultadoQuadrantesProd">${render(E,'')}</div>`
     : semCasoHtml('Sem primíparas Holandesas com produção elegível nos últimos 5 anos — os grupos usam as medianas nacionais, que são de Holandesas.');
-  return `<div class="cabeca prod-subcabeca"><div><div class="sobrescrito">Síntese da recria</div>
-      <h2 style="font-size:18px">Eficiência reprodutiva-produtiva</h2></div></div>
-    <div class="grade">${cartao('Eficiência reprodutiva-produtiva: quem pariu cedo e produziu bem?', '', efic)}</div>`;
+  window.atualizarQuadrantesProd = (ano) => {
+    const alvo=document.getElementById('resultadoQuadrantesProd');
+    if(!alvo) return;
+    const d=ano ? E.porAno[ano] : E;
+    alvo.innerHTML=d && d.n ? render(d,ano) : '<div class="vazio">Sem primíparas Holandesas elegíveis no ano selecionado.</div>';
+  };
+  return `<div class="cabeca prod-subcabeca"><div><div class="sobrescrito">Síntese da recria</div><h2 style="font-size:18px">Eficiência reprodutiva-produtiva</h2></div></div>
+    <div class="grade">${cartao('Eficiência reprodutiva-produtiva: quem pariu cedo e produziu bem?', '', ef)}</div>`;
 }
 
 /* ----------------------------- desenho ----------------------------- */
@@ -5726,12 +5742,12 @@ function mediasBarras(id, lista, cores, fmt){
   const n = document.getElementById('nota_'+id);
   if(n){ const p = notaPeq(lista); if(p) n.innerHTML = (n.innerHTML ? n.innerHTML+' ' : '') + p; }
 }
-function exRuimBarras(id, lista){
+function exRuimBarras(id, lista, casas=1){
   if(!document.getElementById(id)) return;
   barras(id, lista.map(x => x.n ? x.rotulo : x.rotulo+' *'), [
     { rotulo:'Excelente', dados:lista.map(x=>x.perc), n:lista.map(x=>x.n), cor:COR.azul },
     { rotulo:'Ruim', dados:lista.map(x=>x.percRuim), n:lista.map(x=>x.n), cor:COR.ruim }
-  ], { fmt:v=>pf(v,1), y:{ max:1 }, ocultarZero:false });
+  ], { fmt:v=>pf(v,casas), y:{ max:1 }, ocultarZero:false });
   const vaz = lista.filter(x=>!x.n).map(x=>x.rotulo);
   notaEm('nota_'+id, [vaz.length ? `<b>*</b> ${vaz.map(esc).join(', ')}: nenhuma bezerra avaliada neste grupo — ausência de dado, não 0%.` : '', notaPeq(lista)].filter(Boolean).join(' '));
 }
@@ -5764,8 +5780,8 @@ function desenharExtras(aba){
       if(ex.porServico.series.length >= 2) taxaGrupos('gxSanServ', 'notaSanServ', ex.porServico, [COR.azul, COR.roxo, COR.laranja]);
     }
     if(aba === 'colostro'){
-      exRuimBarras('gxTipVol', ex.tipVolume);
-      exRuimBarras('gxTipOrdem', ex.tipOrdem);
+      exRuimBarras('gxTipVol', ex.tipVolume, 0);
+      exRuimBarras('gxTipOrdem', ex.tipOrdem, 0);
       mediasBarras('gxSoroProt', ex.soroProt, [COR.ruim, COR.ambar, COR.azul], v=>nf(v,1));
     }
     if(aba === 'novilhas'){
@@ -7254,7 +7270,6 @@ function painelProducao(r){
     </details>
     <div class="cabeca"><div><div class="sobrescrito">Comparação entre anos de parto</div>
       <h2 style="font-size:20px">Evolução anual da produção no primeiro parto</h2></div><p>Compare os anos para identificar avanço, estabilidade ou recuo no desempenho das primíparas.</p></div>
-    <div id="resumoProdRecente"></div>
     <div class="grade">${cartao('Evolução da produção no primeiro parto, corrigida para 305 dias, por ano de parto','',
       '<div id="amostraHistProd" class="bloco-amostra-producao"></div><div class="grafico" id="gHistProd305"></div>')}</div>
     <div class="grade">${cartao('Produção no primeiro parto, corrigida para 305 dias, por ano de parto','', '<div id="tProdAno"></div>')}</div>
@@ -7262,7 +7277,7 @@ function painelProducao(r){
       '<div id="amostraGrupoProd" class="bloco-amostra-producao"></div><div class="grafico alto" id="gGrupoComb"></div>')}</div>
     <div class="grade">${cartao('Benchmarking interno da produção no primeiro parto','',
       '<p class="nota-rodape" style="margin:0 0 6px"><b>Compare os grupos de maior produção dentro do próprio rebanho.</b></p><p class="nota-rodape" style="margin:0 0 10px">Grupos cumulativos dentro de cada ano: o Top 10% inclui os animais do Top 5%, e assim sucessivamente.</p><div id="tBenchProd"></div>')}</div>
-    <div class="grade">${cartao('Histórico — Top 5% das maiores produções no primeiro parto, corrigidas para 305 dias','', '<div id="tTop5Prod"></div>')}</div>
+    <div class="grade">${cartao('Histórico — maiores produções no primeiro parto, corrigidas para 305 dias','', '<div class="linha-seletor" style="flex-wrap:wrap;gap:12px;margin:0 0 12px"><label for="selAnoTopProd">Ano do parto</label><select id="selAnoTopProd" class="campo-filtro"></select><label for="selPctTopProd">Maiores produções (%)</label><input id="selPctTopProd" class="campo-filtro" type="number" inputmode="numeric" min="1" max="100" step="1" value="5" style="width:85px" aria-label="Percentual superior entre 1 e 100"></div><p id="notaTopProd" class="nota-rodape"></p><div id="tTop5Prod"></div>')}</div>
     ${htmlExtrasProdOrigem()}
     
     <div class="cabeca prod-subcabeca"><div><div class="sobrescrito">Relação com a idade ao parto</div>
@@ -7312,12 +7327,6 @@ function desenharProducao(r){
     });
   };
 
-  const topCinco = animais => {
-    const ord = [...animais].sort((a,b)=>b.prod305-a.prod305);
-    const nTop = ord.length ? Math.max(1, Math.ceil(ord.length*0.05)) : 0;
-    return ord.slice(0,nTop);
-  };
-
   const pintaAno = (p, ano) => {
     const x = p.find(y=>String(y.ano)===String(ano)) || p[p.length-1];
     const alvoTab = document.getElementById('tabelaFaixaParto');
@@ -7340,23 +7349,6 @@ function desenharProducao(r){
     esconderTooltip();
     const animais = raca ? baseHistorica.filter(a=>a.raca===raca) : baseHistorica;
     const p = resumir(animais);
-
-    const resumoRecente = document.getElementById('resumoProdRecente');
-    if(resumoRecente){
-      const atual = p.length ? p[p.length-1] : null;
-      const anterior = p.length>1 ? p[p.length-2] : null;
-      if(!atual) resumoRecente.innerHTML = '';
-      else {
-        const diff = anterior && atual.plMedia!=null && anterior.plMedia!=null ? atual.plMedia-anterior.plMedia : null;
-        const diffTxt = diff==null ? '—' : `${diff>0?'+':''}${nf(diff,0)} kg`;
-        resumoRecente.innerHTML = `<div class="prod-resumo">
-          <div class="prod-resumo-ano"><span>Resultado mais recente</span><b>${esc(String(atual.ano))}</b></div>
-          <div class="prod-resumo-item"><span>Animais elegíveis</span><b>${nf(atual.n)}</b><small>Produção corrigida para 305 dias</small></div>
-          <div class="prod-resumo-item"><span>Produção média</span><b>${atual.plMedia==null?'—':nf(atual.plMedia,0)+' kg'}</b><small>N: ${nf(atual.n)}</small></div>
-          <div class="prod-resumo-item"><span>Variação anual</span><b>${diffTxt}</b><small>${anterior?`vs. ${esc(String(anterior.ano))}`:'Sem ano anterior comparável'}</small></div>
-        </div>`;
-      }
-    }
 
     const alvoGrupo = document.getElementById('amostraGrupoProd');
     if(alvoGrupo) alvoGrupo.innerHTML = chipsAno(p.map((x,i)=>({rotulo:String(x.ano),n:x.n,cor:CORES_ANO[i],detalhe:'animais'})));
@@ -7414,11 +7406,34 @@ function desenharProducao(r){
     }
 
     const tTop = document.getElementById('tTop5Prod');
-    if(tTop){
-      const top = topCinco(animais);
-      tTop.innerHTML = top.length ? tabela(['Número do animal','Produção corrigida para 305 dias (kg)','Ano do parto'],
-        top.map(a=>({celulas:[esc(a.id||'—'),nf(a.prod305,0)+' kg',String(a.ano)]})))
-        : '<div class="vazio">Sem produção elegível para o filtro selecionado.</div>';
+    const anoTop = document.getElementById('selAnoTopProd');
+    const pctTop = document.getElementById('selPctTopProd');
+    const notaTop = document.getElementById('notaTopProd');
+    if(tTop && anoTop && pctTop){
+      const anteriorTop = anoTop.value;
+      const anosTop = [...new Set(animais.map(a=>a.ano).filter(Number.isFinite))].sort((a,b)=>b-a);
+      anoTop.innerHTML = '<option value="">Todos os anos</option>' + anosTop.map(a=>`<option value="${a}">${a}</option>`).join('');
+      anoTop.value = anosTop.some(a=>String(a)===anteriorTop) ? anteriorTop : '';
+      const pintarTop = () => {
+        const pNum = Number(pctTop.value);
+        if(!Number.isInteger(pNum) || pNum<1 || pNum>100){
+          tTop.innerHTML = '<div class="vazio">Digite um percentual inteiro entre 1 e 100.</div>';
+          if(notaTop) notaTop.textContent = '';
+          return;
+        }
+        const universo = anoTop.value ? animais.filter(a=>String(a.ano)===anoTop.value) : animais;
+        const ordenados = [...universo].sort((a,b)=>b.prod305-a.prod305);
+        const nTop = ordenados.length ? Math.max(1,Math.ceil(ordenados.length*pNum/100)) : 0;
+        const top = ordenados.slice(0,nTop);
+        if(notaTop) notaTop.textContent = `Top ${pNum}%: ${nf(nTop)} de ${nf(universo.length)} animais elegíveis · ${anoTop.value || 'todos os anos de parto'} · arredondamento para cima.`;
+        tTop.innerHTML = top.length ? tabela(['Número do animal','Produção corrigida para 305 dias (kg)','Ano do parto'],
+          top.map(a=>({celulas:[esc(a.id||'—'),nf(a.prod305,0)+' kg',String(a.ano)]})))
+          : '<div class="vazio">Sem produção elegível para o filtro selecionado.</div>';
+        prepararDownloads(document);
+      };
+      anoTop.onchange=pintarTop;
+      pctTop.oninput=pintarTop;
+      pintarTop();
     }
     prepararDownloads(document);
   };
@@ -7521,7 +7536,7 @@ function painelQualidade(r){
 
     <div class="cabeca" style="margin-top:26px"><div><div class="sobrescrito">Preenchimento</div>
       <h2 style="font-size:20px">Cobertura de preenchimento</h2></div>
-      <p>A cobertura indica a presença da informação na base. Percentual menor não significa, por si só, pior qualidade.</p></div>
+      <p>A cobertura mede campos preenchidos, não sua validade: preenchido não significa plausível. Confira separadamente as ocorrências que afetaram cálculos, os avisos para conferência e os ajustes automáticos. Cada percentual usa como denominador os registros descritos no próprio cartão; não representa necessariamente o N elegível de um indicador clínico.</p></div>
     <div class="grade">
       ${cartao('Fase de bezerra',`Coorte do período · ${nf(naCoorte.length)} bezerras`,
         tabela(['Campo','Preenchidos','Cobertura',''], linhasBezerra))}
@@ -7573,7 +7588,7 @@ function painelExplicativo(){
   return `<div class="cabeca principal"><div><div class="sobrescrito">Referência metodológica</div>
       <h2>Como calculamos</h2></div></div>
     <div class="texto-explicativo" style="margin-bottom:16px">
-      <p>Aqui você encontra as principais regras usadas para definir <b>populações, denominadores, períodos e critérios de validação</b> dos indicadores. As regras descritas nesta página são as mesmas usadas nos cálculos apresentados no painel.</p>
+      <p>Aqui você encontra as principais regras usadas para definir <b>populações, denominadores, períodos e critérios de validação</b> dos indicadores. Os denominadores variam conforme a disponibilidade e a elegibilidade de cada variável: o N de um gráfico não deve ser extrapolado para os demais.</p><p><b>Primeira lactação:</b> ano = ano do primeiro parto; os rankings usam produção corrigida para 305 dias ≥ 1.000 kg e seleção cumulativa por produção decrescente. Top P% = os primeiros ⌈N × P/100⌉ animais (mínimo de 1 quando N &gt; 0). <b>Eficiência reprodutiva-produtiva:</b> apenas primíparas Holandesas com idade ao parto e produção válidas; cortes fixos da mediana nacional de 23,3 meses e 11.601 kg/305 dias. O filtro anual limita os animais da fazenda, não recalcula as medianas nacionais.</p>
     </div>
     <div class="metodo-lista">
       ${secao('Regras gerais', `
