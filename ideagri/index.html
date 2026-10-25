@@ -1632,15 +1632,15 @@ function calcularExtras(registros, ini, fim, envio){
   const popIA = hist.filter(l => cIA.includes(cicloDe(l._nasc)) && l.idadeIA != null && mais(l._nasc, l.idadeIA) <= CL);
   const popParto = hist.filter(l => { if(!cParto.includes(cicloDe(l._nasc)) || l.idadeParto == null) return false; const d = dParto(l); return d && d <= CL; });
   const gFaixa = l => FAIXA(l.gmd0_desl, BINS_GMD);
-  const iaPorGmd = mediaGrupo(popIA, gFaixa, l=>l.idadeIA/DPM_A, BINS_GMD.map(b=>[b[2],b[2]]));
+  const iaPorGmd = mediaGrupo(popIA, gFaixa, l=>l.idadeIA, BINS_GMD.map(b=>[b[2],b[2]]));
   const partoPorGmd = mediaGrupo(popParto, gFaixa, l=>l.idadeParto/DPM_A, BINS_GMD.map(b=>[b[2],b[2]]));
   const iaFech = popIA.filter(l => l._fech);
   const iaResp = iaFech.some(l => l.idadeRespiratoria != null)
-    ? mediaGrupo(iaFech, l => l.idadeRespiratoria!=null ? 's' : 'n', l=>l.idadeIA/DPM_A, [['s','Teve doença respiratória na cria'],['n','Não teve doença respiratória na cria']])
+    ? mediaGrupo(iaFech, l => l.idadeRespiratoria!=null ? 's' : 'n', l=>l.idadeIA, [['s','Teve doença respiratória na cria'],['n','Não teve doença respiratória na cria']])
     : null;
   const partoFech = popParto.filter(l => l._fech);
   const partoResp = partoFech.some(l => l.idadeRespiratoria != null)
-    ? mediaGrupo(partoFech, l => l.idadeRespiratoria!=null ? 's' : 'n', l=>l.idadeParto/DPM_A, [['s','Teve doença respiratória na cria'],['n','Não teve doença respiratória na cria']])
+    ? mediaGrupo(partoFech, l => l.idadeRespiratoria!=null ? 's' : 'n', l=>l.idadeParto, [['s','Teve doença respiratória na cria'],['n','Não teve doença respiratória na cria']])
     : null;
 
   /* Primíparas: partos dos últimos 5 anos, PL305 ≥ 1.000 kg; no Ideagri, lactação de pelo menos 100 dias. */
@@ -5680,9 +5680,9 @@ function htmlExtrasNovServico(){
   const ex = extrasAtual(); if(!ex) return '';
   let h = '';
   if(somaG(ex.iaPorGmd)) h += `<div class="grade">${cartao('Idade ao primeiro serviço por GMD do nascimento ao desaleitamento', `N: ${nf(somaG(ex.iaPorGmd))}`,
-    `<div class="grafico baixo" id="gxIAGmd"></div><p class="nota-rodape">Novilhas nascidas de ${ex.janelaIA.ini} a ${ex.janelaIA.fim} — gerações que já tiveram tempo de chegar ao primeiro serviço. ${NOTA_RACAS_FAZ}</p><p class="nota-rodape" id="nota_gxIAGmd"></p>`)}</div>`;
+    `<div class="grafico baixo" id="gxIAGmd"></div><p class="nota-rodape">Novilhas nascidas de ${ex.janelaIA.ini} a ${ex.janelaIA.fim} — gerações que já tiveram tempo de chegar ao primeiro serviço. Idade em dias. ${NOTA_RACAS_FAZ}</p><p class="nota-rodape" id="nota_gxIAGmd"></p>`)}</div>`;
   h += `<div class="grade">${cartao('Idade ao primeiro serviço: com × sem doença respiratória na cria', ex.iaResp ? `N: ${nf(somaG(ex.iaResp))}` : '',
-    ex.iaResp ? `<div class="grafico baixo" id="gxIAResp"></div><p class="nota-rodape">Novilhas nascidas de ${ex.janelaIA.ini} a ${ex.janelaIA.fim}, com primeiro serviço registrado e aleitamento concluído. Idade em meses. ${NOTA_RACAS_FAZ} Leitura observacional. Sem caso registrado não confirma ausência de doença.</p><p class="nota-rodape" id="nota_gxIAResp"></p>`
+    ex.iaResp ? `<div class="grafico baixo" id="gxIAResp"></div><p class="nota-rodape">Novilhas nascidas de ${ex.janelaIA.ini} a ${ex.janelaIA.fim}, com primeiro serviço registrado e aleitamento concluído. Idade em dias. ${NOTA_RACAS_FAZ} Leitura observacional. Sem caso registrado não confirma ausência de doença.</p><p class="nota-rodape" id="nota_gxIAResp"></p>`
       : semCasoHtml(ex.janelaIA ? 'Nenhum caso de doença respiratória lançado nas gerações com primeiro serviço — sem grupo para comparar.' : 'Sem gerações com primeiro serviço elegível para esta análise.'))}</div>`;
   return h;
 }
@@ -5692,7 +5692,7 @@ function htmlExtrasNovParto(){
   if(somaG(ex.partoPorGmd)) h += `<div class="grade">${cartao('Idade ao primeiro parto por GMD do nascimento ao desaleitamento', `N: ${nf(somaG(ex.partoPorGmd))}`,
     `<div class="grafico baixo" id="gxPartoGmd"></div><p class="nota-rodape">Novilhas nascidas de ${ex.janelaParto.ini} a ${ex.janelaParto.fim} — gerações que já tiveram tempo de chegar ao primeiro parto. ${NOTA_RACAS_FAZ}</p><p class="nota-rodape" id="nota_gxPartoGmd"></p>`)}</div>`;
   if(ex.janelaParto) h += `<div class="grade">${cartao('Idade ao primeiro parto: com × sem doença respiratória na cria', ex.partoResp ? `N: ${nf(somaG(ex.partoResp))}` : '',
-    ex.partoResp ? `<div class="grafico baixo" id="gxPartoResp"></div><p class="nota-rodape">Mesmas gerações. Leitura observacional.</p><p class="nota-rodape" id="nota_gxPartoResp"></p>`
+    ex.partoResp ? `<div class="grafico baixo" id="gxPartoResp"></div><p class="nota-rodape">Idade em dias. Mesmas gerações. Leitura observacional.</p><p class="nota-rodape" id="nota_gxPartoResp"></p>`
       : semCasoHtml('Nenhum caso de doença respiratória lançado nessas gerações — sem grupo para comparar.'))}</div>`;
   return h;
 }
@@ -5720,9 +5720,9 @@ function htmlExtrasProdEfic(){
         <div class="quad-med"><div><em>Idade média ao 1º parto</em><b>${f.idade==null?'—':nf(f.idade,1)+' meses'}</b></div><div><em>Produção média em 305 dias</em><b>${f.pl==null?'—':nf(f.pl,0)+' kg'}</b></div></div>
         <small>N: ${nf(f.n)} primíparas</small></div>`; };
     return `<div class="quad-grid">${q('precoceAlta','Pariram cedo e produziram bem','q-verde')}${q('tardiaAlta','Pariram tarde e produziram bem','q-ambar')}${q('precoceBaixa','Pariram cedo e produziram menos','q-azul')}${q('tardiaBaixa','Pariram tarde e produziram menos','q-cinza')}</div>
-      <p class="nota-rodape"><b>População da fazenda:</b> ${ano?'partos de '+esc(String(ano)):'partos de '+dBrD(ex.janelaPL.ini)+' a '+dBrD(ex.janelaPL.fim)} · <b>raça:</b> Holandesa · <b>N avaliados:</b> ${nf(dados.n)} primíparas com idade ao parto e produção corrigida para 305 dias elegíveis. <b>Critérios nacionais fixos:</b> idade ao primeiro parto ≤ ${nf(M.idadePartoMediana,1)} meses; produção ≥ ${nf(M.pl305Mediana,0)} kg/305 dias. <b>Referência:</b> benchmarking Alta CRIA (medianas nacionais; o N de animais da base nacional não consta dos metadados deste painel). Categorias mutuamente exclusivas; grupos da referência nacional representam aproximadamente um quarto cada.</p>`;
+      <p class="nota-rodape"><b>População da fazenda:</b> ${ano?'partos de '+esc(String(ano)):'partos de '+dBrD(ex.janelaPL.ini)+' a '+dBrD(ex.janelaPL.fim)} · <b>raça:</b> Holandesa · <b>N avaliados:</b> ${nf(dados.n)} primíparas com idade ao parto e produção corrigida para 305 dias elegíveis. <b>Critérios nacionais fixos:</b> idade ao primeiro parto ≤ ${nf(M.idadePartoMediana,1)} meses; produção ≥ ${nf(M.pl305Mediana,0)} kg/305 dias. <b>Referência:</b> benchmarking Alta CRIA (medianas nacionais; N: 14.046 Holandesas, partos de 01/07/2024 a 30/06/2025). Categorias mutuamente exclusivas; grupos da referência nacional representam aproximadamente um quarto cada.</p>`;
   };
-  const ef = E.n ? `${escolhas}<p class="nota-rodape" style="margin:0 0 14px;padding:12px;border-left:4px solid #153D88;background:#EEF3FB"><b>BENCHMARKING NACIONAL · HOLANDESAS</b><br>Parto precoce: até ${nf(M.idadePartoMediana,1)} meses · Alta produção: ${nf(M.pl305Mediana,0)} kg ou mais em 305 dias. Os cortes são fixos; o filtro de ano altera somente a amostra da fazenda.</p><div id="resultadoQuadrantesProd">${render(E,'')}</div>`
+  const ef = E.n ? `${escolhas}<p class="nota-rodape" style="margin:0 0 14px;padding:12px;border-left:4px solid #153D88;background:#EEF3FB"><b>BENCHMARKING NACIONAL · HOLANDESAS</b><br><span>N: 14.046 · Partos de 01/07/2024 a 30/06/2025</span><br>Parto precoce: até ${nf(M.idadePartoMediana,1)} meses · Alta produção: ${nf(M.pl305Mediana,0)} kg ou mais em 305 dias. Os cortes são fixos; o filtro de ano altera somente a amostra da fazenda.</p><div id="resultadoQuadrantesProd">${render(E,'')}</div>`
     : semCasoHtml('Sem primíparas Holandesas com produção elegível nos últimos 5 anos — os grupos usam as medianas nacionais, que são de Holandesas.');
   window.atualizarQuadrantesProd = (ano) => {
     const alvo=document.getElementById('resultadoQuadrantesProd');
@@ -5786,10 +5786,10 @@ function desenharExtras(aba){
     }
     if(aba === 'novilhas'){
       const rampa = ['#9BB4E4','#6E92D8','#3A6BD0','#153D88'];
-      if(ex.iaResp) mediasBarras('gxIAResp', ex.iaResp, [COR.ruim, COR.azul], v=>nf(v,1));
-      mediasBarras('gxIAGmd', ex.iaPorGmd, rampa, v=>nf(v,1));
+      if(ex.iaResp) mediasBarras('gxIAResp', ex.iaResp, [COR.ruim, COR.azul], v=>nf(v,0)+' dias');
+      mediasBarras('gxIAGmd', ex.iaPorGmd, rampa, v=>nf(v,0)+' dias');
       mediasBarras('gxPartoGmd', ex.partoPorGmd, rampa, v=>nf(v,1));
-      if(ex.partoResp) mediasBarras('gxPartoResp', ex.partoResp, [COR.ruim, COR.azul], v=>nf(v,1));
+      if(ex.partoResp) mediasBarras('gxPartoResp', ex.partoResp, [COR.ruim, COR.azul], v=>nf(v,0)+' dias');
     }
     if(aba === 'producao'){
       mediasBarras('gxPLSemen', ex.plSemen, [COR.azulClaro, COR.rosa], v=>nf(v,0));
@@ -7190,7 +7190,7 @@ function painelNovilhas(r){
       <button class="subaba" data-sub="nov-parto">Primeiro parto</button>
     </div>
     <div class="subpainel ativo" data-painel="nov-servico">
-      ${resumoMarco(ultServico,'servico')}
+      
       <div class="grade">${cartao('Idade e peso ao primeiro serviço por ano',`Idade N: ${somaNov('nIA')} · Peso N: ${somaNov('nPesoIA')}`,
         '<div class="grafico" id="gComboIA"></div>'+notaAnos('gComboIA', 'do evento'))}</div>
       <div class="grade">
@@ -7208,7 +7208,7 @@ function painelNovilhas(r){
       ${htmlExtrasNovServico()}
     </div>
     <div class="subpainel" data-painel="nov-parto">
-      ${resumoMarco(ultParto,'parto')}
+      
       <div class="grade">${cartao('Idade e peso ao primeiro parto por ano',`Idade N: ${somaNov('nParto')} · Peso N: ${somaNov('nPesoParto')}`,
         '<div class="grafico" id="gComboParto"></div>'+notaAnos('gComboParto', 'do evento'))}</div>
       <div class="grade">
