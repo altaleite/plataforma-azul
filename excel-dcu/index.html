@@ -616,6 +616,7 @@ button{ cursor:pointer; border:0; background:none }
 .quad-card strong{ display:block; font-size:26px; font-weight:800; font-stretch:106%; margin-top:2px; line-height:1.15 }
 .quad-card > span{ display:block; font-size:12px; color:var(--apagado) }
 .quad-med{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px }
+.quad-card > b + .quad-med{ margin-top:12px } .quad-card > b + .quad-med b{ font-size:22px; font-weight:800; font-stretch:106%; line-height:1.2 }
 .quad-med em{ display:block; font-style:normal; font-size:11px; color:var(--apagado) }
 .quad-med b{ font-size:14px }
 .quad-card small{ display:block; margin-top:6px; font-size:11px; color:var(--apagado) }
@@ -6377,8 +6378,8 @@ function htmlQuadrantes(modo){
   const C = F ? E.propria.cortes : { idade:M.idadePartoMediana, pl:M.pl305Mediana };
   const render = (dados, ciclo) => {
     const q = (k, titulo, cls) => { const f = dados.quad[k];
-      return `<div class="quad-card ${cls}"><b>${titulo}</b><strong>${f.perc==null?'—':pf(f.perc,1)}</strong>
-        <span>${F ? 'das primíparas da fazenda' : 'da fazenda · benchmarking nacional '+pf(N[k].perc,1)}</span>
+      return `<div class="quad-card ${cls}"><b>${titulo}</b>${F ? '' : `<strong>${f.perc==null?'—':pf(f.perc,1)}</strong>
+        <span>da fazenda · benchmarking nacional ${pf(N[k].perc,1)}</span>`}
         <div class="quad-med"><div><em>Idade média ao 1º parto</em><b>${f.idade==null?'—':nf(f.idade,1)+' meses'}</b></div><div><em>Produção média em 305 dias</em><b>${f.pl==null?'—':nf(f.pl,0)+' kg'}</b></div></div>
         <small>N: ${nf(f.n)} primíparas</small></div>`; };
     const inf = ciclo ? ciclos.find(c => String(c.c) === String(ciclo)) : null;
@@ -6388,7 +6389,7 @@ function htmlQuadrantes(modo){
       <p class="nota-rodape"><b>Partos considerados:</b> ${pop} · <b>raças:</b> ${F ? 'todas as da fazenda' : 'Holandesa'} · <b>N avaliados:</b> ${nf(dados.n)} primíparas com idade ao parto e produção corrigida para 305 dias elegíveis. Categorias mutuamente exclusivas.</p>`;
   };
   const caixaCortes = F
-    ? `<p class="nota-rodape" style="margin:0 0 14px;padding:12px;border-left:4px solid #1E7B4F;background:#E9F5EF"><b>CORTES DA PRÓPRIA FAZENDA</b><br>Parto precoce: até ${nf(C.idade,1)} meses · Alta produção: ${nf(C.pl,0)} kg ou mais em 305 dias — medianas das ${nf(E.propria.n)} primíparas dos últimos 5 anos, <b>de todas as raças da fazenda</b> (${E.propria.racas.map(([r,k])=>esc(r)+' '+pf(k/E.propria.n,0)).join(', ')}). Os cortes misturam raças; os nacionais são só de Holandesas (${nf(M.idadePartoMediana,1)} meses e ${nf(M.pl305Mediana,0)} kg).<br>Como o corte é a mediana da própria fazenda, na visão geral os grupos tendem a ficar perto de 25% (o desvio vem da relação entre idade e produção na fazenda): o que mais informa é a idade e a produção médias de cada grupo e o quanto os cortes se afastam dos nacionais. Ao escolher um ciclo, os cortes continuam os dos 5 anos — por isso a divisão do ciclo muda e mostra se ele foi melhor ou pior que a média da fazenda.</p>`
+    ? `<p class="nota-rodape" style="margin:0 0 14px;padding:12px;border-left:4px solid #1E7B4F;background:#E9F5EF"><b>CORTES DA PRÓPRIA FAZENDA</b><br>Parto precoce: até ${nf(C.idade,1)} meses · Alta produção: ${nf(C.pl,0)} kg ou mais em 305 dias — medianas das ${nf(E.propria.n)} primíparas dos últimos 5 anos, <b>de todas as raças da fazenda</b> (${E.propria.racas.map(([r,k])=>esc(r)+' '+pf(k/E.propria.n,0)).join(', ')}). Os cortes misturam raças; os nacionais são só de Holandesas (${nf(M.idadePartoMediana,1)} meses e ${nf(M.pl305Mediana,0)} kg).<br>Como o corte é a mediana da própria fazenda, os grupos ficam perto de 25% cada — por isso o percentual não é mostrado; o que informa é a idade e a produção médias de cada grupo e o quanto os cortes se afastam dos nacionais. Ao escolher um ciclo, os cortes continuam os dos 5 anos e o N de cada grupo mostra como o ciclo se distribui em relação à média da fazenda.</p>`
     : `<p class="nota-rodape" style="margin:0 0 14px;padding:12px;border-left:4px solid #153D88;background:#EEF3FB"><b>BENCHMARKING NACIONAL · HOLANDESAS</b><br><span>N: 14.046 · Partos de 01/07/2024 a 30/06/2025</span><br>Parto precoce: até ${nf(M.idadePartoMediana,1)} meses · Alta produção: ${nf(M.pl305Mediana,0)} kg ou mais em 305 dias. Os cortes e os percentuais nacionais são fixos; o filtro de ciclo altera somente a amostra da fazenda.</p>`;
   window[fnAtual] = (ciclo) => {
     estadoQuad[modo] = String(ciclo || '');
