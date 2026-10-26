@@ -1653,22 +1653,35 @@ function calcularExtras(registros, ini, fim, envio){
     return true; });
   const M = BENCH_REF.eficiencia.medianas;
   const hol = prim.filter(l => l.raca === 'Holandês' && l.idadeParto != null);
-  const quad = l => { const p = l.idadeParto/DPM_A <= M.idadePartoMediana + 1e-6, a = l.prod305 >= M.pl305Mediana - 1e-6;
+  /* Versão própria da fazenda: todas as raças (decisão do Rafael, 26/10/2026); a nacional segue só com Holandesas. */
+  const primTodas = prim.filter(l => l.idadeParto != null);
+  const racasN = {}; primTodas.forEach(l => { const r = l.raca || 'Não informada'; racasN[r] = (racasN[r]||0) + 1; });
+  const QK = ['precoceAlta','tardiaAlta','precoceBaixa','tardiaBaixa'];
+  const mediana = v => { if(!v.length) return null; const o = v.slice().sort((x,y)=>x-y), m = Math.floor(o.length/2);
+    return o.length % 2 ? o[m] : (o[m-1]+o[m])/2; };
+  /* Cortes: nacionais (fixos) ou da própria fazenda (medianas das primíparas Holandesas dos últimos 5 anos).
+     No recorte por ciclo os cortes da fazenda NÃO são recalculados: continuam os dos 5 anos, para que a
+     divisão mostre o quanto o ciclo se deslocou — recalcular devolveria sempre ~25% em cada grupo. */
+  const cortesFaz = { idade: mediana(primTodas.map(l => l.idadeParto/DPM_A)), pl: mediana(primTodas.map(l => l.prod305)) };
+  const quadDe = C => l => { const p = l.idadeParto/DPM_A <= C.idade + 1e-6, a = l.prod305 >= C.pl - 1e-6;
     return p && a ? 'precoceAlta' : p ? 'precoceBaixa' : a ? 'tardiaAlta' : 'tardiaBaixa'; };
-  const eficiencia = { n: hol.length, quad: {}, porAno: {} };
-  ['precoceAlta','tardiaAlta','precoceBaixa','tardiaBaixa'].forEach(k => { const g = hol.filter(l => quad(l) === k);
-    eficiencia.quad[k] = { n:g.length, perc: hol.length ? g.length/hol.length : null,
-      idade: med(g.map(l=>l.idadeParto/DPM_A)), pl: med(g.map(l=>l.prod305)) }; });
-  [...new Set(hol.map(l=>dParto(l).getFullYear()))].sort((a,b)=>a-b).forEach(ano=>{
-    const grupoAno = hol.filter(l=>dParto(l).getFullYear()===ano);
-    const obj = { n:grupoAno.length, quad:{} };
-    ['precoceAlta','tardiaAlta','precoceBaixa','tardiaBaixa'].forEach(k=>{
-      const g=grupoAno.filter(l=>quad(l)===k);
-      obj.quad[k]={ n:g.length, perc:grupoAno.length?g.length/grupoAno.length:null,
-        idade:med(g.map(l=>l.idadeParto/DPM_A)), pl:med(g.map(l=>l.prod305)) };
-    });
-    eficiencia.porAno[ano]=obj;
-  });
+  const resumoQuad = (lista, C) => { const q = quadDe(C), o = { n:lista.length, quad:{} };
+    QK.forEach(k => { const g = lista.filter(l => q(l) === k);
+      o.quad[k] = { n:g.length, perc: lista.length ? g.length/lista.length : null,
+        idade: med(g.map(l => l.idadeParto/DPM_A)), pl: med(g.map(l => l.prod305)) }; });
+    return o; };
+  const CN = { idade:M.idadePartoMediana, pl:M.pl305Mediana };
+  /* Ciclo de parto: 1º de julho a 30 de junho (mesmo ciclo do benchmarking). */
+  const cicloParto = l => cicloDe(dParto(l));
+  const ciclosParto = [...new Set(primTodas.map(cicloParto))].sort((a,b)=>a-b);
+  const rotCiclo = c => `${c}/${String(c+1).slice(2)}`;
+  const parcial = c => new Date(c,6,1) < iniPL || fimCiclo(c) > CL;
+  const eficiencia = Object.assign(resumoQuad(hol, CN), { porCiclo:{}, ciclos:[],
+    propria: Object.assign(resumoQuad(primTodas, cortesFaz), { cortes:cortesFaz, porCiclo:{}, racas:Object.entries(racasN).sort((a,b)=>b[1]-a[1]) }) });
+  ciclosParto.forEach(c => { const g = hol.filter(l => cicloParto(l) === c), gt = primTodas.filter(l => cicloParto(l) === c);
+    eficiencia.ciclos.push({ c, rotulo:rotCiclo(c), parcial:parcial(c), ini:new Date(c,6,1), fim:fimCiclo(c) });
+    eficiencia.porCiclo[c] = resumoQuad(g, CN);
+    eficiencia.propria.porCiclo[c] = resumoQuad(gt, cortesFaz); });
   const plIdadeIA = mediaGrupo(prim, l => l.idadeIA!=null ? FAIXA(l.idadeIA/DPM_A, BINS_IA) : null, l=>l.prod305, BINS_IA.map(b=>[b[2],b[2]]));
   const plSemen = mediaGrupo(prim.filter(l => l.servico === 'IA'), l=>l.tipoSemen, l=>l.prod305, [['Convencional','Convencional'],['Sexado de fêmea','Sexado de fêmea']]);
   const plServico = mediaGrupo(prim, l=>l.servico, l=>l.prod305, SERV.map(s=>[s,s]));
@@ -5708,30 +5721,54 @@ function htmlExtrasProdOrigem(){
   return `<div class="cabeca prod-subcabeca"><div><div class="sobrescrito">Origem da primípara</div>
       <h2 style="font-size:18px">Sêmen, serviço e mãe</h2></div><p>${notaPL(ex)}</p></div>${corpo}`;
 }
-function htmlExtrasProdEfic(){
+/* Quadrantes idade ao 1º parto × produção 305 d (R50, 26/10/2026).
+   modo 'faz': cortes = medianas da PRÓPRIA fazenda (aba Primeira lactação).
+   modo 'nac': cortes fixos do benchmarking nacional (aba Benchmarking).
+   Os dois têm seletor de ciclo de parto (1º jul a 30 jun); o seletor só recorta a amostra da fazenda. */
+const estadoQuad = { faz:'', nac:'' };
+function htmlQuadrantes(modo){
   const ex = extrasAtual(); if(!ex || !ex.nPrim) return '';
   const E = ex.eficiencia, N = BENCH_REF.eficiencia.quadrantes, M = BENCH_REF.eficiencia.medianas;
-  const anos = Object.keys(E.porAno || {}).sort((a,b)=>Number(b)-Number(a));
-  const escolhas = `<div class="linha-seletor" style="margin:12px 0"><label for="selAnoQuadProd">Ano do primeiro parto</label><select id="selAnoQuadProd" class="campo-filtro" onchange="atualizarQuadrantesProd(this.value)"><option value="">Geral · últimos 5 anos</option>${anos.map(a=>`<option value="${a}">${a}</option>`).join('')}</select></div>`;
-  const render = (dados, ano) => {
-    const q = (k, titulo, cls) => { const f = dados.quad[k], n = N[k];
+  const F = modo === 'faz', base = F ? E.propria : E;
+  const ciclos = (E.ciclos || []).slice().reverse();
+  if(!ciclos.some(c => String(c.c) === estadoQuad[modo])) estadoQuad[modo] = '';
+  const idSel = F ? 'selCicloQuadFaz' : 'selCicloQuadNac', idRes = F ? 'resultadoQuadFaz' : 'resultadoQuadNac';
+  const fnAtual = F ? 'atualizarQuadFaz' : 'atualizarQuadNac';
+  const escolhas = `<div class="linha-seletor" style="margin:12px 0"><label for="${idSel}">Ciclo do parto</label><select id="${idSel}" class="campo-filtro" onchange="${fnAtual}(this.value)"><option value="">Geral · últimos 5 anos</option>${ciclos.map(c=>`<option value="${c.c}" ${String(c.c)===estadoQuad[modo]?'selected':''}>${c.rotulo} · jul/${c.c} a jun/${c.c+1}${c.parcial?' (parcial)':''}</option>`).join('')}</select></div>`;
+  const C = F ? E.propria.cortes : { idade:M.idadePartoMediana, pl:M.pl305Mediana };
+  const render = (dados, ciclo) => {
+    const q = (k, titulo, cls) => { const f = dados.quad[k];
       return `<div class="quad-card ${cls}"><b>${titulo}</b><strong>${f.perc==null?'—':pf(f.perc,1)}</strong>
-        <span>da fazenda · benchmarking nacional ${pf(n.perc,1)}</span>
+        <span>${F ? 'das primíparas da fazenda' : 'da fazenda · benchmarking nacional '+pf(N[k].perc,1)}</span>
         <div class="quad-med"><div><em>Idade média ao 1º parto</em><b>${f.idade==null?'—':nf(f.idade,1)+' meses'}</b></div><div><em>Produção média em 305 dias</em><b>${f.pl==null?'—':nf(f.pl,0)+' kg'}</b></div></div>
         <small>N: ${nf(f.n)} primíparas</small></div>`; };
-    return `<div class="quad-grid">${q('precoceAlta','Pariram cedo e produziram bem','q-verde')}${q('tardiaAlta','Pariram tarde e produziram bem','q-ambar')}${q('precoceBaixa','Pariram cedo e produziram menos','q-azul')}${q('tardiaBaixa','Pariram tarde e produziram menos','q-cinza')}</div>
-      <p class="nota-rodape"><b>População da fazenda:</b> ${ano?'partos de '+esc(String(ano)):'partos de '+dBrD(ex.janelaPL.ini)+' a '+dBrD(ex.janelaPL.fim)} · <b>raça:</b> Holandesa · <b>N avaliados:</b> ${nf(dados.n)} primíparas com idade ao parto e produção corrigida para 305 dias elegíveis. <b>Critérios nacionais fixos:</b> idade ao primeiro parto ≤ ${nf(M.idadePartoMediana,1)} meses; produção ≥ ${nf(M.pl305Mediana,0)} kg/305 dias. <b>Referência:</b> benchmarking Alta CRIA (medianas nacionais; N: 14.046 Holandesas, partos de 01/07/2024 a 30/06/2025). Categorias mutuamente exclusivas; grupos da referência nacional representam aproximadamente um quarto cada.</p>`;
+    const inf = ciclo ? ciclos.find(c => String(c.c) === String(ciclo)) : null;
+    const pop = inf ? `partos de ${dBrD(inf.ini)} a ${dBrD(inf.fim)}${inf.parcial?' (ciclo parcial: só parte dele está nos últimos 5 anos do arquivo)':''}` : `partos de ${dBrD(ex.janelaPL.ini)} a ${dBrD(ex.janelaPL.fim)}`;
+    const peq = dados.n > 0 && dados.n < N_MINIMO_CARTAO ? `<p class="nota-rodape"><b>Amostra pequena</b> (menos de ${N_MINIMO_CARTAO} primíparas neste recorte) — leia como indício.</p>` : '';
+    return `<div class="quad-grid">${q('precoceAlta','Pariram cedo e produziram bem','q-verde')}${q('tardiaAlta','Pariram tarde e produziram bem','q-ambar')}${q('precoceBaixa','Pariram cedo e produziram menos','q-azul')}${q('tardiaBaixa','Pariram tarde e produziram menos','q-cinza')}</div>${peq}
+      <p class="nota-rodape"><b>Partos considerados:</b> ${pop} · <b>raças:</b> ${F ? 'todas as da fazenda' : 'Holandesa'} · <b>N avaliados:</b> ${nf(dados.n)} primíparas com idade ao parto e produção corrigida para 305 dias elegíveis. Categorias mutuamente exclusivas.</p>`;
   };
-  const ef = E.n ? `${escolhas}<p class="nota-rodape" style="margin:0 0 14px;padding:12px;border-left:4px solid #153D88;background:#EEF3FB"><b>BENCHMARKING NACIONAL · HOLANDESAS</b><br><span>N: 14.046 · Partos de 01/07/2024 a 30/06/2025</span><br>Parto precoce: até ${nf(M.idadePartoMediana,1)} meses · Alta produção: ${nf(M.pl305Mediana,0)} kg ou mais em 305 dias. Os cortes são fixos; o filtro de ano altera somente a amostra da fazenda.</p><div id="resultadoQuadrantesProd">${render(E,'')}</div>`
-    : semCasoHtml('Sem primíparas Holandesas com produção elegível nos últimos 5 anos — os grupos usam as medianas nacionais, que são de Holandesas.');
-  window.atualizarQuadrantesProd = (ano) => {
-    const alvo=document.getElementById('resultadoQuadrantesProd');
-    if(!alvo) return;
-    const d=ano ? E.porAno[ano] : E;
-    alvo.innerHTML=d && d.n ? render(d,ano) : '<div class="vazio">Sem primíparas Holandesas elegíveis no ano selecionado.</div>';
+  const caixaCortes = F
+    ? `<p class="nota-rodape" style="margin:0 0 14px;padding:12px;border-left:4px solid #1E7B4F;background:#E9F5EF"><b>CORTES DA PRÓPRIA FAZENDA</b><br>Parto precoce: até ${nf(C.idade,1)} meses · Alta produção: ${nf(C.pl,0)} kg ou mais em 305 dias — medianas das ${nf(E.propria.n)} primíparas dos últimos 5 anos, <b>de todas as raças da fazenda</b> (${E.propria.racas.map(([r,k])=>esc(r)+' '+pf(k/E.propria.n,0)).join(', ')}). Os cortes misturam raças; os nacionais são só de Holandesas (${nf(M.idadePartoMediana,1)} meses e ${nf(M.pl305Mediana,0)} kg).<br>Como o corte é a mediana da própria fazenda, na visão geral os grupos tendem a ficar perto de 25% (o desvio vem da relação entre idade e produção na fazenda): o que mais informa é a idade e a produção médias de cada grupo e o quanto os cortes se afastam dos nacionais. Ao escolher um ciclo, os cortes continuam os dos 5 anos — por isso a divisão do ciclo muda e mostra se ele foi melhor ou pior que a média da fazenda.</p>`
+    : `<p class="nota-rodape" style="margin:0 0 14px;padding:12px;border-left:4px solid #153D88;background:#EEF3FB"><b>BENCHMARKING NACIONAL · HOLANDESAS</b><br><span>N: 14.046 · Partos de 01/07/2024 a 30/06/2025</span><br>Parto precoce: até ${nf(M.idadePartoMediana,1)} meses · Alta produção: ${nf(M.pl305Mediana,0)} kg ou mais em 305 dias. Os cortes e os percentuais nacionais são fixos; o filtro de ciclo altera somente a amostra da fazenda.</p>`;
+  window[fnAtual] = (ciclo) => {
+    estadoQuad[modo] = String(ciclo || '');
+    const alvo = document.getElementById(idRes); if(!alvo) return;
+    const d = ciclo ? (F ? E.propria.porCiclo[ciclo] : E.porCiclo[ciclo]) : base;
+    alvo.innerHTML = d && d.n ? render(d, ciclo) : '<div class="vazio">Sem primíparas elegíveis no ciclo selecionado.</div>';
   };
+  const ini = estadoQuad[modo], d0 = ini ? (F ? E.propria.porCiclo[ini] : E.porCiclo[ini]) : base;
+  return (F ? E.propria.n : E.n) ? `${escolhas}${caixaCortes}<div id="${idRes}">${d0 && d0.n ? render(d0, ini) : '<div class="vazio">Sem primíparas Holandesas elegíveis no ciclo selecionado.</div>'}</div>`
+    : semCasoHtml((F ? 'Sem primíparas com produção elegível nos últimos 5 anos.' : 'Sem primíparas Holandesas com produção elegível nos últimos 5 anos — o benchmarking nacional é de Holandesas.'));
+}
+function htmlExtrasProdEfic(){
+  const ex = extrasAtual(); if(!ex || !ex.nPrim) return '';
   return `<div class="cabeca prod-subcabeca"><div><div class="sobrescrito">Síntese da recria</div><h2 style="font-size:18px">Eficiência reprodutiva-produtiva</h2></div></div>
-    <div class="grade">${cartao('Eficiência reprodutiva-produtiva: quem pariu cedo e produziu bem?', '', ef)}</div>`;
+    <div class="grade">${cartao('Eficiência reprodutiva-produtiva: quem pariu cedo e produziu bem?', 'Divisão dentro dos dados da própria fazenda · todas as raças', htmlQuadrantes('faz'))}</div>`;
+}
+function htmlQuadranteBench(){
+  const h = htmlQuadrantes('nac'); if(!h) return '';
+  return `<div class="grade" style="margin-top:16px">${cartao('Eficiência reprodutiva-produtiva: fazenda × benchmarking nacional', 'Quem pariu cedo e produziu bem · primíparas Holandesas', h)}</div>`;
 }
 
 /* ----------------------------- desenho ----------------------------- */
@@ -5987,6 +6024,7 @@ function painelBenchmarking(r){
       Cada indicador é comparado separadamente; estar numa faixa não é uma classificação geral da fazenda. O N de cada resultado aparece ao lado; abaixo de 20 animais ele ganha o selo de amostra pequena — a faixa continua, mas o resultado oscila mais.
     </div>
     <div class="grade" style="margin-top:4px">${cartao('Resumo da fazenda no benchmarking', 'Período de '+df(B.ini)+' a '+df(B.fim), tabelaResumo)}</div>
+    ${htmlQuadranteBench()}
     <div class="grade" style="margin-top:16px">${cartao('Faixa da fazenda em cada indicador', GRUPOS_BENCH[gid], reguas)}</div>
     <details class="bench-referencias">
       <summary>Ver valores de referência do benchmarking</summary>
