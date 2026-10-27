@@ -376,6 +376,7 @@
           <li><a href="#" data-tool="genetica-analise"><span>Análise genética</span><span class="arrow" aria-hidden="true">→</span></a></li>
           <li><a href="#" data-tool="genetica-endogamia"><span>Endogamia</span><span class="arrow" aria-hidden="true">→</span></a></li>
           <li><a href="#" data-tool="genetica-monetizacao"><span>Monetização</span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="#" data-tool="genetica-naab"><span>Padronização Código NAAB</span><span class="arrow" aria-hidden="true">→</span></a></li>
         </ul>
       </article>
 
@@ -442,6 +443,7 @@
     'genetica-analise':    'https://altaleite.github.io/plataforma-azul/analise-genetica/',
     'genetica-endogamia':  'https://altaleite.github.io/plataforma-azul/endogamia/',
     'genetica-monetizacao':'https://altaleite.github.io/plataforma-azul/monetizacao/',
+    'genetica-naab':       'https://altaleite.github.io/plataforma-azul/padronizador-naab/',
     'reproducao-analise':  'https://altaleite.github.io/plataforma-azul/analise-reprodutiva/',
     'reproducao-evolucao': 'https://altaleite.github.io/plataforma-azul/evolucao-rebanho/',
     'pecuaria-acw':        'https://altaleite.github.io/plataforma-azul/comparativo-acw/',
@@ -566,10 +568,10 @@
       return c.keys();
     }).then(function(keys){
       var ferramentas = keys.filter(function(r){
-        return /\/(analise-genetica|endogamia|monetizacao|analise-reprodutiva|evolucao-rebanho|comparativo-acw|ideagri|excel-dcu|perguntas-respostas)\//.test(r.url);
+        return /\/(analise-genetica|endogamia|monetizacao|analise-reprodutiva|evolucao-rebanho|comparativo-acw|padronizador-naab|ideagri|excel-dcu|perguntas-respostas)\//.test(r.url);
       }).length;
       if (ferramentas > 0) {
-        status.textContent = ferramentas + ' de 9 ferramentas disponíveis sem internet. Atualize sempre que alguma ferramenta mudar.';
+        status.textContent = ferramentas + ' de 10 ferramentas disponíveis sem internet. Atualize sempre que alguma ferramenta mudar.';
         status.className = 'pronto';
         btn.textContent = 'Atualizar cópia offline';
       }
