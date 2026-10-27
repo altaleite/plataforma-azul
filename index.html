@@ -415,7 +415,6 @@
         <ul class="tool-list">
           <li><a href="#" data-tool="neonatos-ideagri"><span>Análise de dados · Ideagri</span><span class="arrow" aria-hidden="true">→</span></a></li>
           <li><a href="#" data-tool="neonatos-excel-dcu"><span>Análise de dados · Excel/DCU</span><span class="arrow" aria-hidden="true">→</span></a></li>
-          <li><a href="#" data-tool="neonatos-perguntas-respostas"><span>Perguntas e Respostas Alta CRIA</span><span class="arrow" aria-hidden="true">→</span></a></li>
         </ul>
       </article>
 
@@ -448,8 +447,7 @@
     'reproducao-evolucao': 'https://altaleite.github.io/plataforma-azul/evolucao-rebanho/',
     'pecuaria-acw':        'https://altaleite.github.io/plataforma-azul/comparativo-acw/',
     'neonatos-ideagri':    'https://altaleite.github.io/plataforma-azul/ideagri/',
-    'neonatos-excel-dcu':  'https://altaleite.github.io/plataforma-azul/excel-dcu/',
-    'neonatos-perguntas-respostas': 'https://altaleite.github.io/plataforma-azul/perguntas-respostas/'
+    'neonatos-excel-dcu':  'https://altaleite.github.io/plataforma-azul/excel-dcu/'
   };
 
   document.querySelectorAll('.tool-list a[data-tool]').forEach(function(a){
@@ -568,10 +566,10 @@
       return c.keys();
     }).then(function(keys){
       var ferramentas = keys.filter(function(r){
-        return /\/(analise-genetica|endogamia|monetizacao|analise-reprodutiva|evolucao-rebanho|comparativo-acw|padronizador-naab|ideagri|excel-dcu|perguntas-respostas)\//.test(r.url);
+        return /\/(analise-genetica|endogamia|monetizacao|analise-reprodutiva|evolucao-rebanho|comparativo-acw|padronizador-naab|ideagri|excel-dcu)\//.test(r.url);
       }).length;
       if (ferramentas > 0) {
-        status.textContent = ferramentas + ' de 10 ferramentas disponíveis sem internet. Atualize sempre que alguma ferramenta mudar.';
+        status.textContent = ferramentas + ' de 9 ferramentas disponíveis sem internet. Atualize sempre que alguma ferramenta mudar.';
         status.className = 'pronto';
         btn.textContent = 'Atualizar cópia offline';
       }

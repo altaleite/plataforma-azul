@@ -19,7 +19,7 @@
  *
  * Ao mudar qualquer arquivo do site, suba o número da versão abaixo.
  */
-const VERSAO = 'v5';
+const VERSAO = 'v6';
 const CACHE = 'plataforma-azul-' + VERSAO;
 const CACHE_FERRAMENTAS = 'plataforma-azul-ferramentas';
 const BASE = '/plataforma-azul/';
