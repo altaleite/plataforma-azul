@@ -141,11 +141,12 @@ html,body{margin:0;min-height:100%;background:#f4f7fb}body{color:#172b4d;font:14
  const traits=targetHeaders.slice(10);
  const traitKeys=Object.fromEntries(traits.map(k=>[k,'trait_'+k]));
  const centerList=['Alta Genetics','ABS Global','Select Sires','GENEX','STgenetics','CRV','Semex','URUS','Cogent','Accelerated Genetics','Alta Genetics Canada'];
- const aliases={animal:['animalid','animal id','numero animal','n animal','nº animal','no animal','numero do animal','id animal','brinco','animal number','animal number id','numero','número'],barn:['barnname','barn name','nome','nome animal','nome da vaca','cow name'],reg:['registrationnumber','registration number','registro animal','numero registro','reg number','registration'],lact:['lactationnumber','lactation number','ordem de parto','ordem parto','total partos','partos','n lact','nº lact','no lact','n parto','nº parto','no parto','num parto','numero parto','lact','lactacao','paridade'],birth:['birthdate','birth date','data nascimento','data de nascimento','nascimento','nasc','dt nasc','dt. nasc.','date of birth'],fresh:['freshdate','fresh date','ultimo parto','último parto','data ultimo parto','last calving'],sireName:['id/nro do touro pai','id nro do touro pai','id do touro pai','sire name','nome completo do pai','nome completo pai','nome do pai','nome pai','pai nome','pai','touro','nome do touro','father name','sire','touro usado','bull name'],sireCode:['sireid','sire id','codigo naab do pai','código naab do pai','codigo naab','código naab','naab code','codigo pai','código pai','naab pai','pai codigo','pai(codigo naab)','pai (codigo naab)','n pai','nº pai','no pai'],mgsName:['avo materno - semen','avô materno - sêmen','avo materno semen','maternal grandsire name','n avo materno','nº avo materno','no avo materno','avo','avô','nome avo materno','nome avô materno','avo materno','avô materno','nome avo','mgs name','maternal grandsire'],mgsCode:['naab avo materno','naab avô materno','codigo naab do avo materno','codigo naab do avô materno','avo materno codigo naab','avô materno código naab','maternal grandsire code','codigo avo materno','código avô materno','codigo naab avo materno','mgs code','naab code do avô materno'],mggsName:['maternal great grandsire','nome bisavo materno','nome bisavô materno','bisavo materno','bisavô materno'],mggsCode:['naab bisavo materno','naab bisavô materno','codigo bisavo materno','código bisavô materno','codigo naab bisavo materno'],heifer:['heifercowindicator','categoria','status','estado','tipo animal','animal category']};
+ const aliases={animal:['animalid','animal id','numero animal','n animal','nº animal','no animal','numero do animal','id animal','brinco','animal number','animal number id','numero','número'],barn:['barnname','barn name','nome','nome animal','nome da vaca','cow name'],reg:['registrationnumber','registration number','registro animal','numero registro','reg number','registration'],lact:['lactationnumber','lactation number','ordem de parto','ordem parto','total partos','partos','n lact','nº lact','no lact','n parto','nº parto','no parto','num parto','num partos','numero partos','numero parto','lact','lactacao','paridade'],birth:['birthdate','birth date','data nascimento','data de nascimento','nascimento','nasc','dt nasc','dt. nasc.','date of birth'],fresh:['freshdate','fresh date','ultimo parto','último parto','data ultimo parto','last calving'],sireName:['id/nro do touro pai','id nro do touro pai','id do touro pai','sire name','nome completo do pai','nome completo pai','nome do pai','nome pai','pai nome','pai','touro','nome do touro','father name','sire','touro usado','bull name'],sireCode:['sireid','sire id','codigo naab do pai','código naab do pai','codigo naab','código naab','naab code','codigo pai','código pai','naab pai','pai codigo','pai(codigo naab)','pai (codigo naab)','n pai','nº pai','no pai'],mgsName:['avo materno - semen','avô materno - sêmen','avo materno semen','maternal grandsire name','n avo materno','nº avo materno','no avo materno','avo','avô','nome avo materno','nome avô materno','avo materno','avô materno','nome avo','mgs name','maternal grandsire','avo mat','avô mat','avo mat.','avo mat','avo m','avô m'],mgsCode:['naab avo materno','naab avô materno','codigo naab do avo materno','codigo naab do avô materno','avo materno codigo naab','avô materno código naab','maternal grandsire code','codigo avo materno','código avô materno','codigo naab avo materno','mgs code','naab code do avô materno'],mggsName:['maternal great grandsire','nome bisavo materno','nome bisavô materno','bisavo materno','bisavô materno','bis mat','bis. mat.','bisavo mat','bisavô mat','bis m'],mggsCode:['naab bisavo materno','naab bisavô materno','codigo bisavo materno','código bisavô materno','codigo naab bisavo materno'],heifer:['heifercowindicator','categoria','status','estado','tipo animal','animal category']};
  Object.entries(traitAliases).forEach(([key,alts])=>aliases[traitKeys[key]]=alts);
  let rawFile=null, rawRows=[], rawHeaders=[], parsed=null, result=[], discarded=[], unusedCols=[], unusedRows=[], qualityIssues=[], allBulls=[], primaryBulls=[], secondaryBulls=[], legacyBulls=[], naabMap={}, headerRowIndex=0, auditReport=null, running=false, lastColumnMap=null, lastSheetName="", taskToken=0;
  const norm=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
- const bullNorm=s=>norm(String(s??'').replace(/\b(sexado|sexada|sexed|sex|conv|convencional|dose|semen|sêmen|touro|bull|polled|et)\b/gi,' ').replace(/([a-z]{4,})sex(?:ado|ada|ed)?\b/gi,'$1'));
+ const _bullNormRaw=s=>norm(String(s??'').replace(/\b(sexado|sexada|sexed|sex|conv|convencional|dose|semen|sêmen|touro|bull|polled|et)\b/gi,' ').replace(/([a-z]{4,})sex(?:ado|ada|ed)?\b/gi,'$1'));
+ const _bnCache=new Map();const bullNorm=s=>{const k=String(s??'');let v=_bnCache.get(k);if(v===undefined){v=_bullNormRaw(k);_bnCache.set(k,v);}return v;};
  const text=(v)=>v==null?'':String(v).trim();
  const safe=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const PHASES=[['Leitura do arquivo','Leitura das abas e localização do cabeçalho'],['Padronização dos dados','Datas, identificação e características de conformação'],['Identificação de touros','Pai, avô materno e bisavô materno'],['Auditoria de integridade','Conferência entre a entrada e o arquivo Animals'],['Preparação do resultado','Resumo disponível para revisão e exportação']];
@@ -252,7 +253,7 @@ html,body{margin:0;min-height:100%;background:#f4f7fb}body{color:#172b4d;font:14
  function natural(name,code){const n=norm(name),c=norm(code),s=norm(`${name||''} ${code||''}`);const ignored=new Set(['ajuste das compras','sem nome','boi','touro','touro so','touro apenas','somente touro','sem touro','sem pai','nenhum','nao informado','desconhecido','unknown','natural','monta natural','natural service','bull only','bull','na','n a','n/a','none','null','0','-','--','sem pai informado']);return ignored.has(n)||ignored.has(c)||/\b(monta natural|natural mating|touro apenas|touro so|somente touro|sem touro|nao informado|desconhecido|unknown|natural service|bull only|boi(?:\s+\d+)?)\b/.test(s)||/\bajuste(?:s)?\s+(?:de|das?)\s+compras?\b/.test(s);}
  function reportFooter(value){const n=norm(value);return n==='totais'||n==='medias'||/^\d+\s+registros?$/.test(n)||n.startsWith('filtros padroes')||n.startsWith('animais pertencentes');}
    const matchCache=new Map();
-  const compactBull=s=>bullNorm(s).replace(/\s+/g,'').replace(/^alta/,'');
+  const _cbCache=new Map();const compactBull=s=>{const k=String(s??'');let v=_cbCache.get(k);if(v===undefined){v=bullNorm(k).replace(/\s+/g,'').replace(/^alta/,'');_cbCache.set(k,v);}return v;};
   const bullAliases={spnatural:'supernatural',cordovasf:'cordova',hasitaal:'hasitall',hasital:'hasitall'};
   function nameAndCenter(value){
    const tokens=norm(value).split(' ').filter(Boolean);
@@ -263,14 +264,16 @@ html,body{margin:0;min-height:100%;background:#f4f7fb}body{color:#172b4d;font:14
   }
   function centerCompatible(b,center){if(!center)return true;const codePrefix=b.code.slice(0,3);const known=naabMap[codePrefix]||[];return [b.central,...known].some(x=>norm(x).includes(norm(center))||norm(center).includes(norm(x)));}
 
+  const _biCache=new WeakMap();
+  function bullInfo(b){let i=_biCache.get(b);if(!i){const names=[b.name,b.full].map(compactBull).filter(Boolean);const tok=bullNorm(b.name).split(/[^a-z0-9]+/).map(compactBull).filter(t=>t.length>=4);i={literal:bullNorm(b.name).replace(/[^a-z0-9]/g,''),names,partsByName:names.map(n=>[n,...tok]),fullWords:bullNorm(b.full).split(/[^a-z0-9]+/).filter(w=>w.length>=5)};_biCache.set(b,i);}return i;}
+  const _qCache=new Map();
+  function queryInfo(query){let i=_qCache.get(query);if(!i){const clean=nameAndCenter(query).clean;const original=bullNorm(clean).replace(/[^a-z0-9]/g,''),raw=compactBull(clean);i={original,q:bullAliases[raw]||raw};_qCache.set(query,i);}return i;}
   function candidateScore(query,b){
-   const original=bullNorm(nameAndCenter(query).clean).replace(/[^a-z0-9]/g,''),raw=compactBull(nameAndCenter(query).clean),q=bullAliases[raw]||raw;if(!q)return 0;
-   const literal=bullNorm(b.name).replace(/[^a-z0-9]/g,'');
+   const {original,q}=queryInfo(query);if(!q)return 0;const info=bullInfo(b);
+   const literal=info.literal;
    if(original.startsWith('alta')&&original.length>5){return literal===original?1:(literal.startsWith('alta')?Math.min(.88,sim(original,literal)):.5);}
-   const names=[b.name,b.full].map(compactBull).filter(Boolean);
    let score=0;
-   for(const n of names){
-    const parts=[n,...(bullNorm(b.name).split(/[^a-z0-9]+/).map(compactBull).filter(t=>t.length>=4))];
+   for(const parts of info.partsByName){
     for(const v of parts){
      if(v===q)score=Math.max(score,1);
      else if(q.length>=4&&v.includes(q))score=Math.max(score,.90);
@@ -284,8 +287,8 @@ html,body{margin:0;min-height:100%;background:#f4f7fb}body{color:#172b4d;font:14
    }
    // Match por palavras significativas dentro do nome completo.
    if(q.length>=5){
-    for(const w of bullNorm(b.full).split(/[^a-z0-9]+/)){
-     if(w.length>=5){const similarity=sim(q,w);if(similarity>=.76)score=Math.max(score,similarity*.98);}
+    for(const w of info.fullWords){
+     const similarity=sim(q,w);if(similarity>=.76)score=Math.max(score,similarity*.98);
     }
    }
    if(b.source==='Primária')score+=.0002;
