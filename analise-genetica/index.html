@@ -1733,24 +1733,27 @@ const TRAITS = [
   {k:'Proteína',                       lab:'Proteína',                  u:'libras', d:0, dir:1, g:'prod'},
   {k:'Feed Saved',                     lab:'Feed Saved',                u:'libras', d:0, dir:1, g:'eficiencia'},
   {k:'Residual Feed Intake',           lab:'Consumo Alimentar Residual',u:'libras', d:0, dir:-1,g:'eficiencia'},
+  /* Ordem pedida pela equipe técnica: Saúde e Longevidade em UM bloco só
+     (Vida Produtiva, CCS, sobrevivências, mastite, ordenha, doenças) e
+     Fertilidade logo depois, com REI, DPR, CCR e HCR na sequência. */
   {k:'Vida Produtiva',                 lab:'Vida Produtiva',            u:''    ,  d:1, dir:1, g:'saude'},
-  {k:'Taxa de Gravidez da Filha',      lab:'Taxa de Prenhez da Filha',  u:''    ,      d:1, dir:1, g:'saude'},
   {k:'Pontuação de Células Somáticas', lab:'Escore de Células Somáticas',u:''    ,d:2, dir:-1,g:'saude'},
-  {k:'Taxa de Concepção de Vacas',     lab:'Taxa de Concepção de Vacas',u:''    ,      d:1, dir:1, g:'saude'},
-  {k:'Taxa de Concepção de Novilhas',  lab:'Taxa de Concepção de Novilhas',u:''    ,   d:1, dir:1, g:'saude'},
   /* "Habitabilidade" é tradução automática de Livability no BlueLink. Identificado
      empiricamente: regressão pai->filha contra C-LIV deu r=0,995 e slope=0,46
      (contra H-LIV: r=0,334). É Cow Livability — a chance da vaca continuar VIVA
      no rebanho, em pontos percentuais sobre a base da raça. Não é sobre "habitar". */
   {k:'Habitabilidade',                 lab:'Sobrevivência da Vaca (LIV)',u:''    ,     d:1, dir:1, g:'saude'},
-  {k:'Repro Efficiency Index',         lab:'Índice de Eficiência Reprodutiva',u:'', d:1, dir:1, g:'repro'},
-  {k:'Early First Calving',            lab:'Parto Precoce',             u:'',d:1,dir:-1,g:'repro'},
-  {k:'First Service Conception',       lab:'Concepção no Primeiro Serviço',u:'',d:1,dir:1,g:'repro'},
   {k:'Mastitis',                       lab:'Mastite',                   u:'',d:1,dir:-1,g:'saude'},
   {k:'Milking Speed',                  lab:'Velocidade de Ordenha',     u:'',d:1,dir:1, g:'saude'},
   {k:'Heifer Livability',              lab:'Sobrevivência da Novilha',  u:'',d:1,dir:1, g:'saude'},
   {k:'Resistance To Respiratory Disease',lab:'Resistência à Doença Respiratória',u:'',d:1,dir:1,g:'saude'},
   {k:'Resistance To Diarrhea',         lab:'Resistência à Diarreia',    u:'',d:1,dir:1, g:'saude'},
+  {k:'Repro Efficiency Index',         lab:'Índice de Eficiência Reprodutiva',u:'', d:1, dir:1, g:'repro'},
+  {k:'Taxa de Gravidez da Filha',      lab:'Taxa de Prenhez da Filha',  u:''    ,      d:1, dir:1, g:'repro'},
+  {k:'Taxa de Concepção de Vacas',     lab:'Taxa de Concepção de Vacas',u:''    ,      d:1, dir:1, g:'repro'},
+  {k:'Taxa de Concepção de Novilhas',  lab:'Taxa de Concepção de Novilhas',u:''    ,   d:1, dir:1, g:'repro'},
+  {k:'Early First Calving',            lab:'Parto Precoce',             u:'',d:1,dir:-1,g:'repro'},
+  {k:'First Service Conception',       lab:'Concepção no Primeiro Serviço',u:'',d:1,dir:1,g:'repro'},
   {k:'Facilidade de Parto do Touro',   lab:'Facilidade de Parto do Touro',u:'',d:1,dir:-1,g:'parto'},
   {k:'Facilidade no Parto da Filha',   lab:'Facilidade de Parto de Filha',u:'',    d:1, dir:-1,g:'parto'},
   {k:'Touro Natimorto',                lab:'Natimorto do Touro',        u:''    ,d:1,dir:-1,g:'parto'},
@@ -1830,14 +1833,15 @@ const sgn = (v,d=0) => v===null||!isFinite(v) ? '—' : (v>0?'+':'')+fmt(v,d);
 
 /* Valor com unidade, na ordem certa. Moeda vem antes do número; o resto vem
    depois; quem não tem unidade não ganha espaço sobrando. */
-function uv(v, t, abs){
+function uv(v, t, abs, dif){
   if(v === null || v === undefined || !isFinite(v)) return '—';
   const d = t.d ?? 0;
   if(t.pre){
     const sig = abs ? '' : (v < 0 ? '−' : '+');
     return `${sig}${t.u}\u00a0${fmt(Math.abs(v), d)}`;
   }
-  const n = abs ? fmt(Math.abs(v), d) : sgn(v, d);
+  /* TPI e NM$ são níveis absolutos: sem "+" na frente. Diferenças (dif=true) mantêm o sinal. */
+  const n = abs ? fmt(Math.abs(v), d) : ((t.semMais && !dif) ? fmt(v, d) : sgn(v, d));
   return t.u ? `${n} ${t.u}` : n;
 }
 /* Plano Genético avulso (fora de um trait). */
@@ -4410,7 +4414,9 @@ function traitUsoBull(h){
   if(k){const t=TRAITS.find(z=>z.k===k);if(t)return t;}
   if([...USO_BULL_SKIP].some(a=>normCab(a)===x)||/^(CP C|CP H|CP 511)/.test(x)||/ REL$/.test(x))return null;
   const extra=Object.entries(USO_BULL_EXTRA).find(([a])=>normCab(a)===x)?.[1];
-  return extra?{k:'bull:'+x,lab:extra[0],d:1,dir:extra[1],u:''}:null;
+  /* TPI e NM$: inteiro e sem "+". DWP$ e CFP: inteiro. PTAT: 2 casas. */
+  const dExtra = ['TPI','NM','DWP','CFP'].includes(x) ? 0 : (x==='PTAT' ? 2 : 1);
+  return extra?{k:'bull:'+x,lab:extra[0],d:dExtra,dir:extra[1],u:'',semMais:['TPI','NM'].includes(x)}:null;
 }
 const USO_MEDIA_NOME = {'MILK':'Leite','FAT':'Gordura','PROTEIN':'Proteína','FAT %':'Gordura (%)',
   'PROT%':'Proteína (%)','PL':'Vida Produtiva','DPR':'Taxa de Prenhez da Filha',
@@ -4420,6 +4426,17 @@ const USO_MEDIA_NOME = {'MILK':'Leite','FAT':'Gordura','PROTEIN':'Proteína','FA
   'DCE':'Facilidade de Parto da Filha','SSB':'Natimorto do Touro',
   'DSB':'Natimorto da Filha','UDC':'Composto do Úbere','FLC':'Composto de Pés e Pernas',
   'BWC':'Composto de Peso Corporal'};
+/* Casas decimais da tabela "Alta × Outros": as da própria característica
+   (Vida Produtiva, REI, DPR, MUI = 1; CCS, UDC, FLC, PTAT = 2; Leite, Gordura,
+   Proteína, TPI, NM$ = 0). */
+function decUsoMedia(lab){
+  const n=normCab(lab);
+  if(/%/.test(String(lab))) return 2;
+  if(/PTAT/.test(n)) return 2;
+  if(['TPI','NM','DWP','CFP'].includes(n)) return 0;
+  const t=TRAITS.find(z=>normCab(z.lab)===n) || TRAITS.find(z=>normCab(z.lab).startsWith(n));
+  return t ? t.d : 0;
+}
 function nomeCaracteristicaUso(v){const x=normCab(v);return Object.entries(USO_MEDIA_NOME).find(([a])=>normCab(a)===x)?.[1]||traitUsoBull(v)?.lab||String(v||'');}
 function lerPlanilhaUso(buf, nomeArquivo){
   const wb = XLSX.read(buf, {type:'array'});
@@ -4553,9 +4570,9 @@ function rUso(){
   $('#uso-kpis').innerHTML = [
     kpi(`Touros em uso · ${raca||'—'}`, fmt(T.length), `${fmt(T.filter(b=>b.central.alta).length)} da Alta · ${fmt(T.filter(b=>b.sexado).length)} com versão sexada`),
     kpi(`${t.lab} médio dos touros`, uv(mUso,t), vals_.length<T.length?`${fmt(vals_.length)} de ${fmt(T.length)} touros com o dado`:'todos os touros com o dado'),
-    kpi('Distância da base do rebanho', dReb===null?'—':uv(dReb,t), mReb===null?'sem dado no rebanho':`${raca} em ${uv(mReb,t)} · não é ganho projetado`,
+    kpi('Distância da base do rebanho', dReb===null?'—':uv(dReb,t,false,true), mReb===null?'sem dado no rebanho':`${raca} em ${uv(mReb,t)} · não é ganho projetado`,
         dReb!==null && t.dir && dReb*t.dir>0 ? 'k-green':'k-amber'),
-    kpi('vs média CDCB', dCd===null?'—':uv(dCd,t), ref?`${esc(raca)} em ${uv(ref.media,t)} · referência de touros`:'sem equivalente publicado',
+    kpi('vs média CDCB', dCd===null?'—':uv(dCd,t,false,true), ref?`${esc(raca)} em ${uv(ref.media,t)} · referência de touros`:'sem equivalente publicado',
         dCd!==null && t.dir && dCd*t.dir>0 ? 'k-green':'')
   ].join('');
 
@@ -4582,8 +4599,8 @@ function rUso(){
         title:c => c[0].raw.nome,
         label:c => `${t.lab}: ${uv(c.raw.y,t)}`,
         afterLabel:c => [`${c.raw.naab}${c.raw.sexado?' · tem versão sexada':''}`, c.raw.central?`Central: ${c.raw.central}`:'',
-          mReb!==null?`vs rebanho ${raca}: ${uv(c.raw.y-mReb,t)}`:'',
-          ref?`vs ${raca} (CDCB touros): ${uv(c.raw.y-ref.media,t)}`:''].filter(Boolean)}}},
+          mReb!==null?`vs rebanho ${raca}: ${uv(c.raw.y-mReb,t,false,true)}`:'',
+          ref?`vs ${raca} (CDCB touros): ${uv(c.raw.y-ref.media,t,false,true)}`:''].filter(Boolean)}}},
       scales:{x:{grid:{display:false}, title:{display:true,text:'touros ordenados do melhor para o pior nesta característica'},
                  min:0, max:ord.length+1,
                  ticks:{stepSize:1, precision:0, autoSkip:false, callback:v=>Number.isInteger(v)&&v>=1&&v<=ord.length?v:''}},
@@ -4622,8 +4639,8 @@ function rUso(){
     const d2 = (mu!==null && rx) ? mu-rx.media : null;
     const cls = d => d===null || !x.dir ? '' : (d*x.dir>0 ? 'pos':'neg');
     h += `<tr><td>${esc(x.lab)}</td><td><b>${uv(mu,x)}</b></td><td>${fmt(v.length)}</td>`+
-         `<td>${uv(mr,x)}</td><td class="${cls(d1)}">${d1===null?'—':uv(d1,x)}</td>`+
-         `<td>${rx?uv(rx.media,x):'—'}</td><td class="${cls(d2)}">${d2===null?'—':uv(d2,x)}</td></tr>`;
+         `<td>${uv(mr,x)}</td><td class="${cls(d1)}">${d1===null?'—':uv(d1,x,false,true)}</td>`+
+         `<td>${rx?uv(rx.media,x):'—'}</td><td class="${cls(d2)}">${d2===null?'—':uv(d2,x,false,true)}</td></tr>`;
   });
   $('#t-uso-comp').innerHTML = h+'</tbody>'; ordenavel('t-uso-comp');
   const proj = (mReb!==null && mUso!==null) ? (mUso+mReb)/2 : null;
@@ -4651,9 +4668,9 @@ function rUso(){
     $('#t-uso-avg').innerHTML =
       `<thead><tr><th>Característica</th><th>${esc(M.colA)}</th><th>${esc(M.colB)}</th><th>Diferença</th></tr></thead><tbody>`+
       M.linhas.map(l => {
-        const d = (l.a!==null && l.b!==null) ? l.a-l.b : null;
-        return `<tr><td>${esc(l.trait)}</td><td><b>${fmt(l.a,0)}</b></td><td>${l.b===null?'—':fmt(l.b,0)}</td>`+
-               `<td>${d===null?'—':sgn(d,0)}</td></tr>`;
+        const d = (l.a!==null && l.b!==null) ? l.a-l.b : null, dd = decUsoMedia(l.trait);
+        return `<tr><td>${esc(l.trait)}</td><td><b>${fmt(l.a,dd)}</b></td><td>${l.b===null?'—':fmt(l.b,dd)}</td>`+
+               `<td>${d===null?'—':sgn(d,dd)}</td></tr>`;
       }).join('')+`</tbody>`;
     ordenavel('t-uso-avg');
   } else $('#uso-avg-card').hidden = true;
