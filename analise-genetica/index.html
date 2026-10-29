@@ -96,6 +96,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 #drop:hover,#drop.over{background:rgba(255,255,255,.13);border-color:#fff}
 #drop .big{font-size:16px;font-weight:600;margin-bottom:4px}
 #drop .small{font-size:13px;color:#B9CBEA}
+#drop .drop-tag{display:inline-block;background:#6EA0EB;color:#0F2447;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 11px;border-radius:99px;margin-bottom:12px}
+#drop .big{font-size:24px;font-weight:700;margin-bottom:6px}
+#drop .drop-sub{font-size:14px;font-weight:600;color:#fff;margin-bottom:10px}
 .gate-note{margin-top:22px;font-size:12px;color:#8FA9D4;line-height:1.7}
 #gate-err{margin-top:14px;background:rgba(179,58,46,.25);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:10px 14px;font-size:13px;display:none;text-align:left}
 
@@ -198,6 +201,7 @@ tr.total:hover td{background:var(--alta-deep)}
 .seg button{padding:5px 11px;font-size:12px;font-weight:500;border-radius:5px;color:var(--ink-2);transition:.13s}
 .seg button.on{background:var(--card);color:var(--alta);box-shadow:0 1px 3px rgba(0,0,0,.09);font-weight:600}
 .seg button:disabled{opacity:.42;cursor:not-allowed}
+.evol-ctl{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}.evol-ctl-l{font-size:12px;font-weight:600;color:var(--ink-2)}
 @media(max-width:760px){
   .seg button.on{background:var(--alta);color:#fff;box-shadow:none}
   .seg-dark button.on{background:#fff;color:var(--alta)}
@@ -1078,8 +1082,10 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
       <div class="gate-field gate-wide"><label for="analyst-name">Responsável pela análise</label><input id="analyst-name" type="text" placeholder="Quem assina o relatório" autocomplete="off"></div>
     </div>
     <div id="drop" tabindex="0" role="button" aria-label="Carregar arquivo CSV">
-      <div class="big">Arraste os CSV do BlueLink aqui</div>
-      <div class="small">um ou vários · vacas, novilhas e prenhezes do <b>mesmo rebanho</b></div>
+      <div class="drop-tag">Arquivo esperado</div>
+      <div class="big">Relatório de Índice de Fêmeas</div>
+      <div class="drop-sub">exportado do BlueLink em .csv · português ou inglês</div>
+      <div class="small">arraste aqui ou clique para escolher · um ou vários arquivos (vacas, novilhas e prenhezes) do <b>mesmo rebanho</b></div>
       <input type="file" id="file" accept=".csv,text/csv" multiple hidden>
     </div>
     <div id="gate-err"></div>
@@ -1322,7 +1328,7 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
     <div class="cert-animal-control"><label for="cert-animal">Escolher animal</label><select id="cert-animal" aria-label="Escolha o animal para emitir o certificado"></select></div><div class="cert-animal-control"><label for="cert-busca">Ou digitar o número do animal</label><input id="cert-busca" type="search" placeholder="Digite o ID e pressione Enter" autocomplete="off"><small id="cert-busca-msg" role="status"></small></div>
     <div><label for="cert-cycle">Data oficial da prova</label><select id="cert-cycle"><option value="04">Abril</option><option value="08">Agosto</option><option value="12">Dezembro</option></select></div>
     <div><label for="cert-year">Ano</label><input id="cert-year" type="number" min="2020" max="2100"></div>
-    <div class="cert-actions"><button id="cert-image" class="cert-image-btn" type="button">Baixar imagem</button></div>
+    <div class="cert-actions"><button id="cert-image" class="cert-image-btn" type="button">Salvar como imagem</button><button id="cert-pdf" class="cert-image-btn" type="button">Salvar como PDF</button></div>
   </div>
   <div id="cert-output"></div>
 </section>
@@ -1442,10 +1448,10 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
     <span style="font-size:12px;font-weight:600;color:var(--ink-2);margin-left:8px">n mínimo/ano</span>
     <select id="sel-nmin"><option value="1">1</option><option value="3" selected>3</option><option value="5">5</option><option value="10">10</option></select>
   </div></div>
-  <div class="grid g4" id="evol-kpis" style="margin-bottom:16px"></div>
+  <div class="grid g3" id="evol-kpis" style="margin-bottom:16px"></div>
   <div class="card"><div class="card-h"><h3>Tendência genética por ano de nascimento</h3></div>
     <div class="card-b"><div class="chart-wrap"><canvas id="c-evol"></canvas></div>
-      <div id="evol-qual" style="margin-top:14px"></div></div></div>
+      <div class="evol-ctl"><span class="evol-ctl-l">Rótulos no gráfico</span><span class="seg"><button type="button" id="btn-evol-pct" class="on" aria-pressed="true">Variação % vs. ano anterior</button></span></div></div></div>
   <div class="card" style="margin-top:16px"><div class="card-h"><h3>Dispersão do rebanho × referência CDCB</h3>
     <span class="hint" id="evol2-hint"></span></div>
     <div class="card-b"><div class="chart-wrap" style="height:390px"><canvas id="c-evol2"></canvas></div>
@@ -1562,7 +1568,7 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
     <div class="card"><div class="card-h"><h3>Concentração do rebanho por touro</h3><span class="hint">nome completo, filhas e participação</span></div>
       <div class="card-b"><div class="donut-wrap"><canvas id="c-donut"></canvas></div><div class="ins info" id="donut-resumo" style="margin-top:12px"></div></div></div>
     <div class="card"><div class="card-h"><h3>Mérito genético × Número de filhas</h3>
-      <span class="ch-tools"><select id="sel-bull-ano" aria-label="Ano de nascimento das filhas"></select><select id="sel-bull-cat" aria-label="Categoria das filhas"></select><select id="sel-bull-metric" aria-label="Característica"></select></span></div>
+      <span class="ch-tools"><select id="sel-bull-ano" aria-label="Ano de nascimento das filhas"></select><select id="sel-bull-cat" aria-label="Categoria das filhas"></select><select id="sel-bull-metric" aria-label="Característica"></select><select id="sel-bull-pct" aria-label="Percentual de touros com mais filhas" title="Mostra só os touros com mais filhas no rebanho"></select></span></div>
       <div class="card-b"><div class="rank-wrap"><canvas id="c-quad"></canvas></div><div class="quadleg" id="quad-leg"></div></div></div>
   </div>
   <div class="card" style="margin-top:16px">
@@ -1583,15 +1589,6 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
     <div class="card-h"><h3>Ranking estratégico por central</h3><span class="colsel" id="central-cols"></span></div>
     <div class="card-b tw"><div class="tabela-fixa"><table id="t-centrais"></table></div></div>
   </div>
-  <div class="card admin-only" style="margin-top:16px"><div class="card-b">
-    <div id="drop-naab" tabindex="0" role="button" aria-label="Carregar lista de Marketing Codes do NAAB">
-      <div class="big">Substituir a lista de centrais (Marketing Codes do NAAB)</div>
-      <div class="small">arraste o .xlsx aqui · colunas <b>Marketing Code #</b> e <b>Company Name</b></div>
-      <input type="file" id="file-naab" accept=".xlsx,.xls" hidden>
-    </div>
-    <div id="naab-err" class="ins bad" style="display:none;margin-top:10px"></div>
-    <div class="ghint" id="naab-status" style="margin-top:10px"></div>
-  </div></div>
 </section>
 
 <!-- ===== TOUROS vs POPULAÇÃO ===== -->
@@ -1674,7 +1671,7 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
     <span style="font-size:12px;font-weight:600;color:var(--ink-2);margin-left:8px">Dentro de</span>
     <select id="sel-pool"></select>
   </div></div>
-  <div class="grid g4" id="sel-kpis" style="margin-bottom:16px"></div>
+  <div class="grid g3" id="sel-kpis" style="margin-bottom:16px"></div>
   <div class="card" style="margin-bottom:16px"><div class="card-h"><h3>Distribuição do rebanho na característica</h3>
     <span class="hint" id="dec-hint"></span></div>
     <div class="card-b tw"><table id="t-decis" class="center-all"></table>
@@ -1713,7 +1710,7 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
 </div>
 
 <footer id="ftr" hidden>
-  <b>Plataforma Azul</b> — versão 3.9 · Alta Genetics Brasil · Programas e Serviços Leite<br>
+  <b>Plataforma Azul</b> — atualizada em <span id="ftr-ver">29/10/2026</span> · Alta Genetics Brasil · Programas e Serviços Leite<br>
   Fonte genética das fêmeas: Relatório de Índice de Fêmeas (BlueLink). Identificação de touros e raça complementada pelo BullSearch USA-202608.
   Categorias de idade calculadas na data de abertura deste relatório. Nenhum dado sai deste navegador.
 </footer>
@@ -1726,6 +1723,8 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
 
 /* --- Direções de seleção. Rafael: revise antes de publicar. dir 1=maior melhor,
    -1=menor melhor, 0=intermediário/neutro (não colorir). ------------------ */
+/* Data da última versão publicada. Atualize junto com cada nova entrega do index. */
+const APP_ATUALIZADO = '29/10/2026';
 const TRAITS = [
   {k:'Meu Índice',                     lab:'Plano Genético',            u:'US$', pre:1, d:0, dir:1, g:'plano'},
   {k:'Leite',                          lab:'Leite',                     u:'libras', d:0, dir:1, g:'prod'},
@@ -1737,7 +1736,7 @@ const TRAITS = [
      (Vida Produtiva, CCS, sobrevivências, mastite, ordenha, doenças) e
      Fertilidade logo depois, com REI, DPR, CCR e HCR na sequência. */
   {k:'Vida Produtiva',                 lab:'Vida Produtiva',            u:''    ,  d:1, dir:1, g:'saude'},
-  {k:'Pontuação de Células Somáticas', lab:'Escore de Células Somáticas',u:''    ,d:2, dir:-1,g:'saude'},
+  {k:'Pontuação de Células Somáticas', lab:'Escore de Células Somáticas',u:''    ,d:2, dir:-1,g:'saude', semMais:true, limVerm:3},
   /* "Habitabilidade" é tradução automática de Livability no BlueLink. Identificado
      empiricamente: regressão pai->filha contra C-LIV deu r=0,995 e slope=0,46
      (contra H-LIV: r=0,334). É Cow Livability — a chance da vaca continuar VIVA
@@ -1833,6 +1832,10 @@ const sgn = (v,d=0) => v===null||!isFinite(v) ? '—' : (v>0?'+':'')+fmt(v,d);
 
 /* Valor com unidade, na ordem certa. Moeda vem antes do número; o resto vem
    depois; quem não tem unidade não ganha espaço sobrando. */
+/* Valor-nível de uma característica: Escore de Células Somáticas (e TPI/NM$) não levam "+". */
+const nivel = (v,t) => (v===null||v===undefined||!isFinite(v)) ? '—' : (t.semMais ? fmt(v,t.d) : sgn(v,t.d));
+/* Cor do nível: CCS vermelho acima de 3,0; as demais seguem o sentido desejável. */
+const classeNivel = (v,t) => t.limVerm!==undefined ? (v>t.limVerm?'neg':'pos') : (t.dir?(t.dir*v>0?'pos':(v===0?'zero':'neg')):'');
 function uv(v, t, abs, dif){
   if(v === null || v === undefined || !isFinite(v)) return '—';
   const d = t.d ?? 0;
@@ -1881,6 +1884,7 @@ function chart(id, cfg){
 }
 
 Chart.defaults.font.family="Arial, sans-serif";
+Chart.defaults.locale="pt-BR";   /* eixos dos gráficos também com ponto de milhar: 2.490 */
 Chart.defaults.font.size = 11;
 Chart.defaults.devicePixelRatio = Math.max(window.devicePixelRatio || 1, 2);
 Chart.defaults.color = '#4A5468';
@@ -2270,7 +2274,7 @@ function aplicarFonte(f, silencioso){
   pintarFiltro();
   $('#m-n').textContent = fmt(D.rows.length);
   $('#m-anos').textContent = D.anos.length ? `${D.anos[0]}–${D.anos[D.anos.length-1]}` : '—';
-  $('#m-touros').textContent = new Set(D.rows.map(r=>r.codTouro).filter(Boolean)).size;
+  $('#m-touros').textContent = fmt(new Set(D.rows.map(r=>r.codTouro).filter(Boolean)).size);
   updateMetaUI();
   painted = {};
   const atual = (document.querySelector('.view.on')?.id || 'v-geral').replace('v-','');
@@ -3021,7 +3025,7 @@ function montarResumo(){
    de procedência dos dados, que é informação de método. */
 function montarRecomendacoes(){
   $('#rep-foot').innerHTML =
-    `Plataforma Azul 3.9 · Alta Genetics Brasil · Programas e Serviços Leite · gerado em ${new Date().toLocaleDateString('pt-BR')}`+
+    `Plataforma Azul · atualizada em ${APP_ATUALIZADO} · Alta Genetics Brasil · Programas e Serviços Leite · gerado em ${new Date().toLocaleDateString('pt-BR')}`+
     `${META.analyst ? ` · análise por <b>${esc(META.analyst)}</b>` : ''}.<br>`+
     `Fonte genética: Relatório de Índice de Fêmeas (BlueLink)${ARQUIVOS.length>1?` — ${ARQUIVOS.length} arquivos unidos: ${ARQUIVOS.map(x=>esc(x.nome)).join(', ')}`:''}. `+
     `Identificação de touros/raça: BullSearch ${esc(BULLSEARCH_EMBED.version||[...B.proofs].join(', ')||'não informado')}. `+
@@ -3143,7 +3147,7 @@ function atualizarCorteCertificado(){
   if(selecionados.some(r=>String(r.id)===valorAtual)) input.value=valorAtual;
   else input.selectedIndex=0;
   const busca=$('#cert-busca'); if(busca?.value.trim() && !selecionados.some(r=>String(r.id).trim()===busca.value.trim())) busca.value='';
-  const texto=criterios.length ? `${selecionados.length} de ${todos.length} fêmeas · corte em cascata: ${criterios.map(c=>c.lab).join(' → ')}${certPct<100?` · top ${certPct}% por etapa`:''}` : `${selecionados.length} fêmeas · lista completa`;
+  const texto=criterios.length ? `${fmt(selecionados.length)} de ${fmt(todos.length)} fêmeas · corte em cascata: ${criterios.map(c=>c.lab).join(' → ')}${certPct<100?` · top ${certPct}% por etapa`:''}` : `${fmt(selecionados.length)} fêmeas · lista completa`;
   $('#cert-filter-hint').textContent=texto;
   document.querySelectorAll('#cert-seg button').forEach(b=>b.classList.toggle('on',+b.dataset.p===certPct));
   renderCertificado();
@@ -3216,13 +3220,42 @@ function rCertificado(){
   $('#cert-cycle').onchange=atualizar; $('#cert-year').oninput=atualizar;
   const certPrintBtn=$('#cert-print'); if(certPrintBtn) certPrintBtn.onclick=emitirCertificado;
   $('#cert-image').onclick=baixarImagemCertificado;
+  $('#cert-pdf').onclick=baixarPdfCertificado;
   atualizarCorteCertificado();
 }
 /* Exportação de imagem do certificado — implementação única da release. */
-function baixarImagemCertificado(){
+function nomeArquivoCertificado(animal){
+  /* "<código do animal> - Plataforma Azul Alta" (imagem e PDF) */
+  return `${String(animal.id).replace(/[\\\/:*?"<>|]+/g,'_').trim()} - Plataforma Azul Alta`;
+}
+function baixarArquivoBlob(blob,nome){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=nome;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500);}
+/* PDF de 1 página A4 sem biblioteca: a imagem do certificado entra como JPEG
+   dentro de um PDF mínimo (catálogo, página, imagem, conteúdo). */
+function montarPdfA4(jpegDataUrl, w, h){
+  const bin=atob(jpegDataUrl.split(',')[1]), jpg=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) jpg[i]=bin.charCodeAt(i);
+  const PW=595.28, PH=841.89, M=22, s=Math.min((PW-2*M)/w,(PH-2*M)/h), iw=w*s, ih=h*s, x=(PW-iw)/2, y=(PH-ih)/2;
+  const enc=new TextEncoder(), partes=[], offs=[]; let pos=0;
+  const push=u=>{partes.push(u);pos+=u.length;}, txt=t=>push(enc.encode(t));
+  const obj=(n,fn)=>{offs[n]=pos;txt(`${n} 0 obj\n`);fn();txt('endobj\n');};
+  txt('%PDF-1.4\n');
+  obj(1,()=>txt('<< /Type /Catalog /Pages 2 0 R >>\n'));
+  obj(2,()=>txt('<< /Type /Pages /Kids [3 0 R] /Count 1 >>\n'));
+  obj(3,()=>txt(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW.toFixed(2)} ${PH.toFixed(2)}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>\n`));
+  obj(4,()=>{txt(`<< /Type /XObject /Subtype /Image /Width ${w} /Height ${h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`);push(jpg);txt('\nendstream\n');});
+  const cont=`q ${iw.toFixed(2)} 0 0 ${ih.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm /Im0 Do Q`;
+  obj(5,()=>txt(`<< /Length ${cont.length} >>\nstream\n${cont}\nendstream\n`));
+  obj(6,()=>txt('<< /Title (Certificado Genetico - Plataforma Azul Alta) /Producer (Plataforma Azul) >>\n'));
+  const xref=pos; txt('xref\n0 7\n0000000000 65535 f \n');
+  for(let n=1;n<=6;n++) txt(String(offs[n]).padStart(10,'0')+' 00000 n \n');
+  txt(`trailer\n<< /Size 7 /Root 1 0 R /Info 6 0 R >>\nstartxref\n${xref}\n%%EOF`);
+  return new Blob(partes,{type:'application/pdf'});
+}
+function baixarImagemCertificado(){ exportarCertificado('png'); }
+function baixarPdfCertificado(){ exportarCertificado('pdf'); }
+function exportarCertificado(formato){
   const id=String($('#cert-busca')?.value||$('#cert-animal').value||'').trim();
   const animal=animaisDoCorteCertificado().selecionados.find(r=>String(r.id).trim()===id);
-  if(!animal){window.alert('Escolha um animal dentro do corte selecionado para baixar a imagem.');return;}
+  if(!animal){window.alert('Escolha um animal dentro do corte selecionado para salvar o certificado.');return;}
   const logo=new Image(); logo.src=$('#hdr img').src;
   const logoBlue=new Image(); logoBlue.src=$('#logo-blue-link').src;
   let exportado=false;
@@ -3257,8 +3290,10 @@ function baixarImagemCertificado(){
     const ls=TRAITS.filter(t=>t.g==='lin'&&D.traits.some(a=>a.k===t.k));
     ls.forEach((t,i)=>{const col=i%2,row=Math.floor(i/2),x=64+col*652,y=linearY+108+row*56,v=animal[t.k],n=v===null||v===undefined?0:Math.max(-2,Math.min(2,v)),bx=x+382,bw=250,by=y-14;texto(t.lab,x,y,15,cinza,'500',300);texto(sgn(v,t.d),x+360,y,16,prof,'700',78,'right');ctx.fillStyle='#E6EDF7';ctx.fillRect(bx,by,bw,12);ctx.fillStyle='#B8C9E0';ctx.fillRect(bx+bw/2-1,by,2,12);const sw=Math.abs(n)/2*(bw/2);ctx.fillStyle=n>=0?'#3E78D2':'#8FA9D4';ctx.fillRect(n>=0?bx+bw/2:bx+bw/2-sw,by,sw,12);linhaH(x,y+17,568);});
     const linearEnd=linearY+108+Math.ceil(ls.length/2)*56+18,footY=Math.max(1715,linearEnd+20);linhaH(64,footY,W-128);texto('PLATAFORMA AZUL  ·  ALTA GENETICS BRASIL',64,footY+30,12,prof,'700');texto(`Documento emitido em ${new Date().toLocaleDateString('pt-BR')}  ·  Fonte: CDCB`,W-64,footY+30,12,cinza,'400',0,'right');
-    const salvar=blob=>{const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=`Certificado_Genetico_${String(animal.id).replace(/[^a-z0-9_-]/gi,'_')}.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);};
-    if(cv.toBlob)cv.toBlob(salvar,'image/png');else{const a=document.createElement('a');a.href=cv.toDataURL('image/png');a.download=`Certificado_Genetico_${animal.id}.png`;a.click();}
+    const nomeBase=nomeArquivoCertificado(animal);
+    if(formato==='pdf'){ baixarArquivoBlob(montarPdfA4(cv.toDataURL('image/jpeg',0.95),cv.width,cv.height),`${nomeBase}.pdf`); return; }
+    const salvar=blob=>baixarArquivoBlob(blob,`${nomeBase}.png`);
+    if(cv.toBlob)cv.toBlob(salvar,'image/png');else{const a=document.createElement('a');a.href=cv.toDataURL('image/png');a.download=`${nomeBase}.png`;a.click();}
   };
   const pronto=()=>{ if(logo.complete && logoBlue.complete) desenhar(); };
   if(logo.complete && logoBlue.complete)desenhar(); else{logo.onload=pronto;logo.onerror=pronto;logoBlue.onload=pronto;logoBlue.onerror=pronto;setTimeout(pronto,140);}
@@ -3780,7 +3815,7 @@ function pintarEvolucao(){
     </div>`;
   }).join('');
   $('#evo-note').innerHTML = usar.length
-    ? `Comparação entre fêmeas nascidas em <b>${A}</b> (${rowsA.length}) e em <b>${B}</b> (${rowsB.length}). `+
+    ? `Comparação entre fêmeas nascidas em <b>${A}</b> (${fmt(rowsA.length)}) e em <b>${B}</b> (${fmt(rowsB.length)}). `+
       `A cor segue o sentido desejável de cada característica; as cores mostram o sentido desejável de cada característica.`
     : `Nenhuma característica selecionada.`;
 }
@@ -3823,7 +3858,7 @@ function paintAcc(){
         <span class="chev">▼</span>
         <span class="tname">${t.lab}</span>
         <canvas class="tspark" width="148" height="48"></canvas>
-        <span class="tval ${t.dir?(t.dir*m>0?'pos':(m===0?'zero':'neg')):''}">${sgn(m,t.d)}<span class="tunit">${t.u||'&nbsp;'}</span></span>
+        <span class="tval ${classeNivel(m,t)}">${nivel(m,t)}<span class="tunit">${t.u||'&nbsp;'}</span></span>
       </button>
       <div class="tbody"><div class="trait-actions">${acts({chart:`tc-${i}`,table:`tt-${i}`,nome:t.lab})}</div><div class="tsplit">
         <div class="tw"><table id="tt-${i}">${catTable(t)}</table></div>
@@ -3849,7 +3884,7 @@ function catTable(t){
   CATS.forEach(c=>{
     const r = rows.find(x=>x.cat===c);
     if(!r){ h+=`<tr style="opacity:.4"><td>${c}</td><td>—</td><td>0,0</td><td>0</td></tr>`; return; }
-    h += `<tr><td>${c}</td><td class="${t.dir?(t.dir*r.m>0?'pos':'neg'):''}">${uv(r.m,t)}</td><td>${fmt(r.pct,1)}</td><td>${fmt(r.n)}</td></tr>`;
+    h += `<tr><td>${c}</td><td class="${t.limVerm!==undefined?classeNivel(r.m,t):(t.dir?(t.dir*r.m>0?'pos':'neg'):'')}">${uv(r.m,t)}</td><td>${fmt(r.pct,1)}</td><td>${fmt(r.n)}</td></tr>`;
   });
   h += `<tr class="total"><td>TOTAL</td><td>${uv(mean(vals(base,t.k)),t)}</td><td>100,0</td><td>${fmt(base.length)}</td></tr></tbody>`;
   return h;
@@ -3866,7 +3901,7 @@ function toggleTrait(btn){
     {label:'Média por categoria', data:pts.map(p=>p.m), borderColor:C.alta, backgroundColor:C.alta,
      pointRadius:pts.map(p=>Math.min(7,3+p.n/8)), tension:.25, spanGaps:true, borderWidth:2}
   ]}, options:{plugins:{legend:{display:false},
-      tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${uv(ctx.raw,t)}`, afterLabel:ctx=>`n = ${pts[ctx.dataIndex].n}`}}},
+      tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${uv(ctx.raw,t)}`, afterLabel:ctx=>`n = ${fmt(pts[ctx.dataIndex].n)}`}}},
       scales:{x:{grid:{display:false},title:{display:true,text:'Categorias'}}, y:{grid:{color:C.line}, ticks:{callback:v=>fmt(v,t.d)}}}}});
 }
 function spark(cv, data, dir){
@@ -3916,6 +3951,7 @@ function rEvol(){
   montarSeletorRacaCDCB('sel-evol-raca', paintEvol);
   paintEvol();
 }
+let EVOL_PCT = true;   // rótulos de variação % ligados por padrão
 function paintEvol(){
   const k = $('#sel-evol').value, t = D.traits.find(x=>x.k===k);
   const desde = +$('#sel-ano').value, nmin = +$('#sel-nmin').value;
@@ -3927,26 +3963,51 @@ function paintEvol(){
   const ref = cdcbRef(k,racaRef);
 
   $('#evol-kpis').innerHTML = [
-    kpi('Ganho médio anual', tr? uv(tr.slope,{...t,d:t.d+1})+'/ano' : '—',
-        tr? `desde ${desde} · ${use.length} períodos · ${tr.qual.lab}`:'sem períodos suficientes',
-        !tr ? '' : tr.qual.nivel==='fraca' ? 'k-amber' : ((tr.slope*(t.dir||1)>0)?'k-green':(t.dir?'k-red':''))),
-    kpi('Ganho acumulado', total!==null? uv(total,t) : '—', tr? `${tr.pts[0].ano} → ${tr.pts[tr.pts.length-1].ano}`:'—', ''),
-    kpi('Consistência (R²)', tr? fmt(tr.r2,2):'—', tr? (tr.r2>.8?'tendência limpa':(tr.r2>.5?'tendência com ruído':'tendência irregular — cuidado ao apresentar')):'—', tr? (tr.r2>.5?'':'k-amber'):''),
-    kpi('Última geração', use.length? uv(use[use.length-1].m,t) : '—', use.length? `nascidas em ${use[use.length-1].ano} · n = ${use[use.length-1].n}`:'—',''),
+    kpi('Ganho médio anual', tr? uv(tr.slope,{...t,d:t.d+1},false,true)+'/ano' : '—',
+        tr? `desde ${desde} · ${use.length} períodos`:'sem períodos suficientes',
+        !tr ? '' : ((tr.slope*(t.dir||1)>0)?'k-green':(t.dir?'k-red':''))),
+    kpi('Ganho acumulado', total!==null? uv(total,t,false,true) : '—', tr? `${tr.pts[0].ano} → ${tr.pts[tr.pts.length-1].ano}`:'—', ''),
+    kpi('Última geração', use.length? uv(use[use.length-1].m,t) : '—', use.length? `nascidas em ${use[use.length-1].ano} · n = ${fmt(use[use.length-1].n)}`:'—',''),
   ].join('');
 
   /* Gráfico 1 = evolução do rebanho. A referência CDCB foi retirada daqui para
      não comparar uma tendência agregada (eventualmente multirracial) com uma
      única raça. A comparação CDCB fica concentrada no gráfico 2 e é filtrada
      explicitamente pela mesma raça. */
-  chart('c-evol', {data:{labels:all.map(p=>p.ano), datasets:[
+  const btnPct = $('#btn-evol-pct');
+  if(btnPct){
+    btnPct.classList.toggle('on',EVOL_PCT); btnPct.setAttribute('aria-pressed',EVOL_PCT?'true':'false');
+    btnPct.onclick = () => { EVOL_PCT=!EVOL_PCT; btnPct.classList.toggle('on',EVOL_PCT); btnPct.setAttribute('aria-pressed',EVOL_PCT?'true':'false'); CHARTS['c-evol']?.draw(); };
+  }
+  /* Variação % de cada ano contra o ano anterior, fixa em cima da bolinha.
+     Fonte pequena e contorno branco para não poluir; verde = sentido desejável. */
+  const escalaPct = Math.max(1e-9, ...all.filter(p=>p.m!==null).map(p=>Math.abs(p.m)));
+  const plugVarPct = {id:'varPct', afterDatasetsDraw(ch){
+    if(!EVOL_PCT) return;
+    const meta = ch.getDatasetMeta(0); if(!meta || !ch.isDatasetVisible(0)) return;
+    const ctx = ch.ctx; ctx.save(); ctx.font='700 10px Arial'; ctx.textAlign='center'; ctx.textBaseline='bottom'; ctx.lineJoin='round';
+    all.forEach((p,i)=>{
+      if(i===0 || p.m===null || all[i-1].m===null || !meta.data[i]) return;
+      /* % só faz sentido quando a base é um número "de verdade": sem cruzar o zero e sem
+         base minúscula perto de zero (valores genéticos são centrados em zero). */
+      const prev = all[i-1].m; if(!isFinite(prev) || prev*p.m<=0 || Math.abs(prev)<0.05*escalaPct) return;
+      const pc = (p.m-prev)/Math.abs(prev)*100; if(!isFinite(pc)) return;
+      const ab = Math.abs(pc), txt = ab>999 ? (pc>0?'>+999%':'<−999%') : (pc>0?'+':(pc<0?'−':''))+fmt(ab, ab>=10?0:1)+'%';
+      const el = meta.data[i], y = el.y - (el.options?.radius ?? 5) - 5;
+      const bom = !t.dir ? null : (pc*t.dir>0);
+      ctx.lineWidth=3; ctx.strokeStyle='#fff'; ctx.strokeText(txt, el.x, y);
+      ctx.fillStyle = bom===null ? C.deep : (bom ? '#2E7D32' : C.red); ctx.fillText(txt, el.x, y);
+    });
+    ctx.restore();
+  }};
+  chart('c-evol', {plugins:[plugVarPct], data:{labels:all.map(p=>p.ano), datasets:[
     {type:'line', label:`Média de ${t.lab}`, data:all.map(p=>p.m), borderColor:C.alta, backgroundColor:'rgba(41,80,151,.06)',
      fill:true, tension:.25, spanGaps:true, borderWidth:2.5, pointRadius:all.map(p=>Math.min(11,3.5+Math.sqrt(p.n)*1.1)),
      pointBackgroundColor:all.map(p=>p.ano>=desde?C.alta:'#B6C4DC'), pointBorderColor:'#fff', pointBorderWidth:1.5},
     ...(tr?[{type:'line', label:`Tendência ${sgn(tr.slope,t.d+1)} ${t.u||''}/ano`.trim(), data:all.map(p=>p.ano>=desde? tr.int+tr.slope*p.ano : null),
      borderColor:tr.slope*t.dir>=0?C.alta:C.red, borderDash:[6,4], borderWidth:2, pointRadius:0, spanGaps:true}]:[]),
     {type:'bar', label:'nº de fêmeas', data:all.map(p=>p.n), backgroundColor:'rgba(74,127,212,.16)', yAxisID:'y2', borderRadius:3, order:9}]},
-    options:{interaction:{mode:'index',intersect:false},
+    options:{interaction:{mode:'index',intersect:false}, layout:{padding:{top:22}},
       plugins:{legend:{position:'bottom'}, tooltip:{callbacks:{label:ctx=>ctx.dataset.yAxisID==='y2'?`${ctx.raw} fêmeas`:`${ctx.dataset.label}: ${uv(ctx.raw,t)}`}}},
       scales:{x:{grid:{display:false},title:{display:true,text:'ano de nascimento da fêmea'}},
               y:{position:'left', grid:{color:C.line}, title:{display:true,text:`${t.lab} (${t.u||'PTA'})`}, ticks:{callback:v=>fmt(v,t.d)}},
@@ -4020,7 +4081,7 @@ function paintEvol(){
     const m = mean(vals(Rbal,x.k));
     const rx = cdcbRef(x.k,racaRef);
     const dx = (rx && m!==null) ? m-rx.media : null;
-    const colsRef = `<td>${rx?uv(rx.media,x):'—'}</td><td class="${dx===null||!x.dir?'':(dx*x.dir>0?'pos':'neg')}">${dx===null?'—':uv(dx,x)}</td>`;
+    const colsRef = `<td>${rx?uv(rx.media,x):'—'}</td><td class="${dx===null||!x.dir?'':(dx*x.dir>0?'pos':'neg')}">${dx===null?'—':uv(dx,x,false,true)}</td>`;
     if(!r){ h+=`<tr><td>${x.lab}</td><td>${uv(m,x)}</td><td colspan="2" style="text-align:center;color:var(--ink-3)">períodos insuficientes</td>${colsRef}</tr>`; return; }
     const ok = x.dir===0 ? null : (r.slope*x.dir > 0);
     const q = r.qual;
@@ -4031,11 +4092,6 @@ function paintEvol(){
   });
   $('#t-bal').innerHTML = h+'</tbody>';
   ordenavel('t-bal');
-  $('#evol-qual').innerHTML = !tr ? '' :
-    `<div class="ins ${tr.qual.nivel==='fraca'?'warn':'info'}"><span class="tag">Ajuste da reta</span>`+
-    `<b>R² ${fmt(tr.r2,2)}</b> sobre ${tr.pts.length} anos de nascimento — <b>${esc(tr.qual.lab)}</b>. `+
-    `R² mede quanto da variação entre anos a reta explica: 1,00 é ajuste perfeito, perto de 0 os anos oscilam sem direção.`+
-    `</div>`;
   /* Nome de exportação propositalmente genérico: remove o antigo “evolucao Plano Genético”. */
   armar('#v-evol .card:nth-of-type(2)', {chart:'c-evol',  nome:'tendencia genetica por ano'});
   armar('#v-evol .card:nth-of-type(3)', {chart:'c-evol2', nome:'dispersao rebanho vs referencia cdcb'});
@@ -4063,13 +4119,7 @@ function rRebanho(){
   if(REB_ANI_COLS === null) REB_ANI_COLS = new Set(['Leite','Gordura','Proteína','Vida Produtiva']);
 
   const catSel = $('#reb-cat');
-  if(!catSel.dataset.on){
-    catSel.dataset.on = 1;
-    catSel.innerHTML = `<option value="all">Todas</option>`+
-      CATS.filter(c=>D.rows.some(r=>r.cat===c)).map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')+
-      `<option value="nov">Todas as novilhas</option><option value="vac">Todas as vacas</option>`;
-    catSel.onchange = rRebanho;
-  }
+  atualizarSelCategoria(catSel, rRebanho, 'Todas');
   const tSel = $('#reb-touro');
   if(!tSel.dataset.on){
     tSel.dataset.on = 1;
@@ -4184,13 +4234,7 @@ function expRebanhoFiltrado(){
 function rCDCB(){
   montarSeletorRacaCDCB('sel-cdcb-raca', rCDCB);
   const catSel = $('#sel-cdcb-cat');
-  if(!catSel.dataset.on){
-    catSel.dataset.on = 1;
-    catSel.innerHTML = `<option value="all">Todo o rebanho</option>`+
-      CATS.filter(c=>D.rows.some(r=>r.cat===c)).map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')+
-      `<option value="nov">Todas as novilhas</option><option value="vac">Todas as vacas</option>`;
-    catSel.onchange = rCDCB;
-  }
+  atualizarSelCategoria(catSel, rCDCB);
   $('#sel-cdcb-raca').value = CDCB_RACA;
   const anos = D.anos.slice();
   const anoPadrao = 'all';
@@ -4243,7 +4287,7 @@ function rCDCB(){
     kpi('Raça comparada', esc(raca), `${fmt(R.length)} fêmeas do rebanho · ${fmt(base.n)} animais no arquivo CDCB`),
     kpi('No lado desejável da média', `${favor.length} de ${comZ.length}`, 'características em relação à média CDCB', favor.length>comZ.length/2?'k-green':'k-amber'),
     kpi('Maior distância', melhor? `${fmt(Math.abs(melhor.z),2)} σ` : '—', melhor? `${melhor.t.lab} · ${melhor.z>0?'acima':'abaixo'} da média CDCB`:'—'),
-    kpi('Leite vs média CDCB', prod? uv(prod.dif,prod.t) : '—', prod&&prod.z!==null? `${fmt(Math.abs(prod.z),2)} σ · percentil aprox. ${fmt(phi(prod.z)*100,0)}` : 'sem equivalente publicado')
+    kpi('Leite vs média CDCB', prod? uv(prod.dif,prod.t,false,true) : '—', '')
   ].join('');
 
   const ord = [...comZ].sort((a,b)=> (b.z*(b.t.dir||1)) - (a.z*(a.t.dir||1)));
@@ -4260,8 +4304,7 @@ function rCDCB(){
         afterLabel:c=>{const l=ord[c.dataIndex];return [
           `Rebanho (${raca}): ${uv(l.m,l.t)} (n ${fmt(l.n)})`,
           `Média CDCB: ${uv(l.ref.media,l.t)}`,
-          `Diferença: ${uv(l.dif,l.t)}`,
-          `Percentil aproximado: ${fmt(phi(l.z)*100,0)}`];}}}},
+          `Diferença: ${uv(l.dif,l.t,false,true)}`];}}}},
       scales:{x:{grid:{color:C.line}, title:{display:true,text:`desvios-padrão em relação à média CDCB · ${raca}`}},
               y:{grid:{display:false}, ticks:{autoSkip:false, font:{size:10.5}}}}},
     plugins:[{id:'zeroCdcb',afterDraw(ch){const {ctx,chartArea:a,scales:sc}=ch;const x=sc.x.getPixelForValue(0);
@@ -4269,20 +4312,22 @@ function rCDCB(){
       ctx.fillStyle=C.ink3;ctx.font='600 10px Arial';ctx.textAlign='center';
       ctx.textBaseline='bottom';ctx.fillText(`média CDCB`,x,Math.max(14,a.top-12));ctx.restore();}}]});
 
+  /* "DP" em vez de "σ": os cabeçalhos da tabela são em CAIXA ALTA e o σ virava Σ (somatório). */
   $('#t-cdcb').innerHTML =
-    `<thead><tr><th>Característica</th><th>Rebanho (${esc(raca)})</th><th>n com dado</th><th>Sem dado</th><th>Média CDCB</th><th>σCDCB</th><th>Diferença</th><th>EMσ</th><th>Percentil aprox.</th></tr></thead><tbody>`+
+    `<thead><tr><th>Característica</th><th>Rebanho (${esc(raca)})</th>`+
+    `<th title="Fêmeas ${esc(raca)} do recorte que têm valor nesta característica">Fêmeas com dado</th>`+
+    `<th title="Fêmeas ${esc(raca)} do recorte sem valor nesta característica">Fêmeas sem dado</th>`+
+    `<th>Média CDCB</th><th title="Desvio-padrão da referência CDCB">DP CDCB</th><th>Diferença</th></tr></thead><tbody>`+
     linhas.map(l=>{
       const ok = l.t.dir===0 ? null : (l.dif*l.t.dir>0);
       return `<tr><td>${esc(l.t.lab)}</td><td><b>${uv(l.m,l.t)}</b></td><td>${fmt(l.n)}</td><td>${fmt(l.ausentes)}</td>
         <td>${uv(l.ref.media,l.t)}</td><td>${l.ref.sd===null?'—':fmt(l.ref.sd,l.t.d)}</td>
-        <td class="${ok===null?'':(ok?'pos':'neg')}">${uv(l.dif,l.t)}</td>
-        <td class="${ok===null?'':(ok?'pos':'neg')}">${l.z===null?'—':fmt(l.z,2)}</td>
-        <td>${l.z===null?'—':fmt(phi(l.z)*100,0)}</td></tr>`;
+        <td class="${ok===null?'':(ok?'pos':'neg')}">${uv(l.dif,l.t,false,true)}</td></tr>`;
     }).join('')+`</tbody>`;
   ordenavel('t-cdcb');
   $('#cdcb-aviso').innerHTML =
     `<div class="ins ${cmp.excluidos?'warn':'info'}"><span class="tag">Método</span>`+
-    `Total do recorte: <b>${fmt(R0.length)}</b>; da raça ${esc(raca)}: <b>${fmt(R.length)}</b>; fora desta comparação por raça: <b>${fmt(R0.length-R.length)}</b>. O n em cada linha conta apenas fêmeas com o valor daquela característica. `+
+    `Total do recorte: <b>${fmt(R0.length)}</b>; da raça ${esc(raca)}: <b>${fmt(R.length)}</b>; fora desta comparação por raça: <b>${fmt(R0.length-R.length)}</b>. <b>Fêmeas com dado</b> e <b>sem dado</b> contam só as fêmeas da raça ${esc(raca)} (as ${fmt(R.length)} comparáveis); as ${fmt(R0.length-R.length)} de outra raça ou sem raça identificada não entram na tabela. `+
     `A referência é a média/DP da mesma raça no arquivo <b>Mean & Standard Deviations of PTA</b>. `+
     (cmp.excluidos ? `<b>${fmt(cmp.excluidos)}</b> fêmeas do recorte ficaram fora porque pertencem a outra raça ou não puderam ter a raça identificada pelo código NAAB do pai. ` : '')+
     (desdeAno===-Infinity
@@ -4292,7 +4337,7 @@ function rCDCB(){
   $('#cdcb-note').innerHTML =
     `A coluna <b>Média CDCB</b> é a média dos PTAs resumidos no arquivo enviado; não é o “zero” da base genética e não é uma tendência anual. `+
     `<b>${fmt(linhas.length)}</b> das ${fmt(D.traits.length)} características do relatório têm equivalente direto no arquivo; as demais ficam fora em vez de receber uma correspondência presumida. `+
-    `O percentil é aproximado e assume distribuição normal dentro da raça.`;
+    `DP CDCB é o desvio-padrão da referência da raça.`;
   armar('#cdcb-chart-card', {chart:'c-cdcb', nome:'rebanho vs media cdcb'});
   armar('#cdcb-table-card', {table:'t-cdcb', nome:'comparacao media cdcb'});
 }
@@ -4724,7 +4769,7 @@ function paintDens(){
   const datasets = bons.map((g,i)=>{
     const col=curveColors[i%curveColors.length];
     // Bloco 1: sem preenchimento claro dentro da curva — só a linha.
-    return {label:`${g.cat} (n=${g.n})`, data:x.map((v,j)=>({x:v,y:g.y[j]})),
+    return {label:`${g.cat} (n=${fmt(g.n)})`, data:x.map((v,j)=>({x:v,y:g.y[j]})),
       borderColor:col, backgroundColor:'transparent', fill:false,
       tension:.34, pointRadius:0, borderWidth:3, __g:g,
       __norot:true};   // a informação é a média, impressa pelo overlayMeans; ponto a ponto é ruído
@@ -4742,7 +4787,7 @@ function paintDens(){
       scales:{x:{type:'linear', grid:{color:C.line}, title:{display:true,text:`${t.lab} (${t.u||'PTA'})`}, ticks:{callback:v=>fmt(v,t.d),maxTicksLimit:9}},
         y:{display:false,min:0,max:ymax*1.16}}},
     plugins:[{id:'overlayMeans',afterDatasetsDraw(ch){const {ctx,scales,chartArea:a}=ch;ctx.save();
-      datasets.forEach((ds,idx)=>{const g=ds.__g,col=ds.borderColor;const px=scales.x.getPixelForValue(g.mu);const py=scales.y.getPixelForValue(dnorm(g.mu,g.mu,g.s));
+      datasets.forEach((ds,idx)=>{if(!ch.isDatasetVisible(idx)) return; const g=ds.__g,col=ds.borderColor;const px=scales.x.getPixelForValue(g.mu);const py=scales.y.getPixelForValue(dnorm(g.mu,g.mu,g.s));
         ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(px,a.bottom);ctx.lineTo(px,py);ctx.stroke();ctx.setLineDash([]);
         ctx.fillStyle=col;ctx.beginPath();ctx.arc(px,py,4.5,0,Math.PI*2);ctx.fill();
         const txt=`${g.cat}: média ${fmt(g.mu,t.d)}`;ctx.font='700 10px Arial';ctx.textAlign='center';const w=ctx.measureText(txt).width+12;
@@ -4752,8 +4797,8 @@ function paintDens(){
 
   let h = `<thead><tr><th>Geração</th><th>Animais (n)</th><th>Média</th><th>Desvio-padrão</th><th>Faixa esperada de 95%</th></tr></thead><tbody>`;
   series.forEach(g=>{
-    const faixa=(g.n>1&&g.s>0)?`${sgn(g.mu-2*g.s,t.d)} a ${uv(g.mu+2*g.s,t)}`:'—';
-    h += `<tr><td>${g.cat}</td><td>${g.n}</td><td>${uv(g.mu,t)}</td><td>${g.n>1?uv(g.s,t,true):'—'}</td><td>${faixa}</td></tr>`;
+    const faixa=(g.n>1&&g.s>0)?`${nivel(g.mu-2*g.s,t)} a ${uv(g.mu+2*g.s,t)}`:'—';
+    h += `<tr><td>${g.cat}</td><td>${fmt(g.n)}</td><td>${uv(g.mu,t)}</td><td>${g.n>1?uv(g.s,t,true):'—'}</td><td>${faixa}</td></tr>`;
   });
   $('#t-dens').innerHTML = h+'</tbody>';
 
@@ -4772,7 +4817,7 @@ function paintDens(){
   const larg = bons.slice().sort((a,b)=>b.s-a.s);
   if(larg.length>1) ins.push(['info','Uniformidade',`Maior variabilidade em <b>${larg[0].cat}</b> (σ ${fmt(larg[0].s,t.d)}); menor em <b>${larg[larg.length-1].cat}</b> (σ ${fmt(larg[larg.length-1].s,t.d)}). Desvio alto amplia a oportunidade de seleção, mas reduz a uniformidade.`]);
   const omit = series.filter(g=>!g.ok && g.n>0);
-  if(omit.length) ins.push(['warn','Amostra insuficiente',`${omit.map(g=>`<b>${g.cat}</b> (n=${g.n})`).join(', ')} não ${omit.length>1?'aparecem':'aparece'} no gráfico porque há menos de ${N_MIN_CURVA} animais ou não existe variação suficiente para estimar a distribuição.`]);
+  if(omit.length) ins.push(['warn','Amostra insuficiente',`${omit.map(g=>`<b>${g.cat}</b> (n=${fmt(g.n)})`).join(', ')} não ${omit.length>1?'aparecem':'aparece'} no gráfico porque há menos de ${N_MIN_CURVA} animais ou não existe variação suficiente para estimar a distribuição.`]);
   void ins;   // card "Leitura da curva" removido no Bloco 1
   ordenavel('t-dens');
   autoExports($('#v-curvas'));
@@ -4902,6 +4947,7 @@ function filtrarAnoCategoria(prefix, base, pintar){
   return porAno.filter(r=>catEl.value==='all'||r.cat===catEl.value);
 }
 let BULL_METRIC = 'Meu Índice';
+let BULL_QUAD_PCT = 100;   // % de touros (os com mais filhas) mostrados no gráfico de bolhas
 let BULL_SORT = {key:'n', dir:'desc'};
 let ULT_BULL_RANK = null;
 let BULL_COLS = new Set(['Leite','Gordura','Proteína','Vida Produtiva']);
@@ -4974,7 +5020,15 @@ function rTouros(){
      abaixo, em texto, com nº de filhas e média. -------------------------- */
   B.forEach(b=>{ b.merit = mean(vals(b.filhas,metric.k)); b.nMetric = vals(b.filhas,metric.k).length; });
   const MIN_FILHAS = Math.max(1, Math.round(N*0.005));
-  const quadB = B.filter(b=>b.merit!==null);
+  const pctEl = $('#sel-bull-pct');
+  if(!pctEl.dataset.on){
+    pctEl.dataset.on = 1;
+    pctEl.innerHTML = [10,20,30,40,50,60,70,80,90,100].map(p=>`<option value="${p}">${p}% dos touros (mais filhas)</option>`).join('');
+    pctEl.onchange = e => { BULL_QUAD_PCT=+e.target.value; rTouros(); };
+  }
+  pctEl.value = String(BULL_QUAD_PCT);
+  const quadTodos = B.filter(b=>b.merit!==null);
+  const quadB = [...quadTodos].sort((a,b)=>b.n-a.n).slice(0, Math.max(1, Math.ceil(quadTodos.length*BULL_QUAD_PCT/100)));
   const elegiveis = quadB.filter(b=>b.nMetric>=MIN_FILHAS);
   const melhorPrimeiro = (a,b)=> metric.dir>=0 ? b.merit-a.merit : a.merit-b.merit;
   const topB = [...elegiveis].sort(melhorPrimeiro).slice(0,5);
@@ -4991,7 +5045,7 @@ function rTouros(){
     borderColor:quadB.map(b=>destaque.has(b.key)?C.deep:((b.merit-mediaMetric)*(metric.dir||1)>=0?C.alta:'#9FB2CE')),
     borderWidth:quadB.map(b=>destaque.has(b.key)?2.6:1.1)}]},
     options:{maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{
-      title:c=>c[0].raw.nome, label:c=>[`${c.raw.x} filhas · n ${c.raw.nMetric} na característica`,
+      title:c=>c[0].raw.nome, label:c=>[`${fmt(c.raw.x)} filhas · n ${fmt(c.raw.nMetric)} na característica`,
         `${metric.lab} médio: ${uv(c.raw.y,metric)}`, `vs rebanho: ${uv(c.raw.y-mediaMetric,metric)}`,
         `${c.raw.cod}${c.raw.central?' · '+c.raw.central:''}`]}}},
       scales:{x:{grid:{color:C.line}, title:{display:true,text:'nº de filhas no rebanho (uso)'}, beginAtZero:true},
@@ -5007,7 +5061,7 @@ function rTouros(){
       + topB.map((b,k)=>`<span class="qi"><span class="qn" style="background:${C.alta}">${k+1}</span>`+
         `<span><b>${esc(b.nome)}</b> <span class="qc">· ${fmt(b.n)} filhas · ${esc(metric.lab)} médio ${uv(b.merit,metric)} · `+
         `${uv(b.merit-mediaMetric,metric)} vs rebanho${b.central?` · ${esc(b.central)}`:''}</span></span></span>`).join('')
-      + `<span class="qi" style="width:100%"><span class="qc">Critério: melhor média de ${esc(metric.lab)} entre as filhas presentes neste rebanho, com no mínimo <b>${MIN_FILHAS}</b> filhas com o dado.</span></span>`
+      + `<span class="qi" style="width:100%"><span class="qc">Critério: melhor média de ${esc(metric.lab)} entre as filhas presentes neste rebanho, com no mínimo <b>${MIN_FILHAS}</b> filhas com o dado.${BULL_QUAD_PCT<100?` Gráfico com os <b>${fmt(quadB.length)}</b> de ${fmt(quadTodos.length)} touros (${BULL_QUAD_PCT}%) que mais deixaram filhas.`:''}</span></span>`
     : `<span class="qi"><span class="qc">Nenhum touro tem ${MIN_FILHAS} filhas ou mais com dado de ${esc(metric.lab)} neste recorte.</span></span>`;
 
   montarSeletorColunas('bull-cols', BULL_COLS, ()=>rTouros(), D.traits.filter(t=>t.k!=='Meu Índice'), 'Características');
@@ -5045,7 +5099,7 @@ function rTouros(){
     h += `<tr><td style="max-width:250px">${esc(b.nome)}${b.sexado?' <span class="pill b" title="Mesmo touro com código convencional e sexado">2 NAAB</span>':''}${
         b.conflito.length?` <span class="pill a" title="O código ${esc(b.conflito.join(', '))} aparece no arquivo com mais de um nome de touro — confira na origem.">nome conflitante</span>`:''}</td>
       <td class="mono" style="font-size:11.5px">${esc(b.cod)}</td><td style="font-size:11.5px">${esc(b.central||'—')}</td>
-      <td>${b.n}</td><td>${fmt(b.n/N*100,1)}</td><td>${RS(b.mi,0)}</td>
+      <td>${fmt(b.n)}</td><td>${fmt(b.n/N*100,1)}</td><td>${RS(b.mi,0)}</td>
       <td class="${d>0?'pos':'neg'}">${RS(d,0)}</td>`+
       extras.map(t=>{const v=mean(vals(b.filhas,t.k));return `<td>${uv(v,t)}</td>`}).join('')+
       `<td style="color:var(--ink-3);font-size:11.5px">${b.anos[0]}${b.anos.length>1?'–'+b.anos[b.anos.length-1]:''}</td></tr>`;
@@ -5151,7 +5205,7 @@ function aplicarPlanilhaNaab(novo, nomeArquivo){
 }
 function montarDropNaab(){
   const d=$('#drop-naab'), f=$('#file-naab');
-  if(!d || d.dataset.on) return; d.dataset.on=1;
+  if(!d || !f || d.dataset.on) return; d.dataset.on=1;
   const carregar = arq => {
     if(!arq) return;
     const fr=new FileReader();
@@ -5277,14 +5331,14 @@ function rCentrais(){
     ? `<span class="qi qi-tit"><span class="qc">As ${topC.length} centrais com a melhor média de ${esc(metric.lab)} — destacadas em azul no gráfico</span></span>`
       + topC.map((x,k)=>`<span class="qi"><span class="qn" style="background:${x.alta?C.deep:C.alta}">${k+1}</span>`+
         `<span><b>${esc(x.nome)}</b> <span class="qc">· ${fmt(x.n)} filhas · ${esc(metric.lab)} médio ${uv(x.mi,metric)} · `+
-        `${uv(x.mi-media,metric)} vs rebanho · touro principal ${esc(x.principal?x.principal.nome:'—')}</span></span></span>`).join('')
+        `${uv(x.mi-media,metric)} vs rebanho</span></span></span>`).join('')
       + `<span class="qi" style="width:100%"><span class="qc">Critério: melhor média de ${esc(metric.lab)} entre as filhas presentes neste rebanho, com no mínimo <b>${MIN_FILHAS_C}</b> filhas com o dado. É o resultado do uso histórico nesta fazenda, não a prova oficial dos touros.</span></span>`
     : `<span class="qi"><span class="qc">Nenhuma central tem ${MIN_FILHAS_C} filhas ou mais com dado de ${esc(metric.lab)} neste recorte.</span></span>`;
 
   montarSeletorColunas('central-cols', CENTRAL_COLS, ()=>rCentrais(), D.traits.filter(t=>t.k!=='Meu Índice'), 'Características');
   const extras = D.traits.filter(t=>CENTRAL_COLS.has(t.k));
   let h=`<thead><tr><th>Central</th><th>NAAB observado</th><th>Filhas</th><th>% rebanho</th><th>Touros</th><th>${esc(metric.lab)}</th><th>vs rebanho</th>`+
-        extras.map(t=>`<th>${esc(t.lab)}</th>`).join('')+`<th>Principal touro</th></tr></thead><tbody>`;
+        extras.map(t=>`<th>${esc(t.lab)}</th>`).join('')+`</tr></thead><tbody>`;
   B.forEach(x=>{
     const d=x.mi===null||media===null?null:x.mi-media;
     h+=`<tr><td><b>${esc(x.nome)}</b>${x.alta?' <span class="pill b">Alta</span>':''}${
@@ -5292,8 +5346,7 @@ function rCentrais(){
       <td class="mono" style="font-size:11.5px">${esc(x.desconhecida?(x.naab||'—'):[...x.codigos].sort().join(' · ')||'—')}</td>
       <td>${fmt(x.n)}</td><td>${fmt(x.share,1)}</td><td>${fmt(x.tourosN)}</td>
       <td>${uv(x.mi,metric)}</td><td class="${sentido(d)}">${uv(d,metric)}</td>`+
-      extras.map(t=>{const v=mean(vals(x.filhas,t.k));return `<td>${uv(v,t)}</td>`}).join('')+
-      `<td>${x.principal?`${esc(x.principal.nome)} <span style="color:var(--ink-3);font-size:11px">(${fmt(x.principal.n)})</span>`:'—'}</td></tr>`;
+      extras.map(t=>{const v=mean(vals(x.filhas,t.k));return `<td>${uv(v,t)}</td>`}).join('')+`</tr>`;
   });
   $('#t-centrais').innerHTML=h+'</tbody>'; ordenavel('t-centrais');
 
@@ -5360,13 +5413,13 @@ function paintPop(){
   const perdidos = P.filter(p=>!p.bull);
   const nFilhas = P.reduce((s,p)=>s+p.n,0), nOk = achados.reduce((s,p)=>s+p.n,0);
 
-  $('#pop-ref').textContent = st ? `base: ${fmt(st.n)} touros · média ${sgn(st.mu,meta.d)} · +1 DP ${sgn(st.p1,meta.d)} · ${[...B.proofs].join(', ')}` : 'sem base para esta característica';
+  $('#pop-ref').textContent = st ? `base: ${fmt(st.n)} touros · média ${nivel(st.mu,meta)} · +1 DP ${nivel(st.p1,meta)} · ${[...B.proofs].join(', ')}` : 'sem base para esta característica';
 
   $('#pop-kpis').innerHTML = [
     kpi('Touros na base', fmt(bulls.length), `${rr?rr.raca:'?'} · ${B.arquivos.length} arquivo(s) · ${[...B.proofs].join(', ')}${B.bulls.size>bulls.length?` · ${B.bulls.size-bulls.length} de outras raças fora`:''}`, ''),
     kpi('Touros pais cruzados', `${achados.length} / ${P.length}`, periodo==='all'?'todos os períodos':`filhas nascidas em ${periodo}`, achados.length<P.length?'k-amber':'k-green'),
     kpi('Cobertura por filhas', fmt(nFilhas? nOk/nFilhas*100:0,1)+'%', `${nOk} de ${nFilhas} filhas têm o PTA do pai`, nOk/nFilhas<0.8?'k-red':'k-green'),
-    kpi('Média da população', st? sgn(st.mu,meta.d):'—', st? `DP ${fmt(st.s,meta.d)} · +1 DP = ${sgn(st.p1,meta.d)}`:'—', ''),
+    kpi('Média da população', st? nivel(st.mu,meta):'—', st? `DP ${fmt(st.s,meta.d)} · +1 DP = ${nivel(st.p1,meta)}`:'—', ''),
   ].join('');
 
   // --- alerta de cobertura: o ponto cego da análise
@@ -5400,7 +5453,7 @@ function paintPop(){
     backgroundColor:pts.map(p=>cor(p)+'BB'), borderColor:pts.map(cor), borderWidth:1.5,
     pointRadius:pts.map(p=>Math.max(5,Math.min(16,4+Math.sqrt(p.x)*2))), pointHoverRadius:18}]},
     options:{plugins:{legend:{display:false}, tooltip:{callbacks:{title:c=>c[0].raw.nome,
-      label:c=>[`${c.raw.cod} · ${c.raw.tipo}`, `${meta.lab}: ${sgn(c.raw.y,meta.d)}`, `${c.raw.x} filhas`,
+      label:c=>[`${c.raw.cod} · ${c.raw.tipo}`, `${meta.lab}: ${nivel(c.raw.y,meta)}`, `${fmt(c.raw.x)} filhas`,
                 `vs média da base: ${sgn(c.raw.y-st.mu,meta.d)}`, `vs +1 DP: ${sgn(c.raw.y-st.p1,meta.d)}`]}}},
       scales:{x:{grid:{color:C.line}, title:{display:true,text:'nº de filhas no rebanho'}, beginAtZero:true},
               y:{grid:{color:C.line}, title:{display:true,text:`${meta.lab} — PTA do touro`}, ticks:{callback:v=>fmt(v,meta.d)}}}},
@@ -5431,7 +5484,7 @@ function paintPop(){
   [['Todos os touros','all'],['Só genômicos','gen'],['Só provados','prov']].forEach(([lab,mo])=>{
     const s2 = popStats(baseFiltrada(mo), k);
     hb += `<tr${mo===baseModo?' style="background:var(--alta-wash);font-weight:600"':''}><td>${lab}${mo===baseModo?' <span class="pill">em uso</span>':''}</td>
-      <td>${s2?fmt(s2.n):'—'}</td><td>${s2?sgn(s2.mu,meta.d):'—'}</td><td>${s2?fmt(s2.s,meta.d):'—'}</td><td>${s2?sgn(s2.p1,meta.d):'—'}</td></tr>`;
+      <td>${s2?fmt(s2.n):'—'}</td><td>${s2?nivel(s2.mu,meta):'—'}</td><td>${s2?fmt(s2.s,meta.d):'—'}</td><td>${s2?nivel(s2.p1,meta):'—'}</td></tr>`;
   });
   $('#t-base').innerHTML = hb+'</tbody>';
   ordenavel('t-base');
@@ -5468,21 +5521,27 @@ function paintPop(){
 }
 
 /* ======================= PLANO GENÉTICO ======================= */
-let quartCols = null;   // null = ainda não inicializado; Set = colunas escolhidas
+let quartCols = null;   // Set = colunas escolhidas
+let quartColsManual = false;   // true depois que a pessoa mexe na seleção
+/* Lista de categorias refeita a cada desenho e baseada no banco inteiro: antes ela
+   era montada uma única vez e perdia categorias (ex.: Bezerras 0-12) quando o
+   filtro de base genética mudava ou um novo arquivo era carregado. */
+function atualizarSelCategoria(sel, onChange, rotuloTodos){
+  const antes = sel.value || 'all';
+  const cats = CATS.filter(c=>D.all.some(r=>r.cat===c));
+  sel.innerHTML = `<option value="all">${rotuloTodos||'Todo o rebanho'}</option>`+
+    cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')+
+    `<option value="nov">Todas as novilhas</option><option value="vac">Todas as vacas</option>`;
+  sel.value = [...sel.options].some(o=>o.value===antes) ? antes : 'all';
+  sel.onchange = onChange;
+}
 function rPlano(){
   /* Bloco 3: os quartis podem ser calculados dentro de uma categoria. Cuidado
      de leitura: com a categoria filtrada, Q1 é o topo DAQUELE grupo, não do
      rebanho — uma novilha de Q1 entre novilhas pode estar em Q2 no rebanho
      inteiro. O rótulo do card avisa. */
-  const catsDisp = CATS.filter(c=>D.rows.some(r=>r.cat===c));
   const selCat = $('#sel-quart-cat');
-  if(!selCat.dataset.on){
-    selCat.dataset.on = 1;
-    selCat.innerHTML = `<option value="all">Todo o rebanho</option>`+
-      catsDisp.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')+
-      `<option value="nov">Todas as novilhas</option><option value="vac">Todas as vacas</option>`;
-    selCat.onchange = ()=>rPlano();
-  }
+  atualizarSelCategoria(selCat, ()=>rPlano());
   const quartPool = selCat.value || 'all';
   const noPool = r => quartPool==='all' ? true
     : quartPool==='nov' ? ehNovilha(r)
@@ -5495,13 +5554,15 @@ function rPlano(){
   // Seleção de colunas: a tabela nasce com 20+ características e vira parede.
   // O consultor escolhe o que interessa àquele rebanho antes de imprimir.
   const todas = D.traits.filter(t=>t.g!=='lin'&&t.g!=='plano');
-  if(quartCols === null) quartCols = new Set(todas.map(t=>t.k));   // 1ª vez: tudo ligado
-  montarSeletorColunas('quart-cols', quartCols, rPlano, todas, 'Características');
+  /* Padrão: só as características que têm peso no plano do cliente. Sem plano
+     informado, nada vem marcado — a pessoa escolhe o que quiser. */
+  if(!quartColsManual) quartCols = new Set(PLANO.ativo ? todas.filter(t=>(PLANO.pesos[t.k]||0)>0).map(t=>t.k) : []);
+  montarSeletorColunas('quart-cols', quartCols, ()=>{ quartColsManual=true; rPlano(); }, todas, 'Características');
   const cols = todas.filter(t => quartCols.has(t.k));
 
   let h = `<thead><tr><th>Quartil</th><th>n</th><th>Plano</th>${cols.map(c=>`<th>${c.lab.replace(/ \(.*\)/,'')}</th>`).join('')}</tr></thead><tbody>`;
   Q.forEach((s,i)=>{
-    h += `<tr><td><b>Q${i+1}</b>${i===0?' <span class="pill b">topo</span>':(i===3?' <span class="pill b">fundo</span>':'')}</td><td>${s.length}</td><td><b>${sgn(mean(vals(s,'Meu Índice')),0)}</b></td>${cols.map(c=>`<td>${sgn(mean(vals(s,c.k)),c.d)}</td>`).join('')}</tr>`;
+    h += `<tr><td><b>Q${i+1}</b>${i===0?' <span class="pill b">topo</span>':(i===3?' <span class="pill b">fundo</span>':'')}</td><td>${fmt(s.length)}</td><td><b>${sgn(mean(vals(s,'Meu Índice')),0)}</b></td>${cols.map(c=>`<td>${nivel(mean(vals(s,c.k)),c)}</td>`).join('')}</tr>`;
   });
   h += `<tr class="total"><td>Topo × fundo</td><td>—</td><td>${sgn(mean(vals(Q[0],'Meu Índice'))-mean(vals(Q[3],'Meu Índice')),0)}</td>${cols.map(c=>`<td>${sgn(mean(vals(Q[0],c.k))-mean(vals(Q[3],c.k)),c.d)}</td>`).join('')}</tr></tbody>`;
   $('#t-quart').innerHTML = h;
@@ -5517,14 +5578,17 @@ function rPlano(){
   const dist = gens.map(g=>{ const sub = R.filter(r=>r.cat===g);
     return {g, n:sub.length, q:[0,1,2,3].map(i=>sub.filter(r=>qOf.get(r)===i).length)}; });
   const qc = ['#17305C','#295097','#4A7FD4','#80A6DD','#B4C8E7'];
+  /* Barras EMPILHADAS: cada quartil (25% do rebanho) é uma coluna e as gerações
+     ficam empilhadas dentro dele. Q1 cheio de gerações novas = plano funcionando. */
   chart('c-qgen',{type:'bar', data:{labels:['Q1 · topo','Q2','Q3','Q4 · fundo'], datasets:dist.map((d,gi)=>({
-    label:`${d.g} (n=${d.n})`, data:d.q.map(n=>d.n?n/d.n*100:0),
-    backgroundColor:qc[gi%qc.length], borderRadius:3, _q:d.q, _grupo:d.g, _n:d.n}))},
+    label:`${d.g} (n=${fmt(d.n)})`, data:d.q.slice(), stack:'q',
+    backgroundColor:qc[gi%qc.length], borderColor:'#fff', borderWidth:1.2, borderRadius:0, _q:d.q, _grupo:d.g, _n:d.n}))},
     options:{plugins:{legend:{position:'bottom'}, tooltip:{callbacks:{
       title:c=>c[0]?.label||'',
-      label:c=>`${c.dataset._grupo}: ${fmt(c.raw,1)}% da geração · ${fmt(c.dataset._q[c.dataIndex])} animais (n=${fmt(c.dataset._n)})`}}},
-      scales:{x:{grid:{display:false},title:{display:true,text:'Quartil do Plano Genético'}},
-              y:{beginAtZero:true,max:100,grid:{color:C.line},title:{display:true,text:'Animais da geração (%)'},ticks:{callback:v=>v+'%'}}}}});
+      label:c=>`${c.dataset._grupo}: ${fmt(c.raw)} animais · ${fmt(c.dataset._n?c.raw/c.dataset._n*100:0,1)}% da geração (n=${fmt(c.dataset._n)})`,
+      footer:its=>`Total no quartil: ${fmt(its.reduce((s,i)=>s+i.raw,0))} animais`}}},
+      scales:{x:{stacked:true,grid:{display:false},title:{display:true,text:'Quartil do Plano Genético'}},
+              y:{stacked:true,beginAtZero:true,grid:{color:C.line},title:{display:true,text:'Animais (n)'},ticks:{callback:v=>fmt(v)}}}}});
 
   const gi = [];
   const nova = dist[dist.length-1], velha = dist[0];
@@ -5651,18 +5715,15 @@ function paintSel(){
     `abaixo do qual ficam as 10% melhores. A tabela segue apenas a característica de ranqueamento e o filtro de categoria.`;
 
   $('#sel-kpis').innerHTML = [
-    kpi('Fêmeas selecionadas', `${k} / ${R.length}`, `${selLado==='top'?'melhores':'piores'} ${selPct}% · corte em ${cr.lab} ${asc?'≤':'≥'} ${uv(S[S.length-1][cr.k],cr)}`,''),
-    kpi('Diferencial', uv(dif,cr), `média do grupo escolhido − média do rebanho, em ${cr.lab}`, dif*(cr.dir||1)>0?'k-green':'k-red'),
+    kpi('Fêmeas selecionadas', `${fmt(k)} / ${fmt(R.length)}`, `${selLado==='top'?'melhores':'piores'} ${selPct}% · corte em ${cr.lab} ${asc?'≤':'≥'} ${uv(S[S.length-1][cr.k],cr)}`,''),
+    kpi('Diferencial', uv(dif,cr,false,true), `média do grupo escolhido − média do rebanho, em ${cr.lab}`, dif*(cr.dir||1)>0?'k-green':'k-red'),
     kpi('Intensidade (i)', fmt(i,2)+' σ', `σ do grupo = ${fmt(sdp,cr.d)} ${cr.u}`,''),
-    kpi(selLado==='top'?'Contribuição materna':'Perda pelo lado materno', uv(dif/2,cr), 'metade do diferencial — falta somar o touro', dif*(cr.dir||1)>0?'k-green':'k-red'),
   ].join('');
 
-  $('#sel-animal-hint').textContent=`${S.length} fêmeas · ${selPct}% ${ladoLab} por ${cr.lab} · clique nos títulos para reordenar`;
+  $('#sel-animal-hint').textContent=`${fmt(S.length)} fêmeas · ${selPct}% ${ladoLab} por ${cr.lab} · clique nos títulos para reordenar`;
   $('#sel-aviso').innerHTML =
     `<div class="ins info"><span class="tag">Definição</span>`+
-    `<b>Diferencial</b>: distância entre a média do grupo escolhido e a média do rebanho. `+
-    `<b>Contribuição materna</b>: metade do diferencial — a parte que a mãe transmite. `+
-    `A outra metade vem do touro e não entra nesta conta.</div>`;
+    `<b>Diferencial</b>: distância entre a média do grupo escolhido e a média do rebanho.</div>`;
   document.querySelector('#sel-animals-card h3').textContent =
     selLado==='top' ? 'Animais dentro do corte selecionado' : 'Animais na cauda inferior do rebanho';
   /* Quando o ranqueamento JÁ É o Plano Genético, a coluna saía duas vezes —
@@ -5679,12 +5740,12 @@ function paintSel(){
      só o que a MÃE transmite. A filha nasce da média dos dois pais, então o
      resultado real depende do touro usado — que esta aba não conhece. Chamar
      de "ganho" prometia um número que a aba não tem como entregar. */
-  let h = `<thead><tr><th>Característica</th><th>Grupo todo</th><th>${selPct}% ${ladoLab}</th><th>Diferencial</th><th>Contribuição materna</th></tr></thead><tbody>`;
+  let h = `<thead><tr><th>Característica</th><th>Grupo todo</th><th>${selPct}% ${ladoLab}</th><th>Diferencial</th></tr></thead><tbody>`;
   cols.forEach(c=>{
     const a = mean(vals(R,c.k)), b = mean(vals(S,c.k));
     if(a===null||b===null) return;
     const d = b-a, ok = c.dir===0 ? null : (d*c.dir>0);
-    h += `<tr><td>${c.lab}</td><td>${uv(a,c)}</td><td>${uv(b,c)}</td><td class="${ok===null?'':(ok?'pos':'neg')}">${uv(d,c)}</td><td class="${ok===null?'':(ok?'pos':'neg')}">${uv(d/2,c)}</td></tr>`;
+    h += `<tr><td>${c.lab}</td><td>${uv(a,c)}</td><td>${uv(b,c)}</td><td class="${ok===null?'':(ok?'pos':'neg')}">${uv(d,c,false,true)}</td></tr>`;
   });
   $('#t-sel').innerHTML = h+'</tbody>';
   ordenavel('t-sel'); autoExports($('#v-oport'));
@@ -5719,12 +5780,12 @@ function rDados(){
     if(p<100 && p>=90) imp = '<span class="pill a">análises por touro perdem alguns animais</span>';
     if(p<90 && p>0) imp = '<span class="pill a">quebra análises que dependem deste campo</span>';
     if(p===0) imp = '<span class="pill r">campo não veio no arquivo — análise correspondente indisponível</span>';
-    h += `<tr><td>${lab}</td><td>${ok}</td><td>${D.rows.length-ok}</td><td class="${p===100?'pos':(p<90?'neg':'')}">${fmt(p,1)}%</td><td style="text-align:center">${imp}</td></tr>`;
+    h += `<tr><td>${lab}</td><td>${fmt(ok)}</td><td>${fmt(D.rows.length-ok)}</td><td class="${p===100?'pos':(p<90?'neg':'')}">${fmt(p,1)}%</td><td style="text-align:center">${imp}</td></tr>`;
   });
   D.traits.forEach(t=>{
     const ok = vals(D.rows,t.k).length, p = ok/D.rows.length*100;
     if(p===100) return;
-    h += `<tr><td>${t.lab}</td><td>${ok}</td><td>${D.rows.length-ok}</td><td class="neg">${fmt(p,1)}%</td><td style="text-align:center"><span class="pill a">média calculada sobre ${ok} animais</span></td></tr>`;
+    h += `<tr><td>${t.lab}</td><td>${fmt(ok)}</td><td>${fmt(D.rows.length-ok)}</td><td class="neg">${fmt(p,1)}%</td><td style="text-align:center"><span class="pill a">média calculada sobre ${fmt(ok)} animais</span></td></tr>`;
   });
   $('#t-qual').innerHTML = h+'</tbody>';
   ordenavel('t-qual');
@@ -5732,7 +5793,7 @@ function rDados(){
 
   const render = q => {
     const R = D.rows.filter(r=>!q || [r.id,r.touro,r.mgs,r.codTouro].join(' ').toLowerCase().includes(q.toLowerCase()));
-    $('#q-count').textContent = `${R.length} de ${D.rows.length} fêmeas`;
+    $('#q-count').textContent = `${fmt(R.length)} de ${fmt(D.rows.length)} fêmeas`;
     $('#t-raw').innerHTML = `<thead><tr><th>ID</th><th>Nasc.</th><th>Idade (m)</th><th>Lact</th><th>Categoria</th><th>Touro pai</th><th>Avô materno</th><th>Plano</th><th>Percentil no rebanho</th><th>Leite</th><th>Gord.</th><th>Prot.</th></tr></thead><tbody>`+
       R.slice(0,400).map(r=>`<tr><td>${r.id}</td><td>${r.nasc?r.nasc.toLocaleDateString('pt-BR'):'—'}</td><td>${fmt(r.idade,0)}</td><td>${r.lact??'—'}</td>
         <td>${r.cat}</td><td style="max-width:190px;overflow:hidden;text-overflow:ellipsis">${r.touro||'—'}</td><td style="max-width:170px;overflow:hidden;text-overflow:ellipsis">${r.mgs||r.codMgs||'—'}</td>
@@ -6671,7 +6732,7 @@ function boot(entrada){
     montarTabs(false);
     $('#m-n').textContent = fmt(D.rows.length);
     $('#m-anos').textContent = `${D.anos[0]}–${D.anos[D.anos.length-1]}`;
-    $('#m-touros').textContent = new Set(D.rows.map(r=>r.codTouro).filter(Boolean)).size;
+    $('#m-touros').textContent = fmt(new Set(D.rows.map(r=>r.codTouro).filter(Boolean)).size);
     $('#rep-logo').src=$('#hdr img').src;
     updateMetaUI();
     $('#gate').style.display='none';
@@ -6685,7 +6746,12 @@ function boot(entrada){
     hh(); window.addEventListener('resize', hh);
     if(proc && proc.length) ARQUIVOS = proc.map(x => ({nome:x.nome, total:x.novos, novos:x.novos, dup:0, linhas:[]}));
     pintarAvisos(); pintarFiltro(); montarMenuMobile();
-    rGeral(); painted.geral = true; autoExports($('#v-geral')); aplicarSharePrefs();
+    if(APP_CONFIG.mode!=='client'){
+      /* Depois de subir os dados, a plataforma abre na primeira aba (Dados). */
+      aplicarSharePrefs(); go('dados');
+    }else{
+      rGeral(); painted.geral = true; autoExports($('#v-geral')); aplicarSharePrefs();
+    }
     if(faltando.length) console.warn('Colunas ausentes no CSV:', faltando);
   }catch(err){
     document.documentElement.classList.remove('client-start');
@@ -6914,6 +6980,7 @@ async function read(lista){
   }
 }
 function initRuntime(){
+  const _fv=document.getElementById('ftr-ver'); if(_fv) _fv.textContent=APP_ATUALIZADO;
   aplicarLogoBlueLink();
   // A cópia integral do documento só é necessária no modo administrativo,
   // quando o usuário pode gerar uma nova versão para cliente. No iPhone, fazer
