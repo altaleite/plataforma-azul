@@ -3896,7 +3896,7 @@ function paintAcc(){
         <span class="chev">▼</span>
         <span class="tname">${t.lab}</span>
         <canvas class="tspark" width="148" height="48"></canvas>
-        <span class="tval ${classeNivel(m,t)}">${nivel(m,t)}<span class="tunit">${t.u||'&nbsp;'}</span></span>
+        <span class="tval">${nivel(m,t)}<span class="tunit">${t.u||'&nbsp;'}</span></span>
       </button>
       <div class="tbody"><div class="trait-actions">${acts({chart:`tc-${i}`,table:`tt-${i}`,nome:t.lab})}</div><div class="tsplit">
         <div class="tw"><table id="tt-${i}">${catTable(t)}</table></div>
@@ -3952,7 +3952,7 @@ function spark(cv, data, dir){
   let first=true;
   data.forEach((y,i)=>{ if(y===null) return; if(first){g.moveTo(X(i),Y(y));first=false;} else g.lineTo(X(i),Y(y)); });
   const up = v[v.length-1] > v[0];
-  g.strokeStyle = (up?1:-1)*dir>0 ? C.alta : C.red;
+  g.strokeStyle = C.alta;
   g.lineWidth = 2.5; g.lineJoin='round'; g.stroke();
   const li = data.map((y,i)=>y!==null?i:-1).filter(i=>i>=0).pop();
   g.beginPath(); g.arc(X(li), Y(data[li]), 3, 0, 7); g.fillStyle=g.strokeStyle; g.fill();
