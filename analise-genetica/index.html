@@ -1742,7 +1742,7 @@ const TRAITS = [
      (contra H-LIV: r=0,334). É Cow Livability — a chance da vaca continuar VIVA
      no rebanho, em pontos percentuais sobre a base da raça. Não é sobre "habitar". */
   {k:'Habitabilidade',                 lab:'Sobrevivência da Vaca (LIV)',u:''    ,     d:1, dir:1, g:'saude'},
-  {k:'Mastitis',                       lab:'Mastite',                   u:'',d:1,dir:-1,g:'saude'},
+  {k:'Mastitis',                       lab:'Resistência à Mastite',     u:'',d:1,dir:1,g:'saude'},
   {k:'Milking Speed',                  lab:'Velocidade de Ordenha',     u:'',d:1,dir:1, g:'saude'},
   {k:'Heifer Livability',              lab:'Sobrevivência da Novilha',  u:'',d:1,dir:1, g:'saude'},
   {k:'Resistance To Respiratory Disease',lab:'Resistência à Doença Respiratória',u:'',d:1,dir:1,g:'saude'},
@@ -1751,7 +1751,7 @@ const TRAITS = [
   {k:'Taxa de Gravidez da Filha',      lab:'Taxa de Prenhez da Filha',  u:''    ,      d:1, dir:1, g:'repro'},
   {k:'Taxa de Concepção de Vacas',     lab:'Taxa de Concepção de Vacas',u:''    ,      d:1, dir:1, g:'repro'},
   {k:'Taxa de Concepção de Novilhas',  lab:'Taxa de Concepção de Novilhas',u:''    ,   d:1, dir:1, g:'repro'},
-  {k:'Early First Calving',            lab:'Parto Precoce',             u:'',d:1,dir:-1,g:'repro'},
+  {k:'Early First Calving',            lab:'Primeiro Parto Precoce',             u:'',d:1,dir:-1,g:'repro'},
   {k:'First Service Conception',       lab:'Concepção no Primeiro Serviço',u:'',d:1,dir:1,g:'repro'},
   {k:'Facilidade de Parto do Touro',   lab:'Facilidade de Parto do Touro',u:'',d:1,dir:-1,g:'parto'},
   {k:'Facilidade no Parto da Filha',   lab:'Facilidade de Parto de Filha',u:'',    d:1, dir:-1,g:'parto'},
@@ -2154,6 +2154,44 @@ function nomesBullCompativeis(orig,b){
   return [curto,completo].filter(Boolean).some(x=>a===x || a.includes(x) || x.includes(a));
 }
 
+
+/* Reconcilia touros: (a) linhas com nome em branco herdam o nome que o mesmo código
+   tem em outras linhas; (b) "código" que não é NAAB (ex.: nome digitado no campo do
+   código, TADDEUS) é ligado ao NAAB do touro de nome igual ou com 1 letra de diferença,
+   somente quando a correspondência é única. */
+function reconciliarTouros(rows){
+  const NAAB=/^\d{3}[A-Z]{2}\d{3,}$/;
+  const pares=[['Código do Touro','Nome do Touro'],['Código MGS','Nome MGS'],['Código MGGS','Nome MGGS']];
+  const cont=new Map();
+  rows.forEach(r=>pares.forEach(([kc,kn])=>{
+    const c=String(r[kc]||'').trim().toUpperCase(), n=String(r[kn]||'').trim();
+    if(NAAB.test(c)&&n){ const m=cont.get(c)||new Map(); m.set(n,(m.get(n)||0)+1); cont.set(c,m); }
+  }));
+  const nomePorCod=new Map();
+  cont.forEach((m,c)=>nomePorCod.set(c,[...m.entries()].sort((a,b)=>b[1]-a[1])[0][0]));
+  const dist=(a,b)=>{ if(Math.abs(a.length-b.length)>1) return 9; const m=a.length,n=b.length,d=[]; for(let i=0;i<=m;i++){d[i]=[i];} for(let j=1;j<=n;j++) d[0][j]=j;
+    for(let i=1;i<=m;i++)for(let j=1;j<=n;j++) d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1)); return d[m][n]; };
+  const cache=new Map();
+  const resolver=txt=>{
+    if(cache.has(txt)) return cache.get(txt);
+    const alvo=normBullNome(txt); let achado=null;
+    if(alvo && alvo.length>=5){
+      const exatos=new Set(), proximos=new Set();
+      const teste=(cod,nome)=>{ const x=normBullNome(nome); if(!x) return; if(x===alvo) exatos.add(cod); else if(x.length>=5 && dist(alvo,x)<=1) proximos.add(cod); };
+      B.bulls.forEach((b,cod)=>{ teste(cod,b['Name']); teste(cod,b['Full Name']); });
+      nomePorCod.forEach((n,cod)=>teste(cod,n));
+      if(exatos.size===1) achado=[...exatos][0]; else if(!exatos.size && proximos.size===1) achado=[...proximos][0];
+    }
+    cache.set(txt,achado); return achado;
+  };
+  rows.forEach(r=>pares.forEach(([kc,kn])=>{
+    let c=String(r[kc]||'').trim().toUpperCase();
+    if(c && !NAAB.test(c)){ const a=resolver(c); if(a){ r[kc]=a; c=a; if(!String(r[kn]||'').trim()) r[kn]=''; } }
+    if(NAAB.test(c) && !String(r[kn]||'').trim() && nomePorCod.has(c)) r[kn]=nomePorCod.get(c);
+  }));
+  return rows;
+}
+
 function ingest(text){
   const {hdr, linhas} = lerCsv(text, 'banco de dados');
   const {col, src} = mapearColunas(hdr);
@@ -2165,7 +2203,7 @@ function ingest(text){
   D.ref = new Date();
 
   const divergBull = new Map();
-  D.all = linhas.map(L => {
+  D.all = reconciliarTouros(linhas.map(L => {
     const r = {};
     ['Id Feminino','Data de Nascimento','Código do Touro','Nome do Touro','Código MGS',
      'Nome MGS','Código MGGS','Nome MGGS','Número de Lactação','Classificação Percentagem']
@@ -2173,7 +2211,7 @@ function ingest(text){
     D.traits.forEach(t => r[t.k] = v(L,t.k));
     r.__fonte = origemDoAnimal(L, src);
     return r;
-  }).map(r => {
+  })).map(r => {
     const nasc = parseDate(r['Data de Nascimento']);
     const lact = num(r['Número de Lactação']);
     let idade = null, cat;
@@ -4410,7 +4448,7 @@ const USO_BULL_EXTRA = {
   'CFP':['Gordura + proteína (CFP)',1], 'PTAT':['Tipo (PTAT)',1], 'FE':['Eficiência alimentar (FE)',1],
   'REI':['Índice de eficiência reprodutiva (REI)',1], 'EFC':['Parto precoce (EFC)',-1],
   'FSC':['Concepção no primeiro serviço (FSC)',1], 'FI':['Índice de fertilidade (FI)',1],
-  'MAST':['Mastite (MAST)',-1], 'MUI':['Índice moderno de úbere (MUI)',1],
+  'MAST':['Resistência à mastite (MAST)',1], 'MUI':['Índice moderno de úbere (MUI)',1],
   'MSPD':['Velocidade de ordenha (MSPD)',1], 'H-LIV':['Sobrevivência da novilha (H-LIV)',1],
   'SSB':['Natimorto do touro (SSB)',-1], 'SCE':['Facilidade de parto do touro (SCE)',-1],
   'DCE':['Facilidade de parto da filha (DCE)',-1], 'DSB':['Natimorto da filha (DSB)',-1],
