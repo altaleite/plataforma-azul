@@ -797,6 +797,8 @@ body.client-mode .admin-only,body.report-mode .admin-only{display:none!important
 .tabela-fixa table{margin:0}
 .tabela-fixa thead th{position:sticky;top:0;z-index:5;background:var(--alta-deep);color:#fff;box-shadow:0 1px 0 var(--line)}
 .tabela-fixa thead th[data-sort]{cursor:pointer}
+.idlink{color:var(--alta);font-weight:600;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}.idlink:hover{text-decoration:underline}
+.corr-leg{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--muted,#5A6879);margin:0 0 10px}.corr-leg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .tabela-fixa tbody td:first-child{position:sticky;left:0;background:#fff;z-index:3;font-weight:600}
 .tabela-fixa thead th:first-child{left:0;z-index:6}
 #t-reb-resumo tbody td:first-child,#t-reb-resumo thead th:first-child{text-align:left}
@@ -1487,7 +1489,7 @@ body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
 
 <!-- ===== CARACTERÍSTICAS ===== -->
 <section class="view" id="v-carac">
-  <div class="sec-h"><span class="eyebrow">Mérito genético</span><h2>Características por categoria</h2></div>
+  <div class="sec-h"><span class="eyebrow">Lucro genético</span><h2>Características por categoria</h2></div>
   <div class="card sticky filterbar" style="margin-bottom:16px"><div class="card-b" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
     <span style="font-size:12px;font-weight:600;color:var(--ink-2)">Exibir</span>
     <div class="seg" id="seg-grp"></div>
@@ -1628,7 +1630,7 @@ body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
   <div class="grid g2">
     <div class="card"><div class="card-h"><h3>Concentração do rebanho por touro</h3><span class="hint">nome completo, filhas e participação</span></div>
       <div class="card-b"><div class="donut-wrap"><canvas id="c-donut"></canvas></div><div class="ins info" id="donut-resumo" style="margin-top:12px"></div></div></div>
-    <div class="card"><div class="card-h"><h3>Mérito genético × Número de filhas</h3>
+    <div class="card"><div class="card-h"><h3>Lucro genético × Número de filhas</h3>
       <span class="ch-tools"><select id="sel-bull-ano" aria-label="Ano de nascimento das filhas"></select><select id="sel-bull-cat" aria-label="Categoria das filhas"></select><select id="sel-bull-metric" aria-label="Característica"></select><select id="sel-bull-pct" aria-label="Percentual de touros com mais filhas" title="Mostra só os touros com mais filhas no rebanho"></select></span></div>
       <div class="card-b"><div class="rank-wrap"><canvas id="c-quad"></canvas></div><div class="quadleg" id="quad-leg"></div></div></div>
   </div>
@@ -1711,8 +1713,9 @@ body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
       <div class="tw"><table id="t-quart" class="center-all"></table></div>
     </div></div>
   <div class="card" style="margin-top:16px"><div class="card-h"><h3>O que dirige o seu índice</h3>
-    <span class="hint">quanto mais escuro, mais forte a ligação · à direita = mesmo sentido do plano</span></div>
-    <div class="card-b"><div class="chart-wrap" style="height:420px"><canvas id="c-corr"></canvas></div></div></div>
+    <span class="hint">a barra mostra a correlação do número · a cor mostra se isso é bom para a característica</span></div>
+    <div class="card-b"><div class="corr-leg"><span><i style="background:#295097"></i>Azul: o plano melhora a característica (mais escuro = ligação mais forte)</span><span><i style="background:#E0951A"></i>Laranja: o plano piora a característica. Vale conferir</span><span><i style="background:#A9B4C6"></i>Cinza: característica sem sentido ideal (tamanho, forma): só descreve o tipo de animal</span></div>
+    <div class="chart-wrap" style="height:420px"><canvas id="c-corr"></canvas></div></div></div>
 </section>
 
 <!-- ===== OPORTUNIDADES ===== -->
@@ -2253,6 +2256,12 @@ function reconciliarTouros(rows){
   return rows;
 }
 
+/* Alta: o MESMO touro tem dois códigos — 011 (convencional) e 511 (sexado). Só esse par é
+   tratado como equivalente: números iguais em outras centrais podem ser touros diferentes. */
+const naabAltaEquiv = c => String(c||'').trim().toUpperCase().replace(/^511(?=[A-Z]{2}\d)/,'011');
+const ehAltaConv = c => /^011[A-Z]{2}\d/.test(String(c||'').trim().toUpperCase());
+const ehAltaSex  = c => /^511[A-Z]{2}\d/.test(String(c||'').trim().toUpperCase());
+
 function ingest(text){
   const {hdr, linhas} = lerCsv(text, 'banco de dados');
   const {col, src} = mapearColunas(hdr);
@@ -2288,7 +2297,11 @@ function ingest(text){
       else if(lact === 2) cat = 'Lact 2';
       else cat = 'Lact 3+';
     }
-    const codTouro=(r['Código do Touro']||'').trim().toUpperCase();
+    /* Pai só vale com código NAAB (ex.: 011HO15088). Em branco, "0", registro de
+       associação (AX155850) ou brinco de 15 dígitos ficam de fora das análises por touro —
+       antes o "0" aparecia no ranking como se fosse um touro. */
+    const codTouroBruto=(r['Código do Touro']||'').trim().toUpperCase();
+    const codTouro=/^\d{1,3}[A-Z]{2}\d{3,}$/.test(codTouroBruto) ? codTouroBruto : '';
     const codMgs=(r['Código MGS']||'').trim().toUpperCase();
     const codMggs=(r['Código MGGS']||'').trim().toUpperCase();
     const nomeOrigem=(r['Nome do Touro']||'').trim(), bull=bullDoNaab(codTouro);
@@ -2297,7 +2310,7 @@ function ingest(text){
     const o = { id:r['Id Feminino'], nasc, ano: nasc? nasc.getFullYear():null, lact, cat, idade,
                 touro:nomeBullSearch(codTouro,nomeOrigem) || codTouro || '—',
                 touroOrigem:nomeOrigem, touroCompleto:nomeCompletoBullSearch(codTouro),
-                codTouro,
+                codTouro, paiInvalido: (codTouroBruto && !codTouro) ? codTouroBruto : '',
                 mgs:nomeBullSearch(codMgs,(r['Nome MGS']||'').trim()), codMgs,
                 mggs:nomeBullSearch(codMggs,(r['Nome MGGS']||'').trim()), codMggs,
                 pct: num(r['Classificação Percentagem']) };
@@ -2307,6 +2320,28 @@ function ingest(text){
     o.bullProof = bull ? String(bull['Proof']||'').trim() : '';
     return o;
   });
+  /* Mesmo touro, dois códigos: a versão sexada (511) assume o nome da convencional (011),
+     para os rankings e gráficos por nome não contarem o touro duas vezes. */
+  {
+    const nomeConv = new Map();
+    D.all.forEach(r=>{ if(ehAltaConv(r.codTouro) && r.touro && r.touro!==r.codTouro){
+      const m=nomeConv.get(r.codTouro)||new Map(); m.set(r.touro,(m.get(r.touro)||0)+1); nomeConv.set(r.codTouro,m); } });
+    D.all.forEach(r=>{
+      if(!ehAltaSex(r.codTouro)) return;
+      const conv = naabAltaEquiv(r.codTouro);
+      const doBS = nomeBullSearch(conv,'');
+      const doArq = nomeConv.has(conv) ? [...nomeConv.get(conv).entries()].sort((a,b)=>b[1]-a[1])[0][0] : '';
+      const nome = doBS || doArq;
+      if(nome){ r.touro = nome; r.touroCompleto = nomeCompletoBullSearch(conv) || r.touroCompleto; }
+    });
+  }
+  {
+    const branco = D.all.filter(r=>!r.codTouro && !r.paiInvalido).length;
+    const inval = D.all.filter(r=>r.paiInvalido);
+    if(branco+inval.length) AVISOS.push(['warn','Pai sem código NAAB',
+      `<b>${fmt(branco+inval.length)}</b> fêmea(s) sem pai identificável: <b>${fmt(branco)}</b> com o código em branco e <b>${fmt(inval.length)}</b> com um código que não é NAAB`+
+      `${inval.length?` (ex.: ${[...new Set(inval.map(r=>r.paiInvalido))].slice(0,4).join(', ')})`:''}. Elas entram nas médias do rebanho, mas ficam fora das análises por touro (Touros, Centrais, Touros em uso).`]);
+  }
   const semRaca = D.all.filter(r=>r.raca==='—').length;
   if(semRaca) AVISOS.push(['info','Raça não identificada',
     `<b>${fmt(semRaca)}</b> fêmea(s) permanecem no banco e nas análises do rebanho. Comparações CDCB exigem raça identificada e são apresentadas por raça.`]);
@@ -2740,9 +2775,19 @@ function ordenavel(id){
           if(Number.isFinite(ds)) return ds;
           return String(c.dataset.sort).toLowerCase();
         }
-        const txt = c.textContent.trim().replace(/\s*(libras|meses|pts|%|escore)\s*$/,'').replace(/^([+−-]?)R\$\u00a0?/,'$1').trim();
-        const n = +txt.replace(/\./g,'').replace(',','.').replace('+','');
-        return (txt !== '—' && txt !== '' && isFinite(n) && /[\d]/.test(txt)) ? n : txt.toLowerCase();
+        const bruto = c.textContent.trim();
+        /* Data dd/mm/aaaa: ordena pela data, não pelo texto. */
+        const dt = bruto.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        if(dt) return Date.UTC(+dt[3], +dt[2]-1, +dt[1]);
+        /* Número com sinal (inclusive o menos tipográfico "−"), moeda (US$, R$) e unidade
+           no fim. Sem isso "−US$ 98" caía na ordenação por texto e ficava fora de ordem. */
+        const m = bruto.replace(/\u00a0/g,' ').match(/^([+\-\u2212]?)\s*(?:US\$|R\$|\$)?\s*([+\-\u2212]?)\s*(\d[\d.]*(?:,\d+)?|,\d+)\s*(?:libras|meses|pts|escore|lb|kg|dias|%|σ)?\s*(?:US\$|R\$)?\s*$/i);
+        if(m){
+          const neg = (m[1]+m[2]).replace(/[+]/g,'').length>0;
+          const n = +m[3].replace(/\./g,'').replace(',','.');
+          if(isFinite(n)) return neg ? -n : n;
+        }
+        return bruto.toLowerCase();
       };
       linhas.sort((a,b)=>{
         const x = val(a), y = val(b);
@@ -3464,6 +3509,23 @@ function renderCertificado(){
     <div class="cert-body"><div class="cert-grid"><section class="cert-block"><h3>Genealogia disponível</h3><div class="cert-block-body cert-pedigree">${certPedigree(animal.touro,animal.codTouro,'Pai')}${certPedigree(animal.mgs,animal.codMgs,'Avô materno')}${certPedigree(animal.mggs,animal.codMggs,'Bisavô materno')}</div></section><section class="cert-block"><h3>Identificação da avaliação</h3><div class="cert-block-body"><table class="cert-metric-table"><tbody><tr><td>Plano Genético</td><td>${uv(animal['Meu Índice'],certTrait('Meu Índice'))}</td></tr><tr><td>Data oficial da prova</td><td>${certDataLabel()}</td></tr><tr><td>Origem da avaliação</td><td>${esc(animal.fonte||'—')}</td></tr><tr><td>Fazenda</td><td>${esc(META.farm||'—')}</td></tr></tbody></table></div></section></div>${grupos}<div class="cert-section"><div class="cert-section-head">Características lineares de tipo<small>Escala visual centralizada em zero</small></div>${certLinearAxis()}<div class="cert-linear">${certLinear(animal) || '<span style="font-size:11px;color:var(--ink-3);padding:6px">Características lineares não disponíveis na base carregada.</span>'}</div></div><div class="cert-foot"><span><b>Plataforma Azul · Alta Genetics Brasil</b><br>Documento emitido em ${new Date().toLocaleDateString('pt-BR')}.</span><span><b>Fonte: CDCB</b><br>Não substitui registro genealógico oficial.</span></div></div>
   </article>`;
 }
+/* Clique no número do brinco (Rebanho, Oportunidades) abre o Certificado daquele animal.
+   O corte do certificado volta para "todo o rebanho, sem critério" para o animal sempre aparecer. */
+function abrirCertificado(id){
+  id=String(id||'').trim(); if(!id) return;
+  go('cert');
+  certCrit=''; certCrit2=''; certCrit3=''; certPct=100;
+  const pool=$('#cert-pool'); if(pool) pool.value='all';
+  montarCriteriosCertificado();
+  atualizarCorteCertificado();
+  const b=$('#cert-busca'); if(b) b.value=id;
+  const sel=$('#cert-animal'); if(sel) sel.value=id;
+  renderCertificado();
+}
+document.addEventListener('click', e=>{
+  const a=e.target.closest && e.target.closest('[data-cert]');
+  if(a){ e.preventDefault(); abrirCertificado(a.dataset.cert); }
+});
 function rCertificado(){
   const input=$('#cert-animal'); if(!input) return;
   montarCriteriosCertificado();
@@ -3987,7 +4049,7 @@ function rGeral(){
   const mediaMI = mean(mi);
   $('#ins-lucro').innerHTML =
     `<div class="ins info"><span class="tag">Unidade</span>`+
-    `O Plano Genético é expresso em <b>dólares de mérito líquido por filha ao longo da vida produtiva</b>, `+
+    `O Plano Genético é expresso em <b>dólares de lucro líquido por filha ao longo da vida produtiva</b>, `+
     `medido contra a média da raça — zero é a média. `+
     `Rebanho em <b>${RS(mediaMI,0)}</b>, de <b>${RS(Math.min(...mi),0)}</b> a <b>${RS(Math.max(...mi),0)}</b>.`+
     `</div>`;
@@ -4432,7 +4494,7 @@ function rRebanho(){
 
   /* --- Listagem --------------------------------------------------------- */
   const fixas = [
-    {k:'id',   lab:'ID',            v:r=>r.id,   txt:r=>esc(r.id)},
+    {k:'id',   lab:'ID',            v:r=>r.id,   txt:r=>`<a class="idlink" data-cert="${esc(r.id)}" title="Abrir o certificado deste animal">${esc(r.id)}</a>`},
     {k:'nasc', lab:'Nascimento',    v:r=>r.nasc?r.nasc.getTime():null, txt:r=>r.nasc?r.nasc.toLocaleDateString('pt-BR'):'—'},
     {k:'idade',lab:'Idade (meses)', v:r=>r.idade, txt:r=>fmt(r.idade,0)},
     {k:'lact', lab:'Lactações',     v:r=>r.lact,  txt:r=>r.lact??'—'},
@@ -5147,6 +5209,7 @@ function bullStats(rows=D.rows){
       conflito: cods.filter(c=>conflitos.has(c)),
       central: centrais.join(' · '), centrais,
       sexado: cods.length>1,
+      nConv: b.filhas.filter(f=>ehAltaConv(f.codTouro)).length, nSex: b.filhas.filter(f=>ehAltaSex(f.codTouro)).length,
       mi: mean(vals(b.filhas,'Meu Índice')), leite: mean(vals(b.filhas,'Leite')),
       gord: mean(vals(b.filhas,'Gordura')), prot: mean(vals(b.filhas,'Proteína')),
       pl: mean(vals(b.filhas,'Vida Produtiva')),
@@ -5346,6 +5409,8 @@ function rTouros(){
     if(key==='cod') return b.cod||'';
     if(key==='central') return b.central||'';
     if(key==='n') return b.n;
+    if(key==='nConv') return (b.nConv||b.nSex) ? b.nConv : null;
+    if(key==='nSex') return (b.nConv||b.nSex) ? b.nSex : null;
     if(key==='pct') return N ? b.n/N*100 : null;
     if(key==='mi') return b.mi;
     if(key==='vs') return b.mi===null?null:b.mi-mediaGeral;
@@ -5363,14 +5428,14 @@ function rTouros(){
   const Bordenado = [...B].sort(cmpBull);
   const Bmostra = Bordenado.slice(0, BULL_LIMITE);
   const thBull = (lab,key) => `<th data-bull-sort="${esc(key)}" class="sortable ${BULL_SORT.key===key?BULL_SORT.dir:''}" title="Ordenar todos os touros por ${esc(lab)}">${esc(lab)}</th>`;
-  let h = `<thead><tr>${thBull('Touro','nome')}${thBull('NAAB','cod')}${thBull('Central','central')}${thBull('Filhas','n')}${thBull('% rebanho','pct')}${thBull('Plano Genético','mi')}${thBull('vs rebanho','vs')}`+
+  let h = `<thead><tr>${thBull('Touro','nome')}${thBull('NAAB','cod')}${thBull('Central','central')}${thBull('Filhas','n')}${thBull('Conv.','nConv')}${thBull('Sexado','nSex')}${thBull('% rebanho','pct')}${thBull('Plano Genético','mi')}${thBull('vs rebanho','vs')}`+
           extras.map(t=>thBull(t.lab,'trait:'+t.k)).join('')+thBull('Períodos','periodo')+`</tr></thead><tbody>`;
   Bmostra.forEach(b=>{
     const d = b.mi - mediaGeral;
     h += `<tr><td style="max-width:250px">${esc(b.nome)}${b.sexado?' <span class="pill b" title="Mesmo touro com código convencional e sexado">2 NAAB</span>':''}${
         b.conflito.length?` <span class="pill a" title="O código ${esc(b.conflito.join(', '))} aparece no arquivo com mais de um nome de touro — confira na origem.">nome conflitante</span>`:''}</td>
       <td class="mono" style="font-size:11.5px">${esc(b.cod)}</td><td style="font-size:11.5px">${esc(b.central||'—')}</td>
-      <td>${fmt(b.n)}</td><td>${fmt(b.n/N*100,1)}</td><td>${RS(b.mi,0)}</td>
+      <td>${fmt(b.n)}</td><td>${(b.nConv||b.nSex)?fmt(b.nConv):'—'}</td><td>${(b.nConv||b.nSex)?fmt(b.nSex):'—'}</td><td>${fmt(b.n/N*100,1)}</td><td>${RS(b.mi,0)}</td>
       <td class="${d>0?'pos':'neg'}">${RS(d,0)}</td>`+
       extras.map(t=>{const v=mean(vals(b.filhas,t.k));return `<td>${uv(v,t)}</td>`}).join('')+
       `<td style="color:var(--ink-3);font-size:11.5px">${b.anos[0]}${b.anos.length>1?'–'+b.anos[b.anos.length-1]:''}</td></tr>`;
@@ -5387,12 +5452,15 @@ function rTouros(){
     ? `mostrando os <b>${fmt(BULL_LIMITE)}</b> primeiros de <b>${fmt(B.length)}</b> na ordenação atual · o Excel sai completo`
     : `${fmt(B.length)} touros`;
   const conf = B.filter(b=>b.conflito.length);
-  $('#bull-aviso').innerHTML = conf.length
+  const paiBranco = R.filter(r=>!r.codTouro && !r.paiInvalido).length, paiInval = R.filter(r=>r.paiInvalido);
+  const avisoPai = (paiBranco+paiInval.length)
+    ? `<div class="ins info" style="margin-bottom:8px"><span class="tag">Pai sem NAAB</span><b>${fmt(paiBranco+paiInval.length)}</b> fêmea(s) ficam fora desta aba e de Centrais e Touros em uso: <b>${fmt(paiBranco)}</b> com o código do pai em branco e <b>${fmt(paiInval.length)}</b> com código que não é NAAB${paiInval.length?` (ex.: ${[...new Set(paiInval.map(r=>r.paiInvalido))].slice(0,4).join(', ')})`:''}. Elas continuam nas médias do rebanho.</div>` : '';
+  $('#bull-aviso').innerHTML = avisoPai + (conf.length
     ? `<div class="ins warn"><span class="tag">Nome divergente na origem</span>`+
       `<b>${fmt(conf.length)}</b> registro(s) trazem o mesmo código NAAB com nomes de touro diferentes: `+
       conf.slice(0,6).map(b=>`<b>${esc(b.nome)}</b> (${esc(b.conflito.join(', '))})`).join(', ')+
       `${conf.length>6?` e mais ${conf.length-6}`:''}. A plataforma agrupa por <b>nome</b>, então esses casos ficam separados. Corrija na origem antes de usar o número.</div>`
-    : '';
+    : '');
   armar('#v-touros .card:nth-of-type(1)', {chart:'c-donut', nome:'concentracao de touros'});
   armar('#v-touros .card:nth-of-type(2)', {chart:'c-quad',  nome:`touros merito x filhas ${metric.lab}`});
   armar('#v-touros .card:nth-of-type(3)', {table:'t-bulls', nome:'ranking de touros pais'});
@@ -5404,7 +5472,7 @@ function expTourosRanking(){
   const x=ULT_BULL_RANK; if(!x || !x.rows?.length) return;
   const rows=x.rows.map(b=>{
     const o={
-      'Touro':b.nome||'—','NAAB':b.cod||'—','Central':b.central||'—','Filhas':b.n,
+      'Touro':b.nome||'—','NAAB':b.cod||'—','Central':b.central||'—','Filhas':b.n,'Filhas convencional (011)':(b.nConv||b.nSex)?b.nConv:null,'Filhas sexado (511)':(b.nConv||b.nSex)?b.nSex:null,
       '% rebanho':x.N?b.n/x.N*100:null,'Plano Genético':b.mi,
       'vs rebanho':b.mi===null?null:b.mi-x.mediaGeral
     };
@@ -5882,15 +5950,23 @@ function rPlano(){
 
   ordenavel('t-quart');
   const mi = D.rows.map(r=>r['Meu Índice']);
+  const sentidoCorr = c => (c.t.g==='lin' || c.t.k==='Composto de Peso Corporal' || !c.t.dir) ? 'neutro' : ((c.r*c.t.dir)>=0 ? 'favor' : 'contra');
   const cor = D.traits.filter(t=>t.g!=='plano').map(t=>({lab:t.lab, r:pearson(mi, D.rows.map(x=>x[t.k])), t}))
     .filter(x=>x.r!==null).sort((a,b)=>Math.abs(b.r)-Math.abs(a.r)).slice(0,16);
   chart('c-corr',{type:'bar', data:{labels:cor.map(c=>c.lab.replace(/ \(.*\)/,'')), datasets:[{data:cor.map(c=>c.r),
     /* Bloco 3: sem vermelho. A correlação negativa não é "ruim" — é só o outro
        sentido. A intensidade do azul passa a codificar a FORÇA (|r|), e o lado
        da barra já mostra o sinal. */
-    backgroundColor:cor.map(c=>{const a=Math.abs(c.r);
+    /* A cor traduz o que a correlação significa PARA A CARACTERÍSTICA: azul = o plano
+       a melhora (já considerando que menos é melhor em CCS etc.); laranja = o plano a
+       piora; cinza = característica sem sentido ideal (tipo/linear). A força (|r|)
+       continua no tom do azul. */
+    backgroundColor:cor.map(c=>{const a=Math.abs(c.r), s=sentidoCorr(c);
+      if(s==='neutro') return '#A9B4C6';
+      if(s==='contra') return a>0.45?'#C97A0B':'#E0951A';
       return a>0.75?'#17305C':a>0.55?'#295097':a>0.35?'#4A7FD4':a>0.2?'#8FAEDC':'#C6D6EE';}), borderRadius:3}]},
-    options:{indexAxis:'y', plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>`r = ${fmt(ctx.raw,2)} · ligação ${Math.abs(ctx.raw)>.6?'forte':(Math.abs(ctx.raw)>.3?'moderada':'fraca')} · ${ctx.raw>=0?'mesmo sentido do plano':'sentido oposto ao plano'}`}}},
+    options:{indexAxis:'y', plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>{const c=cor[ctx.dataIndex], s=sentidoCorr(c);
+      return `r = ${fmt(ctx.raw,2)} · ligação ${Math.abs(ctx.raw)>.6?'forte':(Math.abs(ctx.raw)>.3?'moderada':'fraca')} · `+(s==='neutro'?'característica sem sentido ideal':(s==='contra'?'o plano tende a PIORAR esta característica':'o plano tende a melhorar esta característica'));}}}},
       scales:{x:{min:-1,max:1,grid:{color:C.line},title:{display:true,text:'correlação com o Plano Genético'}}, y:{grid:{display:false},ticks:{font:{size:10}}}}}});
 
   /* Gerador de leitura automática removido — o card não existe mais. */
@@ -6003,7 +6079,7 @@ function paintSel(){
   const extrasHead = [cr2,cr3].filter(Boolean).map(c=>`<th>${c.lab}</th>`).join('');
   const mostraPlano = cr.k !== 'Meu Índice';
   $('#t-sel-animals').innerHTML=`<thead><tr><th>Posição</th><th>ID</th><th>Categoria</th><th>Nascimento</th><th>${cr.lab}</th>${extrasHead}${mostraPlano?'<th>Plano Genético</th>':''}<th>Touro pai</th></tr></thead><tbody>`+
-    S.map(r=>`<tr><td>${r.__rank}</td><td>${esc(r.id)}</td><td>${r.cat}</td><td>${r.nasc?r.nasc.toLocaleDateString('pt-BR'):'—'}</td><td><b>${uv(r[cr.k],cr)}</b></td>${[cr2,cr3].filter(Boolean).map(c=>`<td>${uv(r[c.k],c)}</td>`).join('')}${mostraPlano?`<td>${RS(r['Meu Índice'],0)}</td>`:''}<td>${esc(r.touro||r.codTouro||'—')}</td></tr>`).join('')+'</tbody>';
+    S.map(r=>`<tr><td>${r.__rank}</td><td><a class="idlink" data-cert="${esc(r.id)}" title="Abrir o certificado deste animal">${esc(r.id)}</a></td><td>${r.cat}</td><td>${r.nasc?r.nasc.toLocaleDateString('pt-BR'):'—'}</td><td><b>${uv(r[cr.k],cr)}</b></td>${[cr2,cr3].filter(Boolean).map(c=>`<td>${uv(r[c.k],c)}</td>`).join('')}${mostraPlano?`<td>${RS(r['Meu Índice'],0)}</td>`:''}<td>${esc(r.touro||r.codTouro||'—')}</td></tr>`).join('')+'</tbody>';
   ordenavel('t-sel-animals');
 
   const cols = D.traits.filter(t=>t.g!=='lin');
@@ -6244,9 +6320,10 @@ function conferirAcas(){
   AC.map.forEach(a => {
     const r = idsD.get(a.id);
     if(!r){ semRebanho++; return; }
-    /* O mesmo touro pode vir com prefixo de central diferente (011HO16387 × 511HO16387):
-       o que identifica o touro é raça + número, então o prefixo de 3 dígitos é ignorado. */
-    const semPref = c => String(c||'').toUpperCase().replace(/^\d{3}(?=[A-Z]{2}\d)/,'');
+        /* Aqui é a MESMA vaca nos dois relatórios: se raça + número do touro batem, é o mesmo pai,
+       mesmo com prefixo diferente de central (011×511 da Alta; 200×777 etc.). Só número diferente
+       indica arquivos de rodadas ou rebanhos distintos. */
+    const semPref = c => String(c||'').toUpperCase().replace(/^\d{1,3}(?=[A-Z]{2}\d)/,'');
     if(a.pai && r.codTouro && semPref(a.pai) !== semPref(r.codTouro)) paiDif++;
     if(a.indice !== null && r['Meu Índice'] !== null && Math.abs(a.indice - r['Meu Índice']) > 1) indDif++;
   });
