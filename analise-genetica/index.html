@@ -1057,6 +1057,67 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
 <meta name="theme-color" content="#17305C">
 <meta name="application-name" content="Plataforma Azul">
 <meta name="apple-mobile-web-app-title" content="Plataforma Azul">
+<style id="cssRelatorioGen">
+/* Relatório PDF (A4 paisagem). O contêiner só existe dentro do iframe de impressão. */
+#relatorioGen{ display:none }
+body.rp-live .chart-wrap, body.rp-live .chart-sm, body.rp-live .tchart, body.rp-live .donut-wrap{ max-height:270px }
+body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
+@media print{
+  html.modo-relatorio, body.modo-relatorio{ background:#fff!important; font-size:11px }
+  body.modo-relatorio > *:not(#relatorioGen){ display:none!important }
+  body.modo-relatorio #relatorioGen{ display:block!important }
+  #relatorioGen, #relatorioGen *{ -webkit-print-color-adjust:exact; print-color-adjust:exact }
+}
+#relatorioGen{ width:273mm; margin:0 auto; font-family:Arial,system-ui,sans-serif; color:var(--ink) }
+#relatorioGen .rp-capa{ width:273mm; height:180mm; margin:0; box-sizing:border-box; position:relative; overflow:hidden; break-after:page; border-radius:3mm;
+  background:linear-gradient(145deg,#17305C,#295097 62%,#416FBB); color:#fff; padding:16mm 20mm }
+#relatorioGen .rp-capa::after{ content:""; position:absolute; width:520px; height:520px; border:1px solid rgba(255,255,255,.14); border-radius:50%;
+  right:-170px; bottom:-260px; box-shadow:0 0 0 85px rgba(255,255,255,.04),0 0 0 170px rgba(255,255,255,.03) }
+#relatorioGen .rp-capa-topo{ display:flex; justify-content:space-between; align-items:center; position:relative; z-index:1 }
+#relatorioGen .rp-capa-topo img{ height:11mm; filter:brightness(0) invert(1) }
+#relatorioGen .rp-capa-topo span{ font-size:9pt; letter-spacing:.14em; text-transform:uppercase; color:#B9CBEA }
+#relatorioGen .rp-capa-meio{ position:relative; z-index:1; margin-top:22mm }
+#relatorioGen .rp-k{ color:#F9B000; letter-spacing:.18em; font-size:10pt; font-weight:700; text-transform:uppercase }
+#relatorioGen .rp-capa h1{ font-size:36pt; line-height:1.05; margin:4mm 0 8mm; font-weight:800; color:#fff; letter-spacing:-.01em }
+#relatorioGen .rp-fazenda{ font-size:18pt; font-weight:700; color:#fff }
+#relatorioGen .rp-dono{ font-size:12pt; color:#B9CBEA; margin-top:1.5mm }
+#relatorioGen .rp-capa-barra{ width:24mm; height:1.6mm; background:#F9B000; margin:9mm 0 }
+#relatorioGen .rp-capa-grade{ position:absolute; left:20mm; right:20mm; bottom:14mm; display:grid; grid-template-columns:repeat(4,1fr); gap:6mm; z-index:1;
+  border-top:1px solid rgba(255,255,255,.22); padding-top:5mm }
+#relatorioGen .rp-capa-grade .l{ font-size:8pt; letter-spacing:.12em; text-transform:uppercase; color:#A8C2EC }
+#relatorioGen .rp-capa-grade .v{ font-size:15pt; font-weight:700; margin-top:1mm }
+#relatorioGen .rp-sec{ break-before:page }
+#relatorioGen .rp-cab{ display:flex; gap:4mm; align-items:center; margin:0 0 5mm; padding-bottom:2.5mm; border-bottom:.5mm solid #F9B000; break-after:avoid }
+#relatorioGen .rp-cab .n{ font-size:20pt; font-weight:800; color:#F9B000 }
+#relatorioGen .rp-cab h2{ font-size:16pt; color:#153D88; font-weight:800; line-height:1.1; margin:0 }
+#relatorioGen .rp-cab p{ font-size:8.5pt; color:#5A6879; margin:.8mm 0 0; letter-spacing:.06em; text-transform:uppercase }
+#relatorioGen .rp-sec > *{ margin-bottom:3.5mm }
+#relatorioGen .card, #relatorioGen .kpi, #relatorioGen .ins, #relatorioGen .evo-card, #relatorioGen figure{ break-inside:avoid; box-shadow:none }
+#relatorioGen .grid{ break-inside:avoid; align-items:start }
+/* No papel a largura útil é menor que 1080 px e as regras de celular entrariam: a página mantém as colunas do painel */
+#relatorioGen .g4{ grid-template-columns:repeat(4,1fr)!important }
+#relatorioGen .g3{ grid-template-columns:repeat(3,1fr)!important }
+#relatorioGen .g2{ grid-template-columns:repeat(2,1fr)!important; zoom:.92 }
+#relatorioGen .g2.central-grid{ grid-template-columns:minmax(0,.85fr) minmax(0,1.35fr)!important; zoom:.88 }
+#relatorioGen .card{ margin:0!important }
+#relatorioGen .chart-wrap, #relatorioGen .chart-sm, #relatorioGen .tchart, #relatorioGen .donut-wrap{ height:auto!important; max-height:none!important; min-height:0!important }
+#relatorioGen img.rp-img{ display:block; height:auto }
+#relatorioGen .tw, #relatorioGen .table-scroll, #relatorioGen .tabela-fixa{ max-height:none!important; overflow:visible!important }
+#relatorioGen thead th{ position:static!important }
+#relatorioGen table{ font-size:10.5px; width:100% }
+#relatorioGen th, #relatorioGen td{ padding:3px 7px!important }
+#relatorioGen tr{ break-inside:avoid }
+#relatorioGen thead{ display:table-header-group }
+#relatorioGen .rp-trunc{ font-size:9px; color:#5A6879; margin:2mm 0 0; padding:0 4px }
+#relatorioGen .rp-sel{ font-weight:700; color:var(--alta-deep) }
+#relatorioGen .card-b{ padding:12px 14px }
+#relatorioGen .card-h{ padding:10px 14px }
+#relatorioGen .card-h{ flex-wrap:wrap }
+#relatorioGen .rp-ctl{ flex:1 1 100%; font-size:10px; color:#5A6879; font-weight:600 }
+#relatorioGen .card.rp-denso{ zoom:.8 }
+#relatorioGen .rp-nota{ font-size:8.5pt; color:#5A6879; margin-top:5mm; line-height:1.5 }
+</style>
+
 </head>
 <body>
 
@@ -1120,7 +1181,7 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
     <div class="hactions">
       <button class="hbtn" id="btn-meta">Identificação</button>
       <button class="hbtn" id="btn-client">Baixar HTML cliente</button>
-      <button class="hbtn" id="btn-rep">Modo relatório</button>
+      <button class="hbtn" id="btn-rep" type="button">Baixar PDF</button>
       <button class="hbtn" id="btn-reload" onclick="location.reload()">Trocar rebanho</button>
       <button class="hbtn" id="hmenu-btn">Ações ▾</button>
     </div>
@@ -1724,7 +1785,7 @@ body,button,input,select,textarea,table{text-rendering:optimizeLegibility}
 /* --- Direções de seleção. Rafael: revise antes de publicar. dir 1=maior melhor,
    -1=menor melhor, 0=intermediário/neutro (não colorir). ------------------ */
 /* Data da última versão publicada. Atualize junto com cada nova entrega do index. */
-const APP_ATUALIZADO = '29/10/2026';
+const APP_ATUALIZADO = '30/10/2026';
 const TRAITS = [
   {k:'Meu Índice',                     lab:'Plano Genético',            u:'US$', pre:1, d:0, dir:1, g:'plano'},
   {k:'Leite',                          lab:'Leite',                     u:'libras', d:0, dir:1, g:'prod'},
@@ -2776,15 +2837,16 @@ function prepararModalShare(){
     $('#share-modal').hidden=true;
     if(SHARE_MODAL_ACTION==='client-link') gerarLinkCliente();
     else if(SHARE_MODAL_ACTION==='client-download') gerarVersaoCliente();
-    else setReport(true);
+    else gerarRelatorioGen();
   };
 }
 function abrirModalShare(acao){
   SHARE_MODAL_ACTION=acao; prepararModalShare(); preencherFormShare(SHARE_PREFS);
   const cliente=acao==='client-link'||acao==='client-download';
   $('#share-title').textContent=cliente?'Conteúdo da versão do cliente':'Conteúdo do relatório em PDF';
+  if(!cliente) setTimeout(()=>{ $('#share-subtitle').textContent='O PDF traz as seções analíticas em páginas A4. Rebanho completo, Qualidade dos dados, Certificado e Acasalamento não entram: a lista inteira continua no painel e no Excel.'; },0);
   $('#share-subtitle').textContent=cliente?`Escolha o que o cliente poderá visualizar. ${USO?.touros?.length?`${fmt(USO.touros.length)} touros em uso serão incorporados ao HTML.`:'Carregue a planilha BullSearch em Touros em uso antes de gerar o HTML para incluir esta análise.'}`:'Escolha o que aparecerá no relatório antes de abrir a impressão.';
-  $('#share-apply').textContent=acao==='client-link'?'Gerar link':acao==='client-download'?'Baixar HTML':'Abrir modo relatório';
+  $('#share-apply').textContent=acao==='client-link'?'Gerar link':acao==='client-download'?'Baixar HTML':'Gerar PDF';
   $('#share-modal').hidden=false;
 }
 /* --- Rótulos impressos nos gráficos ---------------------------------------
@@ -2970,6 +3032,177 @@ function resolucaoGraficos(alta){
   });
 }
 
+/* ======================================================================
+   RELATÓRIO EM PDF (A4 paisagem)
+   O painel se abre de novo dentro de um iframe com a largura da página,
+   percorre as seções analíticas, congela os gráficos em imagem e imprime só
+   o relatório. Tabelas longas viram "as N primeiras" e o Rebanho completo
+   fica de fora: o PDF é leitura, a lista inteira continua no painel e no Excel.
+   ====================================================================== */
+const PDF_GEN_SECOES = ['planocli','geral','evol','cdcb','curvas','touros','centrais','uso','plano','oport'];
+const PDF_GEN_LIMITE = 30, PDF_GEN_LINHAS = 20;
+function pdfGenEsperar(ms){ return new Promise(r=>setTimeout(r,ms)); }
+function pdfGenConfig(){
+  if(APP_CONFIG.mode==='client') return Object.assign({}, APP_CONFIG, {sharePrefs:SHARE_PREFS, fonte:FONTE});
+  return {mode:'client', embeddedCsvBase64:utf8ToBase64(RAW_CSV), embeddedAcasBase64:'',
+    uso: USO?.touros?.length ? USO : null, usoTrait:USO_TRAIT, usoCols: USO_COLS ? [...USO_COLS] : null, usoRaca:USO_RACA,
+    meta:{farm:META.farm||'', owner:META.owner||'', analyst:META.analyst||''},
+    sharePrefs:SHARE_PREFS, plano:PLANO.ativo?PLANO:null,
+    naabMap:(NAAB_MAP!==NAAB_EMBUTIDO)?NAAB_MAP:null,
+    arquivos:ARQUIVOS.map(a=>({nome:a.nome, novos:a.novos})), fonte:FONTE, generatedAt:new Date().toISOString()};
+}
+/* Copia um bloco do painel para o papel: gráfico vira imagem, controles viram
+   texto ou somem, tabela longa é cortada. */
+function pdfGenCongelar(el){
+  const originais = Array.from(el.querySelectorAll('canvas'));
+  const textosSel = Array.from(el.querySelectorAll('select')).map(s=>(s.options[s.selectedIndex]&&s.options[s.selectedIndex].text)||'');
+  const copia = el.cloneNode(true);
+  copia.querySelectorAll('select').forEach((s,i)=>s.setAttribute('data-rp-txt', textosSel[i]||''));
+  copia.querySelectorAll('canvas').forEach((cv,i)=>{
+    const o = originais[i]; if(!o) return;
+    const img = new Image(); img.className = 'rp-img'; img.alt = '';
+    try{ img.src = o.toDataURL('image/png'); }catch(e){ cv.remove(); return; }
+    const lw = parseFloat(o.style.width) || o.clientWidth || 0;       // largura em CSS com que o gráfico foi desenhado
+    if(lw){ img.style.width = lw+'px'; img.style.maxWidth = '100%'; img.style.margin = '0 auto'; }
+    cv.replaceWith(img);
+  });
+  copia.querySelectorAll('.seg').forEach(s=>{
+    const ativo = s.querySelector('button.on,button.active,button.sel');
+    if(ativo){ const b = document.createElement('b'); b.className = 'rp-sel'; b.textContent = ativo.textContent.trim(); s.replaceWith(b); } else s.remove();
+  });
+  copia.querySelectorAll('.report-omit,[hidden],.admin-only,.filterbar,.sec-p,.acts,.colsel,.ch-tools button,button,input,textarea,.tip-chart,.baixar-imagem').forEach(e=>{ if(e!==copia) e.remove(); });
+  /* seletores do cabeçalho de um cartão viram uma linha só: "Todos os anos · Plano Genético · ..." */
+  copia.querySelectorAll('.card-h').forEach(h=>{
+    const sels = Array.from(h.querySelectorAll('select')); if(!sels.length) return;
+    const span = document.createElement('span'); span.className = 'rp-ctl';
+    span.textContent = sels.map(s=>s.getAttribute('data-rp-txt')).filter(Boolean).join(' · ');
+    sels[0].replaceWith(span); sels.slice(1).forEach(s=>s.remove());
+  });
+  copia.querySelectorAll('select').forEach(s=>{
+    const b = document.createElement('b'); b.className = 'rp-sel';
+    b.textContent = s.getAttribute('data-rp-txt') || '';
+    s.replaceWith(b);
+  });
+  copia.querySelectorAll('.sticky').forEach(e=>e.classList.remove('sticky'));
+  copia.querySelectorAll('table').forEach(t=>{
+    const tb = t.tBodies[0]; if(!tb) return;
+    const linhas = Array.from(tb.rows); if(linhas.length <= PDF_GEN_LIMITE) return;
+    linhas.slice(PDF_GEN_LINHAS).forEach(r=>r.remove());
+    const nota = document.createElement('p'); nota.className = 'rp-trunc';
+    nota.textContent = 'Mostrando as '+PDF_GEN_LINHAS+' primeiras de '+fmt(linhas.length)+' linhas. A lista completa está no painel e no Excel.';
+    (t.closest('.tw')||t).insertAdjacentElement('afterend', nota);
+  });
+  copia.querySelectorAll('table').forEach(t=>{
+    if(t.tBodies[0] && t.tBodies[0].rows.length > 18){ const c = t.closest('.card'); if(c) c.classList.add('rp-denso'); }
+  });
+  copia.querySelectorAll('.card').forEach(c=>{
+    if(!c.querySelector('img,table,.kpi') && !c.textContent.replace(/\s+/g,'').length) c.remove();
+  });
+  return copia;
+}
+function pdfGenSecao(num, eyebrow, titulo){
+  const s = document.createElement('section'); s.className = 'rp-sec';
+  s.innerHTML = '<div class="rp-cab"><span class="n">'+num+'</span><div><h2>'+esc(titulo)+'</h2>'+(eyebrow?'<p>'+esc(eyebrow)+'</p>':'')+'</div></div>';
+  return s;
+}
+async function capturarRelatorioGen(){
+  for(let i=0;i<150;i++){ let ok=false; try{ ok = D && D.rows && D.rows.length && painted.geral; }catch(e){} if(ok) break; await pdfGenEsperar(100); }
+  /* Na cópia do cliente o iframe nasce de um HTML já renderizado: os seletores de ano chegam com opções velhas e
+     o "Para" ficaria igual ao "De". Limpa e repinta para voltar ao padrão (primeiro × último ano). */
+  try{ ['evo-a','evo-b'].forEach(i=>{ const s = document.getElementById(i); if(s) s.innerHTML = ''; }); pintarEvolucao(); }catch(e){ console.error(e); }
+  Chart.defaults.devicePixelRatio = 3; Chart.defaults.animation = false;
+  try{ Chart.defaults.plugins.tooltip.enabled = false; }catch(e){}
+  REPORT = true;                                 // liga os valores impressos nos gráficos
+  document.body.classList.add('rp-live');
+  if(APP_CONFIG.fonte && APP_CONFIG.fonte!=='all' && FONTE!==APP_CONFIG.fonte){ aplicarFonte(APP_CONFIG.fonte); await pdfGenEsperar(500); }
+  go('geral'); await pdfGenEsperar(500); resolucaoGraficos(true); await pdfGenEsperar(500);
+  const prefs = SHARE_PREFS.sections;
+  const ids = PDF_GEN_SECOES.filter(i=>prefs.includes(i) && VIEWS.some(v=>v.id===i));
+  for(const id of ids){ go(id); await pdfGenEsperar(750); }
+  aplicarSharePrefs();
+  try{ montarResumo(); montarRecomendacoes(); }catch(e){ console.error(e); }
+  const secoes = []; let n = 0;
+  if(prefs.includes('resumo')){
+    const r = document.getElementById('rep-resumo');
+    if(r){
+      const c = pdfGenCongelar(r); const sh = c.querySelector('.sec-h'); if(sh) sh.remove();
+      c.classList.remove('rep-sec'); c.removeAttribute('id');
+      n++; const s = pdfGenSecao(String(n).padStart(2,'0'), 'Leitura executiva', 'O que este relatório diz');
+      Array.from(c.children).forEach(k=>s.appendChild(k));
+      const foot = document.getElementById('rep-foot');
+      if(foot && foot.textContent.trim()){ const p = document.createElement('p'); p.className = 'rp-nota'; p.innerHTML = foot.innerHTML; s.appendChild(p); }
+      secoes.push(s);
+    }
+  }
+  for(const id of ids){
+    const v = document.getElementById('v-'+id); if(!v || v.classList.contains('report-omit')) continue;
+    const c = pdfGenCongelar(v);
+    const sh = c.querySelector('.sec-h');
+    const eyebrow = sh ? (sh.querySelector('.eyebrow')||{}).textContent : '';
+    const titulo = sh ? ((sh.querySelector('h2')||{}).textContent || '') : ((VIEWS.find(x=>x.id===id)||{}).full||'');
+    if(sh) sh.remove();
+    if(!c.querySelector('img.rp-img, table, .kpi, .plano-hero')) continue;      // seção sem informação não sai
+    n++; const s = pdfGenSecao(String(n).padStart(2,'0'), eyebrow, titulo);
+    Array.from(c.children).forEach(k=>s.appendChild(k));
+    secoes.push(s);
+  }
+  const nome = META.farm || 'Fazenda não informada', dono = META.owner || '', analista = META.analyst || '';
+  const logo = (document.querySelector('#hdr img')||{}).src || '', logoBlue = (document.getElementById('logo-blue-link')||{}).src || '';
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  const mi = D.rows.length, anos = D.anos.length ? D.anos[0]+'–'+D.anos[D.anos.length-1] : '—';
+  const touros = new Set(D.rows.map(r=>r.codTouro).filter(Boolean)).size;
+  const cont = document.createElement('div'); cont.id = 'relatorioGen';
+  cont.innerHTML = '<div class="rp-capa"><div class="rp-capa-topo">'+(logo?'<img src="'+logo+'" alt="">':'')+'<span>Programas e Serviços Leite</span></div>'+
+    '<div class="rp-capa-meio"><div class="rp-k">Relatório de análise genética</div><h1>Diagnóstico genético<br>do rebanho</h1>'+
+    '<div class="rp-fazenda">'+esc(nome)+'</div>'+(dono?'<div class="rp-dono">'+esc(dono)+'</div>':'')+(analista?'<div class="rp-dono">Análise: '+esc(analista)+'</div>':'')+
+    '<div class="rp-capa-barra"></div></div>'+
+    '<div class="rp-capa-grade"><div><div class="l">Fêmeas analisadas</div><div class="v">'+fmt(mi)+'</div></div>'+
+    '<div><div class="l">Período de nascimento</div><div class="v">'+esc(anos)+'</div></div>'+
+    '<div><div class="l">Touros pais</div><div class="v">'+fmt(touros)+'</div></div>'+
+    '<div><div class="l">Data do relatório</div><div class="v">'+hoje+'</div></div></div></div>';
+  secoes.forEach(s=>cont.appendChild(s));
+  document.body.appendChild(cont);
+  document.documentElement.classList.add('modo-relatorio'); document.body.classList.add('modo-relatorio');
+  const rodape = 'Plataforma Azul · '+nome+' · Alta Genetics';
+  const st = document.createElement('style');
+  st.textContent = '@page{ size:A4 landscape; margin:12mm 12mm 15mm; @bottom-left{ content:"'+rodape.replace(/["\\]/g,'')+'"; font:7pt Arial,sans-serif; color:#5A6879 } @bottom-right{ content:"Página " counter(page); font:7pt Arial,sans-serif; color:#5A6879 } }'+
+    '@page :first{ @bottom-left{ content:none } @bottom-right{ content:none } }';
+  document.head.appendChild(st);
+  const slug2 = (nome+'').replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim();
+  const d = new Date();
+  const titulo = 'Relatório genético '+slug2+' '+String(d.getDate()).padStart(2,'0')+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+d.getFullYear();
+  document.title = titulo;
+  return { titulo, secoes: secoes.length };
+}
+async function gerarRelatorioGen(){
+  const btn = $('#btn-rep'); if(!btn || btn.disabled) return;
+  const rotulo = btn.textContent; btn.disabled = true; btn.textContent = 'Gerando PDF…';
+  let ifr = null;
+  try{
+    const base = (typeof SOURCE_HTML==='string' && SOURCE_HTML) ? SOURCE_HTML : '<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+    const json = JSON.stringify(pdfGenConfig()).replace(/</g,'\\u003c');
+    const html = base.replace(/(<script id="runtime-config" type="application\/json">)[\s\S]*?(<\/script>)/, (m,a,b)=>a+json+b);
+    ifr = document.createElement('iframe');
+    ifr.setAttribute('aria-hidden','true');
+    ifr.style.cssText = 'position:fixed;left:-30000px;top:0;width:1096px;height:1200px;border:0;opacity:0;pointer-events:none';
+    document.body.appendChild(ifr);
+    await new Promise((ok,erro)=>{ ifr.onload = ok; ifr.onerror = erro; ifr.srcdoc = html; });
+    await pdfGenEsperar(600);
+    const w = ifr.contentWindow;
+    const r = await w.capturarRelatorioGen();
+    if(!r || !r.secoes) throw new Error('nenhuma seção com dados foi encontrada para o relatório');
+    const tituloOriginal = document.title; document.title = r.titulo;
+    const limpar = ()=>{ document.title = tituloOriginal; setTimeout(()=>{ try{ ifr.remove(); }catch(_){} }, 600); };
+    w.addEventListener('afterprint', limpar);
+    w.focus(); w.print();
+  }catch(err){
+    console.error('relatório PDF', err);
+    if(ifr) try{ ifr.remove(); }catch(_){}
+    alert('Não foi possível gerar o relatório em PDF: '+(err && err.message ? err.message : err));
+  }
+  btn.disabled = false; btn.textContent = rotulo;
+}
+
 function setReport(on){
   REPORT = on;
   document.body.classList.toggle('report', on);
@@ -3067,7 +3300,7 @@ function montarRecomendacoes(){
     `${META.analyst ? ` · análise por <b>${esc(META.analyst)}</b>` : ''}.<br>`+
     `Fonte genética: Relatório de Índice de Fêmeas (BlueLink)${ARQUIVOS.length>1?` — ${ARQUIVOS.length} arquivos unidos: ${ARQUIVOS.map(x=>esc(x.nome)).join(', ')}`:''}. `+
     `Identificação de touros/raça: BullSearch ${esc(BULLSEARCH_EMBED.version||[...B.proofs].join(', ')||'não informado')}. `+
-    `Origem da avaliação: ${fontes.map(([f,n])=>`${fonteLab(f)} — ${fmt(n)}`).join(' · ')}. `+
+    `Origem da avaliação: ${fontesDisponiveis().map(([f,n])=>`${fonteLab(f)} — ${fmt(n)}`).join(' · ')}. `+
     `Percentis recalculados sobre o conjunto analisado. Categorias de idade calculadas na data de geração. `+
     `Nenhum dado saiu do navegador.`;
 }
@@ -5930,12 +6163,20 @@ function lerCsvAcas(text, nome){
    que é o pai da fêmea. Ler por posição fixa quebraria se o BlueLink passar a
    exportar 2 ou 4 opções em vez de 3. */
 function posicoesAcas(U){
-  const iPai  = acharCol(U, /^TOURO NAAB$/);
-  const iId   = acharCol(U, /N[ÚU]MERO DE VACAS/, /N[ÚU]MERO D[OA] ANIMAL/, /^ANIMAL$/, /^VACA$/, /^ID$/);
+  const iPai  = acharCol(U, /^TOURO NAAB$/, /^SIRE ID$/, /^SIRE NAAB$/);
+  const iId   = acharCol(U, /N[ÚU]MERO DE VACAS/, /N[ÚU]MERO D[OA] ANIMAL/, /^COW NUMBER$/, /^ANIMAL NUMBER$/, /^ANIMAL$/, /^VACA$/, /^COW$/, /^ID$/);
   const iStoc = acharCol(U, /^STOC$/, /TIPO DE S[ÊE]MEN/, /^SEMEN$/);
   const iInd  = acharCol(U, /^[ÍI]NDICE$/, /^INDEX$/);
   const trios = [];
-  U.forEach((h,i) => { if(h === 'NAAB' && i !== iPai) trios.push([i, i+1, i+2]); });
+  /* Português: NAAB, nome, INB (3 colunas). Inglês: NAAB, REG, SHORT NAME, INB % (4).
+     O nome e a consanguinidade são procurados pelo título entre este NAAB e o próximo. */
+  const idxNaab = U.map((h,i)=>h==='NAAB'&&i!==iPai?i:-1).filter(i=>i>=0);
+  idxNaab.forEach((i,k) => {
+    const fim = k+1<idxNaab.length ? idxNaab[k+1] : U.length;
+    let n=-1, b=-1;
+    for(let j=i+1;j<fim;j++){ if(n<0 && /SHORT NAME|^NOME|NAME/.test(U[j])) n=j; if(b<0 && /^INB|ENDOG|CONSANG/.test(U[j])) b=j; }
+    trios.push([i, n>=0?n:i+1, b>=0?b:i+2]);
+  });
   return {iStoc, iInd, iPai, iId, trios};
 }
 
@@ -6776,7 +7017,7 @@ function boot(entrada){
     $('#gate').style.display='none';
     ['#hdr','#app','#ftr'].forEach(s=>$(s).hidden=false);
     document.documentElement.classList.remove('client-start');
-    $('#btn-rep').onclick = () => REPORT ? setReport(false) : abrirModalShare('report');
+    $('#btn-rep').onclick = () => abrirModalShare('report');
     $('#btn-client').onclick=()=>abrirModalShare('client-download');
     $('#btn-meta').onclick=openMeta; $('#meta-cancel').onclick=closeMeta; $('#meta-save').onclick=()=>{setMeta($('#farm-edit').value,$('#owner-edit').value,$('#analyst-edit').value);closeMeta();};
     $('#meta-modal').onclick=e=>{if(e.target.id==='meta-modal')closeMeta();};
