@@ -859,6 +859,54 @@ td .miniBarra{ height:6px; border-radius:3px; background:var(--cinza-alta); disp
 .metodo-tabela th{color:var(--apagado);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
 
 </style>
+<style id="cssRelatorioPdf">
+/* Relatório PDF: o contêiner só existe dentro do iframe de impressão */
+#relatorioPdf{ display:none }
+@media print{
+  html.modo-relatorio, body.modo-relatorio{ background:#fff!important }
+  body.modo-relatorio > *:not(#relatorioPdf){ display:none!important }
+  body.modo-relatorio #relatorioPdf{ display:block!important }
+  #relatorioPdf, #relatorioPdf *{ -webkit-print-color-adjust:exact; print-color-adjust:exact }
+}
+#relatorioPdf{ font-family:'Archivo',sans-serif; color:#0F1726 }
+#relatorioPdf .rp-capa{ width:210mm; height:297mm; box-sizing:border-box; position:relative; overflow:hidden;
+  background:linear-gradient(160deg,#0C2456,#153D88); color:#fff; padding:22mm 20mm; break-after:page }
+#relatorioPdf .rp-capa .rp-logo{ height:30mm; display:block }
+#relatorioPdf .rp-capa .rp-k{ margin-top:58mm; color:#F9B000; letter-spacing:.18em; font-size:10pt; font-weight:700; text-transform:uppercase }
+#relatorioPdf .rp-capa h1{ font-size:38pt; line-height:1.05; margin:4mm 0 6mm; font-weight:800; color:#fff }
+#relatorioPdf .rp-capa .rp-p{ font-size:13pt; opacity:.85; max-width:140mm }
+#relatorioPdf .rp-capa .rp-barra{ width:24mm; height:2mm; background:#F9B000; margin:10mm 0 }
+#relatorioPdf .rp-capa dl{ display:grid; grid-template-columns:34mm 1fr; gap:3mm 4mm; font-size:11pt; margin:4mm 0 0 }
+#relatorioPdf .rp-capa dt{ color:#A8C2EC; font-size:9pt; letter-spacing:.08em; text-transform:uppercase; padding-top:1mm }
+#relatorioPdf .rp-capa dd{ font-weight:600; margin:0 }
+#relatorioPdf .rp-capa .rp-alta{ position:absolute; left:20mm; bottom:16mm; height:11mm; filter:brightness(0) invert(1); opacity:.9 }
+#relatorioPdf .rp-capa .rp-fonte{ position:absolute; right:20mm; bottom:17mm; font-size:8.5pt; opacity:.7 }
+#relatorioPdf .rp-sec{ break-before:page }
+#relatorioPdf .rp-sec:first-of-type{ break-before:auto }
+#relatorioPdf .rp-cab{ display:flex; gap:4mm; align-items:center; margin:0 0 6mm; padding-bottom:3mm; border-bottom:.5mm solid #F9B000 }
+#relatorioPdf .rp-cab span{ font-size:20pt; font-weight:800; color:#F9B000 }
+#relatorioPdf .rp-cab h2{ font-size:17pt; color:#153D88; font-weight:800; line-height:1.1; margin:0 }
+#relatorioPdf .rp-cab p{ font-size:8.5pt; color:#5A6879; margin:1mm 0 0 }
+#relatorioPdf .rp-fig{ position:relative; margin:0 auto 3.5mm; width:158mm; break-inside:avoid }
+#relatorioPdf .rp-fig.rp-largo{ width:186mm }
+#relatorioPdf .rp-fig > .cartao{ margin:0!important; box-shadow:none!important; width:100%!important; min-width:0!important }
+#relatorioPdf .rp-etq{ position:absolute; right:4mm; top:3.5mm; z-index:2; background:#FFF0CC; color:#8A5E00; font-size:7.5pt;
+  font-weight:700; padding:1mm 3mm; border-radius:2mm; letter-spacing:.04em; text-transform:uppercase }
+#relatorioPdf .grafico{ height:auto!important; min-height:0!important; flex:0 0 auto!important }
+#relatorioPdf .grafico > img.rp-img{ display:block; width:100%; height:auto }
+#relatorioPdf .rp-kp4{ display:grid; grid-template-columns:repeat(2,1fr); gap:4mm; margin:0 0 6mm }
+#relatorioPdf .rp-kp5{ display:grid; grid-template-columns:repeat(5,1fr); gap:3mm; margin:0 0 7mm }
+#relatorioPdf .rp-kp4 > *, #relatorioPdf .rp-kp5 > *{ min-width:0; margin:0!important }
+#relatorioPdf .rp-sub{ font-size:11pt; font-weight:800; color:#153D88; margin:0 0 3mm }
+#relatorioPdf .rp-tab{ width:186mm; margin:0 auto }
+#relatorioPdf .rp-tab > .cartao{ margin:0!important; box-shadow:none!important; zoom:.82 }
+#relatorioPdf .rp-tab-a > .cartao{ zoom:.9 }
+#relatorioPdf .rp-tab-b{ margin-top:7mm }
+#relatorioPdf .rp-tab > .cartao{ break-inside:avoid }
+#relatorioPdf .rp-kp5 > *{ zoom:.84 }
+#relatorioPdf .rp-kp4 > *{ zoom:.92 }
+#relatorioPdf .rp-nada{ font-size:10pt; color:#5A6879; text-align:center; padding:30mm 0 }
+</style>
 </head>
 <body>
 
@@ -1013,7 +1061,7 @@ td .miniBarra{ height:6px; border-radius:3px; background:var(--cinza-alta); disp
         <button class="bf-limpar" id="limparFiltros" hidden>Limpar</button>
       </div>
       <div class="acoes">
-        <button class="botao fantasma" id="btnPdf" style="display:none">Imprimir / PDF</button>
+        <button class="botao fantasma" id="btnPdf" type="button" title="Gerar o relatório em PDF (A4) com os principais gráficos">Baixar PDF</button>
         <button class="botao destaque" id="btnCliente" data-remover-no-cliente>Gerar arquivo do cliente</button>
         <button class="botao fantasma" id="btnTrocar" data-remover-no-cliente>Trocar base</button>
       </div>
@@ -1628,7 +1676,7 @@ function calcularExtras(registros, ini, fim, envio){
   const B = BENCH_FAZ.base(registros), CL = B.C, hist = B.todas;
   const limIA = menosMeses(CL, 24), limParto = menosMeses(CL, 36);
   const ciclos = [...new Set(hist.map(l => cicloDe(l._nasc)))].sort((a,b)=>a-b);
-  const maduros = lim => ciclos.filter(c => fimCiclo(c) <= lim).slice(-5);
+  const maduros = lim => ciclos.filter(c => fimCiclo(c) <= lim).slice(-ANOS_HISTORICO);
   const cIA = maduros(limIA), cParto = maduros(limParto);
   const janela = cs => cs.length ? { ini:`01/07/${cs[0]}`, fim:`30/06/${cs[cs.length-1]+1}` } : null;
   const popIA = hist.filter(l => cIA.includes(cicloDe(l._nasc)) && l.idadeIA != null && mais(l._nasc, l.idadeIA) <= CL);
@@ -1647,7 +1695,7 @@ function calcularExtras(registros, ini, fim, envio){
 
   /* Primíparas: partos dos últimos 5 anos, PL305 ≥ 1.000 kg; no Ideagri, lactação de pelo menos 100 dias. */
   const env = String(envio||'').toUpperCase();
-  const iniPL = new Date(CL.getFullYear()-5, CL.getMonth(), CL.getDate()+1);
+  const iniPL = new Date(CL.getFullYear()-(ANOS_HISTORICO-1), 0, 1);
   const prim = hist.filter(l => { const d = dParto(l);
     if(!d || d < iniPL || d > CL) return false;
     if(l.prod305 == null || !Number.isFinite(l.prod305) || l.prod305 < 1000) return false;
@@ -1872,7 +1920,18 @@ function canonCategoricoIde(dominio,valor){
   return c[0].rotulo;
 }
 const SERVICOS = ['IA','TE/FIV','Monta natural'];
+/* Histórico = últimos 3 anos (Rafael, 29/10/2026: "2024 para cá; tirar 2022 e 2023 de tudo").
+   Janela rolante: o ano da última data do arquivo menos 2. */
+const ANOS_HISTORICO = 3;
+/* TE/FIV: o embrião entra na receptora já com 7 dias de vida, então a gestação
+   contada a partir da transferência fica 7 dias mais curta que a real. */
+const GEST_DIAS_EXTRA_TE_FIV = 7;
 function servicoCanon(v){ const x=canonCategoricoIde('servico',v); return SERVICOS.includes(x)?x:null; }
+/* Gestação do Ideagri: todo animal de TE/FIV soma +7 dias, antes de qualquer média e da checagem de plausibilidade. */
+function gestacaoAjustada(g, tipoServico){
+  if(g==null) return g;
+  return servicoCanon(tipoServico)==='TE/FIV' ? g + GEST_DIAS_EXTRA_TE_FIV : g;
+}
 /* ORDEM_PARTO_MAE vem 0 no export quando a mãe não tem ordem conhecida (ou é
    receptora de TE). Zero não é 'primeiro parto': vira null = não informado. */
 function ordemMaeCanon(v){ const o = n(v); return (o==null || o<=0) ? null : o; }
@@ -2555,7 +2614,7 @@ function preparar(r){
     anoNasc: nasc? nasc.getFullYear() : null,
     ordemMae: ordemMaeCanon(r.ORDEM_PARTO_MAE),
     deNovilha: ordemMaeCanon(r.ORDEM_PARTO_MAE)===1,
-    gestacao: n(r.DURACAO_GESTACAO_MAE),
+    gestacao: gestacaoAjustada(n(r.DURACAO_GESTACAO_MAE), r.TIPO_SERVICO),
     /* 'Sexado de macho' foi REMOVIDO de toda a análise (Rafael, 22/08/2026:
        "machos não devem entrar na conta de nada"). O animal em si é fêmea e
        continua contando em tudo — só o RÓTULO do sêmen sai, virando "não
@@ -3473,8 +3532,10 @@ function calcular(registros, opcoes){
     ? new Date(a.nasc.getTime()+a.idadeIA*DIA).getFullYear() : null;
   const anosNovilhas = [...new Set(validos.map(anoIA)
     .concat(validos.map(a=>a.dataParto?a.dataParto.getFullYear():null)).filter(Boolean))].sort();
-  const ultimos3 = anosNasc.slice(-3);
-  const ultimos5Nov = anosNovilhas.slice(-5);
+  const anoRefHist = ultimaDataArquivo ? ultimaDataArquivo.getFullYear() : new Date().getFullYear();
+  const anoMinHist = anoRefHist - ANOS_HISTORICO + 1;
+  const ultimos3 = anosNasc.filter(y=>y>=anoMinHist);
+  const ultimos5Nov = anosNovilhas.filter(y=>y>=anoMinHist);
 
   const serieNovilhas = ultimos5Nov.map(ano=>{
     const gIA = validos.filter(a=>anoIA(a)===ano && a.idadeIA!=null);
@@ -3519,7 +3580,7 @@ function calcular(registros, opcoes){
   const anosProducao = [...new Set(validos
       .filter(a=>a.dataParto && a.prod305!=null && a.duracaoLac1!=null && a.duracaoLac1>=REGRAS.duracaoMinimaLactacao)
       .map(a=>a.dataParto.getFullYear()))]
-      .sort().slice(-5);   /* ano em curso entra assim que tiver 1 animal elegível (26/10/2026) */
+        .sort().filter(y=>y>=anoMinHist);   /* ano em curso entra assim que tiver 1 animal elegível (26/10/2026) */
   const producaoPorAno = anosProducao.map(ano=>{
     // O relatório só considera a lactação quando ela já durou o bastante para a
     // projeção de 305 dias fazer sentido: DURACAO_1_LAC >= 100 dias. Sem esse
@@ -3541,7 +3602,7 @@ function calcular(registros, opcoes){
      filtros de grau de sangue, benchmarking interno e Top 5% recalcularem sem
      alterar a regra de elegibilidade da fonte. */
   const producaoAnimais = validos
-    .filter(a=>a.dataParto && a.prod305!=null && a.duracaoLac1!=null && a.duracaoLac1>=REGRAS.duracaoMinimaLactacao
+    .filter(a=>a.dataParto && a.dataParto.getFullYear()>=anoMinHist && a.prod305!=null && a.duracaoLac1!=null && a.duracaoLac1>=REGRAS.duracaoMinimaLactacao
       )
     .map(a=>({ id:a.id, ano:a.dataParto.getFullYear(), prod305:a.prod305, dur:a.duracaoLac1, kgd:(a.duracaoLac1>0 ? a.prod305/a.duracaoLac1 : null),
       idadeParto:a.idadeParto, pParto:a.pParto, raca:a.raca||null, grauHolandes:a.grauHolandes }));
@@ -3549,7 +3610,7 @@ function calcular(registros, opcoes){
   /* Cobertura da produção: de todas as primíparas com 1º parto no ano, quantas têm
      produção elegível (lactação encerrada, ≥100 dias, sem incoerência). O ano em curso
      fica FORA das médias, mas entra aqui para o aviso. */
-  const coberturaProducao = validos.filter(a=>a.dataParto)
+  const coberturaProducao = validos.filter(a=>a.dataParto && a.dataParto.getFullYear()>=anoMinHist)
     .map(a=>({ ano:a.dataParto.getFullYear(), raca:a.raca||null,
       ok: a.prod305!=null && a.duracaoLac1!=null && a.duracaoLac1>=REGRAS.duracaoMinimaLactacao }));
 
@@ -3588,7 +3649,7 @@ function calcular(registros, opcoes){
      arquivo tem nascimento", igual à gestação usa 3 anos. As análises de
      colostro×desfecho abaixo usam essa janela (base5/avaliadas5). */
   const anosNascHistorico = [...new Set(validosBrutos.map(a=>a.anoNasc).filter(Boolean))].sort((x,y)=>x-y);
-  const ultimos5 = anosNascHistorico.slice(-5);
+  const ultimos5 = anosNascHistorico.filter(y=>y>=anoMinHist);
   const base5 = validosBrutos.filter(a=>ultimos5.includes(a.anoNasc));
   const avaliadas5 = elegiveisTip(base5);   // já exclui colostro em pó, igual elegiveisTip()
   /* Cruzamento "excelente e ruim" por categoria, no PERÍODO SELECIONADO.
@@ -5761,7 +5822,7 @@ function htmlQuadrantes(modo){
   if(!ciclos.some(c => String(c.c) === estadoQuad[modo])) estadoQuad[modo] = '';
   const idSel = F ? 'selCicloQuadFaz' : 'selCicloQuadNac', idRes = F ? 'resultadoQuadFaz' : 'resultadoQuadNac';
   const fnAtual = F ? 'atualizarQuadFaz' : 'atualizarQuadNac';
-  const escolhas = `<div class="linha-seletor" style="margin:12px 0"><label for="${idSel}">Ciclo do parto</label><select id="${idSel}" class="campo-filtro" onchange="${fnAtual}(this.value)"><option value="">Geral · últimos 5 anos</option>${ciclos.map(c=>`<option value="${c.c}" ${String(c.c)===estadoQuad[modo]?'selected':''}>${c.rotulo} · jul/${c.c} a jun/${c.c+1}${c.parcial?' (parcial)':''}</option>`).join('')}</select></div>`;
+  const escolhas = `<div class="linha-seletor" style="margin:12px 0"><label for="${idSel}">Ciclo do parto</label><select id="${idSel}" class="campo-filtro" onchange="${fnAtual}(this.value)"><option value="">Geral · últimos 3 anos</option>${ciclos.map(c=>`<option value="${c.c}" ${String(c.c)===estadoQuad[modo]?'selected':''}>${c.rotulo} · jul/${c.c} a jun/${c.c+1}${c.parcial?' (parcial)':''}</option>`).join('')}</select></div>`;
   const C = F ? E.propria.cortes : { idade:M.idadePartoMediana, pl:M.pl305Mediana };
   const render = (dados, ciclo) => {
     const q = (k, titulo, cls) => { const f = dados.quad[k];
@@ -5770,13 +5831,13 @@ function htmlQuadrantes(modo){
         <div class="quad-med"><div><em>Idade média ao 1º parto</em><b>${f.idade==null?'—':nf(f.idade,1)+' meses'}</b></div><div><em>Produção média até 305 dias</em><b>${f.pl==null?'—':nf(f.pl,0)+' kg'}</b></div><div><em>Duração média da lactação (máx. 305)</em><b>${f.dur==null?'—':nf(f.dur,0)+' dias'}</b></div><div><em>Média por dia de lactação</em><b>${f.kgd==null?'—':nf(f.kgd,1)+' kg/dia'}</b></div><div><em>Peso médio ao 1º parto · N com peso: ${nf(f.nPeso)}</em><b>${f.peso==null?'—':nf(f.peso,0)+' kg'}</b></div></div>
         <small>N: ${nf(f.n)} primíparas</small></div>`; };
     const inf = ciclo ? ciclos.find(c => String(c.c) === String(ciclo)) : null;
-    const pop = inf ? `partos de ${dBrD(inf.ini)} a ${dBrD(inf.fim)}${inf.parcial?' (ciclo parcial: só parte dele está nos últimos 5 anos do arquivo)':''}` : `partos de ${dBrD(ex.janelaPL.ini)} a ${dBrD(ex.janelaPL.fim)}`;
+    const pop = inf ? `partos de ${dBrD(inf.ini)} a ${dBrD(inf.fim)}${inf.parcial?' (ciclo parcial: só parte dele está nos últimos 3 anos do arquivo)':''}` : `partos de ${dBrD(ex.janelaPL.ini)} a ${dBrD(ex.janelaPL.fim)}`;
     const peq = dados.n > 0 && dados.n < N_MINIMO_CARTAO ? `<p class="nota-rodape"><b>Amostra pequena</b> (menos de ${N_MINIMO_CARTAO} primíparas neste recorte) — leia como indício.</p>` : '';
     return `<div class="quad-grid">${q('precoceAlta','Pariram cedo e produziram bem','q-verde')}${q('tardiaAlta','Pariram tarde e produziram bem','q-ambar')}${q('precoceBaixa','Pariram cedo e produziram menos','q-azul')}${q('tardiaBaixa','Pariram tarde e produziram menos','q-cinza')}</div>${peq}
       <p class="nota-rodape"><b>Partos considerados:</b> ${pop} · <b>raças:</b> ${F ? 'todas as da fazenda' : 'Holandesa'} · <b>N avaliados:</b> ${nf(dados.n)} primíparas com idade ao parto e produção até 305 dias elegíveis. Categorias mutuamente exclusivas.</p>`;
   };
   const caixaCortes = F
-    ? `<p class="nota-rodape" style="margin:0 0 14px;padding:12px;border-left:4px solid #1E7B4F;background:#E9F5EF"><b>CORTES DA PRÓPRIA FAZENDA</b><br>Parto precoce: até ${nf(C.idade,1)} meses · Alta produção: ${nf(C.pl,0)} kg ou mais em 305 dias — medianas das ${nf(E.propria.n)} primíparas dos últimos 5 anos, <b>de todas as raças da fazenda</b> (${E.propria.racas.map(([r,k])=>esc(r)+' '+pf(k/E.propria.n,0)).join(', ')}). Os cortes misturam raças; os nacionais são só de Holandesas (${nf(M.idadePartoMediana,1)} meses e ${nf(M.pl305Mediana,0)} kg).<br>Como o corte é a mediana da própria fazenda, os grupos ficam perto de 25% cada — por isso o percentual não é mostrado; o que informa é a idade e a produção médias de cada grupo e o quanto os cortes se afastam dos nacionais. Ao escolher um ciclo, os cortes continuam os dos 5 anos e o N de cada grupo mostra como o ciclo se distribui em relação à média da fazenda.</p>`
+    ? `<p class="nota-rodape" style="margin:0 0 14px;padding:12px;border-left:4px solid #1E7B4F;background:#E9F5EF"><b>CORTES DA PRÓPRIA FAZENDA</b><br>Parto precoce: até ${nf(C.idade,1)} meses · Alta produção: ${nf(C.pl,0)} kg ou mais em 305 dias — medianas das ${nf(E.propria.n)} primíparas dos últimos 3 anos, <b>de todas as raças da fazenda</b> (${E.propria.racas.map(([r,k])=>esc(r)+' '+pf(k/E.propria.n,0)).join(', ')}). Os cortes misturam raças; os nacionais são só de Holandesas (${nf(M.idadePartoMediana,1)} meses e ${nf(M.pl305Mediana,0)} kg).<br>Como o corte é a mediana da própria fazenda, os grupos ficam perto de 25% cada — por isso o percentual não é mostrado; o que informa é a idade e a produção médias de cada grupo e o quanto os cortes se afastam dos nacionais. Ao escolher um ciclo, os cortes continuam os dos 3 anos e o N de cada grupo mostra como o ciclo se distribui em relação à média da fazenda.</p>`
     : `<p class="nota-rodape" style="margin:0 0 14px;padding:12px;border-left:4px solid #153D88;background:#EEF3FB"><b>BENCHMARKING NACIONAL · HOLANDESAS</b><br><span>N: 14.046 · Partos de 01/07/2024 a 30/06/2025</span><br>Parto precoce: até ${nf(M.idadePartoMediana,1)} meses · Alta produção: ${nf(M.pl305Mediana,0)} kg ou mais em 305 dias. Os cortes e os percentuais nacionais são fixos; o filtro de ciclo altera somente a amostra da fazenda.</p>`;
   window[fnAtual] = (ciclo) => {
     estadoQuad[modo] = String(ciclo || '');
@@ -5786,7 +5847,7 @@ function htmlQuadrantes(modo){
   };
   const ini = estadoQuad[modo], d0 = ini ? (F ? E.propria.porCiclo[ini] : E.porCiclo[ini]) : base;
   return (F ? E.propria.n : E.n) ? `${escolhas}${caixaCortes}<div id="${idRes}">${d0 && d0.n ? render(d0, ini) : '<div class="vazio">Sem primíparas Holandesas elegíveis no ciclo selecionado.</div>'}</div>`
-    : semCasoHtml((F ? 'Sem primíparas com produção elegível nos últimos 5 anos.' : 'Sem primíparas Holandesas com produção elegível nos últimos 5 anos — o benchmarking nacional é de Holandesas.'));
+    : semCasoHtml((F ? 'Sem primíparas com produção elegível nos últimos 3 anos.' : 'Sem primíparas Holandesas com produção elegível nos últimos 3 anos — o benchmarking nacional é de Holandesas.'));
 }
 function htmlExtrasProdEfic(){
   const ex = extrasAtual(); if(!ex || !ex.nPrim) return '';
@@ -7235,8 +7296,8 @@ function painelNovilhas(r){
   const somaRaw = campo => r.novilhas.reduce((t,x)=>t+(x[campo]||0),0);
   const somaNov = campo => nf(somaRaw(campo));
   const casasIA = 1, casasPA = 1;
-  const n4 = n.slice(-4);   // distribuições de idade ao 1º serviço/parto: só os 4 anos mais recentes
-  const somaNov4 = campo => nf(r.novilhas.slice(-4).reduce((t,x)=>t+(x[campo]||0),0));
+  const n4 = n.slice(-ANOS_HISTORICO);   // distribuições de idade ao 1º serviço/parto: só os 4 anos mais recentes
+  const somaNov4 = campo => nf(r.novilhas.slice(-ANOS_HISTORICO).reduce((t,x)=>t+(x[campo]||0),0));
 
   const ultimoCom = campos => n.filter(x=>campos.some(c=>(x[c]||0)>0))
     .slice().sort((a,b)=>(+a.ano||0)-(+b.ano||0)).pop() || null;
@@ -7317,10 +7378,10 @@ function desenharNovilhas(r){
   // quebrava a escala monocromática e destoava do resto do dashboard.
   const coresAno = CORES_ANO;
   barras('gDistIA', REGRAS.binsIA.map(b=>b[2]+' meses'),
-    n.slice(-4).map((x,i)=>({ rotulo:String(x.ano), dados:x.distIA.perc, n:x.distIA.cont, cor:coresAno[i+1] })),
+    n.slice(-ANOS_HISTORICO).map((x,i)=>({ rotulo:String(x.ano), dados:x.distIA.perc, n:x.distIA.cont, cor:coresAno[i+1] })),
     { fmt:v=>pf(v,0), grossura:14, ocultarZero:false, semLegenda:true });
   barras('gDistParto', REGRAS.binsParto.map(b=>b[2]+' meses'),
-    n.slice(-4).map((x,i)=>({ rotulo:String(x.ano), dados:x.distParto.perc, n:x.distParto.cont, cor:coresAno[i+1] })),
+    n.slice(-ANOS_HISTORICO).map((x,i)=>({ rotulo:String(x.ano), dados:x.distParto.perc, n:x.distParto.cont, cor:coresAno[i+1] })),
     { fmt:v=>pf(v,0), grossura:10, ocultarZero:false, semLegenda:true });
   // dispersão mês × idade
   dispersao('gDispServ', r.novilhasDispersao.servico, { tituloY:'Idade 1º serviço (meses)', cor:COR.roxo, solido:true, linhaY:true });
@@ -7379,7 +7440,7 @@ function desenharProducao(r){
   const seletorAno = document.getElementById('selAnoParto');
 
   const resumir = animais => {
-    const anos = [...new Set(animais.map(a=>a.ano).filter(Number.isFinite))].sort((a,b)=>a-b).slice(-5);
+    const anos = [...new Set(animais.map(a=>a.ano).filter(Number.isFinite))].sort((a,b)=>a-b).slice(-ANOS_HISTORICO);
     return anos.map(ano=>{
       const g = animais.filter(a=>a.ano===ano);
       const porFaixa = REGRAS.binsParto.map(([,,rot])=>{
@@ -7427,13 +7488,13 @@ function desenharProducao(r){
     esconderTooltip();
     const animais = raca ? baseHistorica.filter(a=>a.raca===raca) : baseHistorica;
     const p = resumir(animais);
-    const p4 = p.slice(-4);   /* gráficos e benchmark interno: só os 4 anos mais recentes */
+    const p4 = p.slice(-ANOS_HISTORICO);   /* gráficos e benchmark interno: só os 4 anos mais recentes */
 
     const alvoCob = document.getElementById('coberturaProd');
     if(alvoCob){
       const cob = (r.coberturaProducao || []).filter(c=>!raca || c.raca===raca);
       const emCurso = r.anoEmCursoProducao;
-      const anosCob = [...new Set(cob.map(c=>c.ano))].sort((a,b)=>a-b).slice(-6)
+      const anosCob = [...new Set(cob.map(c=>c.ano))].sort((a,b)=>a-b).slice(-ANOS_HISTORICO)
         .filter(ano=>ano!==emCurso || cob.some(c=>c.ano===ano && c.ok));
       const itens = anosCob.map(ano=>{
         const t = cob.filter(c=>c.ano===ano), k = t.filter(c=>c.ok).length;
@@ -7702,12 +7763,12 @@ function painelExplicativo(){
         <p>A aba <b>Qualidade dos dados</b> mostra o que efetivamente ocorreu na fazenda e separa ocorrências que afetaram cálculos de pontos que apenas exigem conferência.</p>
         <h4>Qual período cada indicador considera?</h4>
         ${tabelaPeriodo}
-        <p>Os históricos neonatais são organizados, em geral, pelo <b>ano de nascimento</b>. Novilhas são organizadas pelo <b>ano do primeiro serviço ou do primeiro parto</b>, e primeira lactação pelo <b>ano do primeiro parto</b>. Os históricos mostram até os cinco anos mais recentes com dados elegíveis para cada análise.</p>`, true)}
+        <p>Os históricos neonatais são organizados, em geral, pelo <b>ano de nascimento</b>. Novilhas são organizadas pelo <b>ano do primeiro serviço ou do primeiro parto</b>, e primeira lactação pelo <b>ano do primeiro parto</b>. Os históricos mostram até os três anos mais recentes com dados elegíveis para cada análise.</p>`, true)}
       ${secao('Nascimentos', `
         <p><b>Origem materna:</b> ordem de parto 1 identifica filha de novilha; ordem superior a 1 identifica filha de vaca. Ordem 0 ou ausente é tratada como não informada.</p>
         <p><b>Tipo de sêmen e tipo de serviço:</b> os percentuais usam como denominador somente as bezerras com aquela informação disponível. Tipo de serviço é agrupado em IA, TE/FIV e monta natural.</p>
         <p><b>Parto auxiliado:</b> o percentual usa somente nascimentos com tipo de parto informado.</p>
-        <p><b>Gestação:</b> a duração corresponde à gestação que originou a bezerra. As análises mensais seguem o período selecionado; o histórico anual é organizado por ano de nascimento.</p>`)}
+        <p><b>Gestação:</b> a duração corresponde à gestação que originou a bezerra. Nos animais de TE/FIV soma-se 7 dias à duração registrada, porque o embrião é transferido já com 7 dias de vida. As análises mensais seguem o período selecionado; o histórico anual é organizado por ano de nascimento.</p>`)}
       ${secao('Colostro', `
         <p><b>Transferência de imunidade passiva (TIP):</b> a classificação usa o resultado sérico disponível para cada bezerra.</p>
         <table class="tabela-simples"><thead><tr><th>Categoria</th><th>Brix</th><th>Proteína sérica</th></tr></thead><tbody>
@@ -7744,7 +7805,7 @@ function painelExplicativo(){
       ${secao('Primeira lactação', `
         <p>Toda a seção usa <b>produção no primeiro parto, até 305 dias</b>.</p>
         <p>Nesta fonte, entram animais com primeiro parto válido, <b>lactação encerrada com duração real ≥ 100 dias</b> e <b>produção até 305 dias ≥ 1.000 kg</b> (acima de 305 dias, a produção é cortada em 305; abaixo, é o total real, sem ajuste). Lactação que termina depois do 2º parto é descartada. Vaca ainda em lactação (lactação não encerrada) não tem produção no Ideagri e fica fora desta análise.</p>
-        <p>O filtro de <b>grau de sangue</b> atualiza todas as análises da seção. As comparações anuais excluem o ano em curso e mostram até os cinco anos mais recentes com produção elegível.</p>
+        <p>O filtro de <b>grau de sangue</b> atualiza todas as análises da seção. As comparações anuais excluem o ano em curso e mostram até os três anos mais recentes com produção elegível.</p>
         <p>A distribuição por idade ao primeiro parto usa somente animais que, além da produção elegível, possuem idade ao parto disponível; peso ao primeiro parto possui N próprio.</p>`)}
       ${secao('Associações com desempenho posterior', `
         <p>Os cruzamentos entre colostragem, crescimento, sanidade e resultados posteriores são análises <b>observacionais</b>. Eles ajudam a identificar padrões na própria base da fazenda, mas <b>não demonstram causalidade</b>.</p>
@@ -8579,7 +8640,7 @@ function semComentariosSeguro(src){
   }catch(e){ return src; }
 }
 
-function montarArquivoCliente(){
+function montarArquivoCliente(opcoes={}){
   const doc = document.documentElement.cloneNode(true);
   doc.querySelectorAll('[data-remover-no-cliente]').forEach(el=>el.remove());
   doc.querySelector('#paineis').innerHTML = '';   // é remontado na abertura
@@ -8596,10 +8657,11 @@ function montarArquivoCliente(){
     benchFim: estado.filtros.benchFim ? estado.filtros.benchFim.toISOString() : null,
     diagId: estado.diagId || {},
     avisos: estado.avisos || {},
-    filtrosPop: {},              // o cliente abre a fazenda inteira e filtra por conta
+    filtrosPop: opcoes.manterFiltros ? (estado.filtros.pop||{}) : {},   // o cliente abre a fazenda inteira e filtra por conta; o PDF leva os filtros ativos
     geradoEm: new Date().toISOString()
   };
   const script = doc.querySelector('#dadosEmbutidos');
+  if(opcoes.modoPdf){ const marca = document.createElement('script'); marca.textContent = 'window.__MODO_PDF = true;'; script.parentNode.insertBefore(marca, script); }
   script.textContent = 'window.DADOS_EMBUTIDOS = ' + JSON.stringify(dados)
     .replace(/</g,'\\u003c') + ';';
   // limpa os comentários de todo script inline, menos o bloco de dados
@@ -8712,7 +8774,8 @@ function montarSeletorPeriodo(){
   if(!selAno) return;
   if(!selAno.dataset.montado){
     const anos = [...new Set(estado.registros.map(r=>{ const d=dt(r.DATA_NASCIMENTO); return d?d.getFullYear():null; })
-      .filter(Boolean))].sort((a,b)=>b-a).slice(0,5);   // só os 5 anos de nascimento mais recentes
+      .filter(Boolean))].sort((a,b)=>b-a)
+      .filter((a,i,v)=>a>=v[0]-(ANOS_HISTORICO-1));   // só os 3 anos de nascimento mais recentes (2024 para cá)
     selAno.innerHTML = anos.map(a=>`<option value="${a}">${a}</option>`).join('');
     selAno.dataset.montado = '1';
   }
@@ -8899,6 +8962,7 @@ function montarComparacao(){
 
 function ligar(){
   aplicarTema();
+  $('#btnPdf')?.addEventListener('click', gerarRelatorioPdf);
 
   if(estado.modoCliente){
     const d = window.DADOS_EMBUTIDOS;
@@ -9004,7 +9068,6 @@ function ligar(){
   // Botão "Imprimir / PDF" oculto (Rafael, 22/08/2026: a saída impressa ainda
   // não está boa). O listener fica, com ?., pra reativar bastando tirar o
   // style="display:none" do botão no HTML.
-  $('#btnPdf')?.addEventListener('click', ()=>window.print());
   $('#btnCliente').addEventListener('click', gerarArquivoCliente);
   /* Pasta de destino do lote — ver e5.js, paridade. Escolhida ANTES do seletor
      de arquivos porque a API exige gesto do usuário. */
@@ -9022,6 +9085,238 @@ function ligar(){
   });
   ligarFiltros();
 }
+
+/* ======================================================================
+   Relatório em PDF (A4). O dashboard se abre de novo dentro de um iframe
+   estreito (720 px), percorre as abas, congela os gráficos em imagem e
+   imprime só o relatório. Funciona offline, no arquivo do cliente também.
+   ====================================================================== */
+const PDF_PLANO = [
+  { num:'03', titulo:'Nascimentos', sub:'Distribuição, origem das bezerras e partos', aba:'nasc', passos:[
+    { sub:'nasc-geral', itens:['Distribuição mensal dos nascimentos','Histórico de nascimentos de fêmeas','Tipo de sêmen que gerou as bezerras','Tipo de serviço que gerou as bezerras','Ordem de parto das mães'] },
+    { sub:'nasc-parto', itens:['Parto auxiliado','Histórico de partos auxiliados'] } ] },
+  { num:'04', titulo:'Colostro', sub:'Colostro fornecido, transferência de imunidade e mortalidade', aba:'colostro', passos:[
+    { sub:'col-forn', itens:['Tipo de colostro fornecido','Brix do colostro fornecido','Forma de fornecimento do colostro'] },
+    { sub:'col-tip', itens:['Eficiência de colostragem por categoria','Percentual na categoria Excelente','Percentual na categoria Ruim','Histórico das categorias'] },
+    { sub:'col-sanidade', itens:['Eficiência de colostragem × mortalidade'] } ] },
+  { num:'05', titulo:'Crescimento', sub:'Ganho de peso até o desaleitamento', aba:'cresc', passos:[
+    { sub:'cre-30', itens:['GMD do nascimento aos 30 dias por mês'] },
+    { sub:'cre-desl', itens:['GMD do nascimento ao desaleitamento por mês','Peso ao desaleitamento por mês','Idade ao desaleitamento por mês'] } ] },
+  { num:'06', titulo:'Sanidade', sub:'Diarreia, doenças respiratórias e mortalidade', aba:'sanidade', passos:[
+    { sub:'san-diarreia', etiqueta:'Diarreia', itens:['Ocorrências por 100 nascimentos no mês','Distribuição dos casos por semana'] },
+    { sub:'san-respiratoria', etiqueta:'Doenças respiratórias', itens:['Ocorrências por 100 nascimentos no mês','Distribuição dos casos por semana'] },
+    { sub:'san-mort', etiqueta:'Mortalidade', itens:['Mortalidade após 24 h por mês','Distribuição das mortes após 24 h por semana de vida','Histórico de mortalidade após 24 h'] } ] },
+  { num:'07', titulo:'Novilhas', sub:'Idade e peso ao primeiro serviço e ao primeiro parto', aba:'novilhas', passos:[
+    { sub:'nov-servico', itens:['Idade e peso ao primeiro serviço por ano'] },
+    { sub:'nov-parto', itens:['Idade e peso ao primeiro parto por ano'] } ] },
+  { num:'08', titulo:'Primeira lactação', sub:'Produção das primíparas até 305 dias', aba:'producao', passos:[
+    { sub:null, itens:['Evolução da produção no primeiro parto'] } ] }
+];
+
+/* Cartão sem informação para a fazenda: não entra no PDF. Vale para frase de
+   "sem medição", gráfico sem nenhum ponto e cartão sem gráfico nem conteúdo. */
+function pdfCartaoVazio(card){
+  if(card.querySelector('.sem-medicao')) return true;
+  const cv = Array.from(card.querySelectorAll('canvas'));
+  if(!cv.length){
+    if(card.querySelector('.grafico.sem-dado')) return true;
+    return false;
+  }
+  let algum = false;
+  for(const c of cv){
+    let ch = null; try{ ch = Chart.getChart(c); }catch(_){}
+    if(!ch){ algum = true; continue; }
+    const tem = ch.data.datasets.some(d=>(d.data||[]).some(v=>{
+      if(v==null) return false;
+      if(typeof v==='number') return !isNaN(v);
+      if(typeof v==='object') return v.y!=null || v.x!=null || v.r!=null;
+      return true;
+    }));
+    if(tem) algum = true;
+  }
+  return !algum;
+}
+
+function pdfEsperar(ms){ return new Promise(r=>setTimeout(r,ms)); }
+function pdfCartao(raiz, titulo){
+  const lista = raiz.querySelectorAll('.cartao');
+  for(const c of lista){
+    if(c.offsetParent===null) continue;
+    const t = ((c.firstElementChild && c.firstElementChild.textContent) || '').replace(/\s+/g,' ').trim();
+    if(t.startsWith(titulo)) return c;
+  }
+  return null;
+}
+function pdfCongelar(el){
+  const originais = Array.from(el.querySelectorAll('canvas'));
+  const copia = el.cloneNode(true);
+  copia.querySelectorAll('canvas').forEach((cv,i)=>{
+    const o = originais[i]; if(!o) return;
+    const img = new Image(); img.className = 'rp-img'; img.alt = '';
+    try{ img.src = o.toDataURL('image/png'); }catch(e){ return; }
+    cv.replaceWith(img);
+  });
+  copia.querySelectorAll('.baixar-imagem,[data-baixar-imagem],.tip-chart').forEach(e=>e.remove());
+  copia.querySelectorAll('select').forEach(s=>{
+    const b = document.createElement('b');
+    b.textContent = (s.options[s.selectedIndex] && s.options[s.selectedIndex].text) || '';
+    s.replaceWith(b);
+  });
+  copia.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));
+  return copia;
+}
+function pdfFigura(card, etiqueta, largo){
+  const f = document.createElement('figure'); f.className = 'rp-fig' + (largo ? ' rp-largo' : '');
+  f.style.margin = '0 auto 3.5mm';
+  if(etiqueta){ const e = document.createElement('div'); e.className = 'rp-etq'; e.textContent = etiqueta; f.appendChild(e); }
+  f.appendChild(pdfCongelar(card));
+  return f;
+}
+function pdfSecao(num, titulo, sub){
+  const s = document.createElement('section'); s.className = 'rp-sec';
+  s.innerHTML = '<div class="rp-cab"><span>'+num+'</span><div><h2>'+esc(titulo)+'</h2><p>'+esc(sub)+'</p></div></div>';
+  return s;
+}
+function pdfLinhasTabela(card){
+  return Array.from(card.querySelectorAll('tbody tr'));
+}
+
+async function capturarRelatorioPdf(){
+  Chart.defaults.devicePixelRatio = 3;
+  Chart.defaults.animation = false;
+  const secoes = [];
+  const f = estado.fazenda || {};
+
+  /* 01 Resumo executivo */
+  trocarAba('visao'); await pdfEsperar(600);
+  const rv = document.querySelector('[data-painel-raiz="visao"]');
+  if(rv){
+    const s = pdfSecao('01','Resumo executivo','Principais indicadores do período e posição frente ao benchmarking Alta CRIA');
+    const g4 = rv.querySelector('.grade.g4'), g5 = rv.querySelector('.grade.g5');
+    const leitura = Array.from(rv.children).find(e=>e.classList.contains('grade') && !e.classList.contains('g4') && !e.classList.contains('g5'));
+    if(g4){ const d = document.createElement('div'); d.className = 'rp-kp4'; Array.from(g4.children).forEach(k=>d.appendChild(pdfCongelar(k))); s.appendChild(d); }
+    if(g5){ const t = document.createElement('div'); t.className = 'rp-sub'; t.textContent = 'Crescimento e desaleitamento'; s.appendChild(t);
+      const d = document.createElement('div'); d.className = 'rp-kp5'; Array.from(g5.children).forEach(k=>d.appendChild(pdfCongelar(k))); s.appendChild(d); }
+    if(leitura){ const d = document.createElement('div'); d.className = 'rp-tab'; d.appendChild(pdfCongelar(leitura)); s.appendChild(d); }
+    secoes.push(s);
+  }
+
+  /* 02 Benchmarking: tabela resumida em uma página */
+  trocarAba('bench'); await pdfEsperar(700);
+  const rb = document.querySelector('[data-painel-raiz="bench"]');
+  if(rb){
+    const s1 = pdfSecao('02','Benchmarking','Resultado da fazenda por indicador × faixas do benchmarking Alta CRIA');
+    const tab = pdfCartao(rb, 'Resumo da fazenda no benchmarking');
+    const linhasTab = tab ? pdfLinhasTabela(tab) : [];
+    const dadosTab = linhasTab.filter(tr=>tr.children.length > 2);
+    const semDadosTab = dadosTab.length > 0 && dadosTab.every(tr=>/sem dado/i.test(tr.textContent));
+    if(tab && !semDadosTab){
+      const t = pdfCongelar(tab);
+      /* indicadores que ficam de fora do PDF */
+      const FORA = /^(parto auxiliado|bezerras que dobraram|umbigo inflamado|diarreia até|gmd do nascimento ao primeiro serviço|gmd do desaleitamento ao primeiro serviço|gmd do nascimento ao primeiro parto|gmd do primeiro serviço ao primeiro parto|primíparas precoces)/i;
+      pdfLinhasTabela(t).forEach(tr=>{ if(tr.children.length > 2 && FORA.test(tr.children[0].textContent.trim())) tr.remove(); });
+      /* colunas "À frente de" e do ciclo anterior (2024/2025) */
+      const ths = Array.from(t.querySelectorAll('thead th'));
+      const cols = ths.map((th,i)=>/à frente de|^\d{4}\/\d{2,4}/i.test(th.textContent.trim()) ? i : -1).filter(i=>i>=0).sort((x,y)=>y-x);
+      t.querySelectorAll('tr').forEach(tr=>{
+        const cel = Array.from(tr.children);
+        if(cel.length > 2){ cols.forEach(i=>{ if(cel[i]) cel[i].remove(); }); }
+        else if(cel.length === 1 && cel[0].hasAttribute('colspan')){ cel[0].setAttribute('colspan', Math.max(1, ths.length - cols.length)); }
+      });
+      /* faixas de indicador que ficaram sem linhas */
+      const corpo = Array.from(t.querySelectorAll('tbody tr'));
+      corpo.forEach((tr,i)=>{ if(tr.children.length <= 2){ const prox = corpo[i+1]; if(!prox || prox.children.length <= 2) tr.remove(); } });
+      /* nota de rodapé: fica só a explicação das faixas */
+      const nota = t.querySelector('.nota-rodape');
+      if(nota) nota.textContent = 'Faixa: Top 5% = entre as 5% melhores fazendas do benchmarking; "Abaixo do Top 75%" = no quarto de fazendas com resultado mais fraco.';
+      const d1 = document.createElement('div'); d1.className = 'rp-tab rp-tab-a'; d1.appendChild(t); s1.appendChild(d1);
+    }
+    if(s1.querySelector('.rp-tab')) secoes.push(s1);
+  }
+
+  /* 03 a 08: seções com gráficos */
+  for(const sec of PDF_PLANO){
+    const painel = PAINEIS.find(p=>p.id===sec.aba); if(!painel) continue;
+    trocarAba(sec.aba); await pdfEsperar(600);
+    const raiz = document.querySelector('[data-painel-raiz="'+sec.aba+'"]'); if(!raiz) continue;
+    const s = pdfSecao(sec.num, sec.titulo, sec.sub); let n = 0;
+    for(const passo of sec.passos){
+      if(passo.sub){
+        const bt = raiz.querySelector('.subaba[data-sub="'+passo.sub+'"]'); if(!bt) continue;
+        bt.click(); await pdfEsperar(800);
+      }
+      for(const titulo of passo.itens){
+        const card = pdfCartao(raiz, titulo); if(!card) continue;
+        if(pdfCartaoVazio(card)) continue;
+        s.appendChild(pdfFigura(card, passo.etiqueta, false)); n++;
+      }
+    }
+    if(n) secoes.push(s);
+  }
+
+  /* contêiner final */
+  const ini = document.querySelector('#marcaPeriodo'), nas = document.querySelector('#marcaNasc'), fil = document.querySelector('#marcaFiltros');
+  const periodo = ini ? ini.textContent.trim() : '';
+  const logo = (document.querySelector('.menu-topo img') || {}).src || '';
+  const logoAlta = (document.querySelector('.menu-pe img') || {}).src || '';
+  const nome = f.fazenda || 'Fazenda';
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  const linhasCapa = [
+    ['Proprietário', f.proprietario], ['Município', [f.cidade, f.estado].filter(Boolean).join(' / ')],
+    ['Código', f.codigo], ['Período', periodo ? 'Bezerras nascidas de '+periodo.replace(' a ',' a ') : ''],
+    ['Amostra', nas ? nas.textContent.trim() : ''], ['Filtros', fil ? fil.textContent.trim() : ''],
+    ['Técnico', f.responsavel], ['Emissão', hoje]
+  ].filter(l=>l[1]);
+  const cont = document.createElement('div'); cont.id = 'relatorioPdf';
+  cont.innerHTML = '<div class="rp-capa">'+(logo?'<img class="rp-logo" src="'+logo+'" alt="">':'')+
+    '<div class="rp-k">Relatório de análises · Alta CRIA</div><h1>Fazenda '+esc(nome)+'</h1>'+
+    '<div class="rp-p">Desempenho da recria: nascimentos, colostro, crescimento, sanidade, novilhas e primeira lactação.</div><div class="rp-barra"></div>'+
+    '<dl>'+linhasCapa.map(l=>'<dt>'+esc(l[0])+'</dt><dd>'+esc(String(l[1]))+'</dd>').join('')+'</dl>'+
+    (logoAlta?'<img class="rp-alta" src="'+logoAlta+'" alt="">':'')+
+    '<div class="rp-fonte">Fonte: dados da fazenda · benchmarking Alta CRIA</div></div>';
+  secoes.forEach(s=>cont.appendChild(s));
+  document.body.appendChild(cont);
+  document.documentElement.classList.add('modo-relatorio'); document.body.classList.add('modo-relatorio');
+  const rodape = 'Alta CRIA · Fazenda '+nome+(periodo?' · Bezerras nascidas de '+periodo:'');
+  const st = document.createElement('style');
+  st.textContent = '@page{ size:A4; margin:14mm 12mm 16mm; @bottom-left{ content:"'+rodape.replace(/["\\]/g,'')+'"; font:7pt Arial,sans-serif; color:#5A6879 } @bottom-right{ content:"Página " counter(page); font:7pt Arial,sans-serif; color:#5A6879 } }'+
+    '@page :first{ margin:0; @bottom-left{ content:none } @bottom-right{ content:none } }';
+  document.head.appendChild(st);
+  const slug = (nome+'').replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim();
+  const d = new Date();
+  const titulo = 'Relatório Alta CRIA '+slug+' '+String(d.getDate()).padStart(2,'0')+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+d.getFullYear();
+  document.title = titulo;
+  return { titulo, secoes: secoes.length };
+}
+
+async function gerarRelatorioPdf(){
+  const btn = $('#btnPdf'); if(!btn || btn.disabled) return;
+  const rotulo = btn.textContent; btn.disabled = true; btn.textContent = 'Gerando relatório…';
+  let ifr = null;
+  try{
+    const { html } = montarArquivoCliente({ manterFiltros:true, modoPdf:true });
+    ifr = document.createElement('iframe');
+    ifr.setAttribute('aria-hidden','true'); ifr.setAttribute('data-remover-no-cliente','');
+    ifr.style.cssText = 'position:fixed;left:-30000px;top:0;width:720px;height:1200px;border:0;opacity:0;pointer-events:none';
+    document.body.appendChild(ifr);
+    await new Promise((ok,erro)=>{ ifr.onload = ok; ifr.onerror = erro; ifr.srcdoc = html; });
+    await pdfEsperar(900);
+    const w = ifr.contentWindow;
+    const r = await w.capturarRelatorioPdf();
+    if(!r || !r.secoes) throw new Error('nenhum gráfico foi encontrado para o relatório');
+    const tituloOriginal = document.title; document.title = r.titulo;
+    const limpar = ()=>{ document.title = tituloOriginal; setTimeout(()=>{ try{ ifr.remove(); }catch(_){} }, 600); };
+    w.addEventListener('afterprint', limpar);
+    w.focus(); w.print();
+    btn.disabled = false; btn.textContent = rotulo;
+  }catch(err){
+    console.error('relatório PDF', err);
+    if(ifr) try{ ifr.remove(); }catch(_){}
+    btn.disabled = false; btn.textContent = rotulo;
+    alert('Não foi possível gerar o relatório em PDF: '+(err && err.message ? err.message : err));
+  }
+}
+
 document.addEventListener('DOMContentLoaded', ligar);
 </script>
 </body>
