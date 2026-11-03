@@ -1788,7 +1788,7 @@ body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
 /* --- Direções de seleção. Rafael: revise antes de publicar. dir 1=maior melhor,
    -1=menor melhor, 0=intermediário/neutro (não colorir). ------------------ */
 /* Data da última versão publicada. Atualize junto com cada nova entrega do index. */
-const APP_ATUALIZADO = '30/10/2026';
+const APP_ATUALIZADO = '02/11/2026';
 const TRAITS = [
   {k:'Meu Índice',                     lab:'Plano Genético',            u:'US$', pre:1, d:0, dir:1, g:'plano'},
   {k:'Leite',                          lab:'Leite',                     u:'libras', d:0, dir:1, g:'prod'},
@@ -1815,7 +1815,7 @@ const TRAITS = [
   {k:'Taxa de Gravidez da Filha',      lab:'Taxa de Prenhez da Filha',  u:''    ,      d:1, dir:1, g:'repro'},
   {k:'Taxa de Concepção de Vacas',     lab:'Taxa de Concepção de Vacas',u:''    ,      d:1, dir:1, g:'repro'},
   {k:'Taxa de Concepção de Novilhas',  lab:'Taxa de Concepção de Novilhas',u:''    ,   d:1, dir:1, g:'repro'},
-  {k:'Early First Calving',            lab:'Primeiro Parto Precoce',             u:'',d:1,dir:-1,g:'repro'},
+  {k:'Early First Calving',            lab:'Primeiro Parto Precoce',             u:'',d:1,dir:1,g:'repro'},
   {k:'First Service Conception',       lab:'Concepção no Primeiro Serviço',u:'',d:1,dir:1,g:'repro'},
   {k:'Facilidade de Parto do Touro',   lab:'Facilidade de Parto do Touro',u:'',d:1,dir:-1,g:'parto'},
   {k:'Facilidade no Parto da Filha',   lab:'Facilidade de Parto de Filha',u:'',    d:1, dir:-1,g:'parto'},
@@ -2707,18 +2707,32 @@ function baixar(href, nome){
    lineares, ganho/ano). Agora cada célula é convertida aqui, no padrão
    brasileiro, e entra na planilha como número de verdade com casas decimais.
    ---------------------------------------------------------------------- */
-const RX_NUM_BR = /^[+-]?\s*(?:US\$|R\$)?\s*\d{1,3}(?:\.\d{3})*(?:,\d+)?\s*%?$|^[+-]?\s*(?:US\$|R\$)?\s*\d+(?:,\d+)?\s*%?$/;
+const RX_NUM_BR = /^[+-]?\s*(?:US\$|R\$)?\s*[+-]?\s*\d{1,3}(?:\.\d{3})*(?:,\d+)?\s*(?:%|libras|lbs|lb|pts|meses|dias|kg)?$|^[+-]?\s*(?:US\$|R\$)?\s*[+-]?\s*\d+(?:,\d+)?\s*(?:%|libras|lbs|lb|pts|meses|dias|kg)?$/i;
 function celulaParaValor(txt){
-  const t = String(txt??'').replace(/\u00a0/g,' ').trim();
+  /* O app escreve negativos com o menos tipográfico (−), moeda (US$) e unidade (libras).
+     Tudo isso é reconhecido aqui: o valor entra no Excel como NÚMERO e a moeda/unidade
+     vira formato da célula — antes "−US$ 109" e "-202 libras" saíam como texto e "+US$ 83"
+     como 83, misturando texto e número na mesma coluna. */
+  const t = String(txt??'').replace(/\u00a0/g,' ').replace(/\u2212/g,'-').trim();
   if(!t || t==='—' || t==='-' || t==='–') return null;
+  /* Data dd/mm/aaaa vira data de verdade (ordena e filtra certo no Excel). */
+  const dm = t.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if(dm){ const d = Date.UTC(+dm[3], +dm[2]-1, +dm[1]); if(isFinite(d)) return {v: d/86400000 + 25569, t:'n', z:'dd/mm/yyyy'}; }
   if(!RX_NUM_BR.test(t)) return {v:t, t:'s'};
   const pc = /%$/.test(t);
-  const limpo = t.replace(/US\$|R\$|%|\s/g,'').replace(/\./g,'').replace(',','.');
-  const n = Number(limpo);
-  if(!isFinite(n)) return {v:t, t:'s'};
+  const moeda = (t.match(/US\$|R\$/)||[''])[0];
+  const un = (t.match(/(libras|lbs|lb|pts|meses|dias|kg)$/i)||[''])[0].toLowerCase();
+  const neg = /-/.test(t);
+  const limpo = t.replace(/US\$|R\$|%|libras|lbs|lb|pts|meses|dias|kg|[+\-\s]/gi,'').replace(/\./g,'').replace(',','.');
+  const n0 = Number(limpo);
+  if(!isFinite(n0)) return {v:t, t:'s'};
+  const n = neg ? -n0 : n0;
   const casas = (limpo.split('.')[1]||'').length;
-  return {v: pc ? n/100 : n, t:'n', z: pc ? (casas>2?'0.'+'0'.repeat(casas-2)+'%':'0.0%')
-                                        : (casas ? '0.'+'0'.repeat(casas) : '0')};
+  const base = casas ? '0.'+'0'.repeat(casas) : '0';
+  let z = pc ? (casas>2?'0.'+'0'.repeat(casas-2)+'%':'0.0%') : base;
+  if(moeda) z = '"'+moeda+' "'+z;
+  if(un) z = z+' "'+(un==='lbs'||un==='lb'?'libras':un)+'"';
+  return {v: pc ? n/100 : n, t:'n', z};
 }
 function expTable(id, nome){
   const t = document.getElementById(id);
@@ -4278,9 +4292,13 @@ function rEvol(){
   /* Leite abre por padrão porque existe nos dois lados da comparação CDCB.
      Plano Genético continua disponível, mas não tem equivalente CDCB. */
   if(D.traits.some(t=>t.k==='Leite')) $('#sel-evol').value = 'Leite';
+  restaurarSel($('#sel-evol'),'evol');
   const dflt = Math.max(D.anos[0], Math.max(...D.anos)-6);
   $('#sel-ano').innerHTML = D.anos.map(a=>`<option ${a===dflt?'selected':''}>${a}</option>`).join('');
-  ['#sel-evol','#sel-ano','#sel-nmin'].forEach(s=>$(s).onchange = paintEvol);
+  restaurarSel($('#sel-ano'),'ano');
+  $('#sel-evol').onchange = () => { MEM_SEL.evol = $('#sel-evol').value; paintEvol(); };
+  $('#sel-ano').onchange  = () => { MEM_SEL.ano  = $('#sel-ano').value;  paintEvol(); };
+  $('#sel-nmin').onchange = paintEvol;
   montarSeletorRacaCDCB('sel-evol-raca', paintEvol);
   paintEvol();
 }
@@ -4623,7 +4641,24 @@ function rCDCB(){
     kpi('Leite vs média CDCB', prod? uv(prod.dif,prod.t,false,true) : '—', '')
   ].join('');
 
-  const ord = [...comZ].sort((a,b)=> (b.z*(b.t.dir||1)) - (a.z*(a.t.dir||1)));
+  /* Ordem do gráfico decidida com TODAS as fêmeas (mesmo recorte de categoria/ano/raça), para que
+     PA e Genômica apareçam na mesma sequência. Só entra a característica que tem dado na base escolhida. */
+  const ordEst = (()=>{
+    try{
+      const Ra = cdcbRowsComparaveis(D.all.filter(r =>
+        (r.ano ?? -Infinity) >= desdeAno &&
+        (cat==='all' ? true : cat==='nov' ? ehNovilha(r) : cat==='vac' ? r.cat.startsWith('Lact') : r.cat===cat)), raca).rows;
+      const sc = new Map();
+      D.traits.forEach(t=>{ const rf=cdcbRef(t.k,raca); if(!rf||!rf.sd) return; const m=mean(vals(Ra,t.k)); if(m===null) return;
+        sc.set(t.k, ((m-rf.media)/rf.sd)*(t.dir||1)); });
+      return [...sc.entries()].sort((a,b)=>b[1]-a[1]).map(e=>e[0]);
+    }catch(e){ return []; }
+  })();
+  const posEst = new Map(ordEst.map((k,i)=>[k,i]));
+  const ord = [...comZ].sort((a,b)=>{
+    const pa = posEst.has(a.t.k)?posEst.get(a.t.k):1e6, pb = posEst.has(b.t.k)?posEst.get(b.t.k):1e6;
+    return pa!==pb ? pa-pb : (b.z*(b.t.dir||1)) - (a.z*(a.t.dir||1));
+  });
   $('.cdcb-wrap').style.minHeight = `${Math.max(280, ord.length*34+70)}px`;
   chart('c-cdcb',{type:'bar', data:{labels:ord.map(l=>l.t.lab.replace(/ \(.*\)/,'')),
     datasets:[{data:ord.map(l=>l.z),
@@ -4741,7 +4776,7 @@ const USO_BULL_EXTRA = {
   'DWP$':['DWP$',1], 'CM$':['CM$',1], 'FM$':['FM$',1], 'GM$':['GM$',1],
   'TPI':['TPI',1], 'NM$':['NM$',1], 'HCC':['HCC',1],
   'CFP':['Gordura + proteína (CFP)',1], 'PTAT':['Tipo (PTAT)',1], 'FE':['Eficiência alimentar (FE)',1],
-  'REI':['Índice de eficiência reprodutiva (REI)',1], 'EFC':['Parto precoce (EFC)',-1],
+  'REI':['Índice de eficiência reprodutiva (REI)',1], 'EFC':['Primeiro parto precoce (EFC)',1],
   'FSC':['Concepção no primeiro serviço (FSC)',1], 'FI':['Índice de fertilidade (FI)',1],
   'MAST':['Resistência à mastite (MAST)',1], 'MUI':['Índice moderno de úbere (MUI)',1],
   'MSPD':['Velocidade de ordenha (MSPD)',1], 'H-LIV':['Sobrevivência da novilha (H-LIV)',1],
@@ -5082,9 +5117,17 @@ function rUso(){
 }
 
 /* ======================= CURVAS DE DENSIDADE (POP 4.2) ======================= */
+/* A característica escolhida em Curvas e em Tendência fica guardada: ao trocar a base
+   genética (PA × Genômica) as listas são refeitas e a escolha volta para a mesma característica. */
+const MEM_SEL = {dens:null, evol:null, ano:null};
+function restaurarSel(sel, memKey){
+  const v = MEM_SEL[memKey];
+  if(v!==null && [...sel.options].some(o=>o.value===v)) sel.value = v;
+}
 function rCurvas(){
   $('#sel-dens').innerHTML = D.traits.map(t=>`<option value="${t.k}">${t.lab}</option>`).join('');
-  $('#sel-dens').onchange = paintDens;
+  restaurarSel($('#sel-dens'),'dens');
+  $('#sel-dens').onchange = () => { MEM_SEL.dens = $('#sel-dens').value; paintDens(); };
   paintDens();
 }
 function paintDens(){
@@ -5951,8 +5994,13 @@ function rPlano(){
   ordenavel('t-quart');
   const mi = D.rows.map(r=>r['Meu Índice']);
   const sentidoCorr = c => (c.t.g==='lin' || c.t.k==='Composto de Peso Corporal' || !c.t.dir) ? 'neutro' : ((c.r*c.t.dir)>=0 ? 'favor' : 'contra');
-  const cor = D.traits.filter(t=>t.g!=='plano').map(t=>({lab:t.lab, r:pearson(mi, D.rows.map(x=>x[t.k])), t}))
-    .filter(x=>x.r!==null).sort((a,b)=>Math.abs(b.r)-Math.abs(a.r)).slice(0,16);
+  /* Quais características entram e em que ordem é decidido com TODAS as fêmeas; o valor de cada barra
+     vem da base genética escolhida. Assim PA e Genômica mostram as mesmas características, na mesma
+     ordem, e dá para comparar barra a barra. */
+  const miAll = D.all.map(r=>r['Meu Índice']);
+  const ordemFixa = D.traits.filter(t=>t.g!=='plano').map(t=>({t, ra:pearson(miAll, D.all.map(x=>x[t.k]))}))
+    .filter(x=>x.ra!==null).sort((a,b)=>Math.abs(b.ra)-Math.abs(a.ra)).slice(0,16);
+  const cor = ordemFixa.map(o=>({lab:o.t.lab, r:pearson(mi, D.rows.map(x=>x[o.t.k])), t:o.t})).filter(x=>x.r!==null);
   chart('c-corr',{type:'bar', data:{labels:cor.map(c=>c.lab.replace(/ \(.*\)/,'')), datasets:[{data:cor.map(c=>c.r),
     /* Bloco 3: sem vermelho. A correlação negativa não é "ruim" — é só o outro
        sentido. A intensidade do azul passa a codificar a FORÇA (|r|), e o lado
