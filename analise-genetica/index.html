@@ -242,6 +242,27 @@ body.report .chipbar,body.report .chipbar-acts{display:none!important}
 #drop2 .big,#drop-uso .big,#drop-naab .big{font-size:14px;font-weight:600;color:var(--alta);margin-bottom:3px}
 #drop2 .small,#drop-uso .small,#drop-naab .small{font-size:12px;color:var(--ink-2)}
 #drop-uso:focus-visible,#drop-naab:focus-visible{outline:2px solid var(--alta);outline-offset:2px}
+.uso-pick-l{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:6px}
+.uso-busca-w{position:relative;max-width:640px}
+#uso-busca{width:100%;padding:10px 12px;border:1.5px solid var(--alta-line);border-radius:9px;font:inherit;font-size:14px;background:#fff}
+#uso-busca:focus{outline:2px solid var(--alta);outline-offset:1px}
+.uso-res{position:absolute;z-index:61;left:0;right:0;top:100%;margin-top:4px;background:#fff;border:1px solid var(--alta-line);border-radius:9px;box-shadow:0 8px 24px rgba(20,40,90,.16);max-height:340px;overflow:auto}
+.uso-res button{display:flex;width:100%;gap:10px;align-items:baseline;text-align:left;padding:8px 12px;border:0;background:none;cursor:pointer;font:inherit;font-size:13px;border-bottom:1px solid #eef1f7}
+.uso-res button:hover,.uso-res button.on{background:var(--alta-wash)}
+.uso-res button[disabled]{opacity:.5;cursor:default}
+.uso-res .n{font-weight:600;color:var(--ink)}.uso-res .c{color:var(--ink-3);font-size:11.5px}.uso-res .t{margin-left:auto;color:var(--ink-3);font-size:11.5px;white-space:nowrap}
+.uso-pick-f{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
+#v-prog .prog-fl{font-size:12px;font-weight:600;color:var(--ink-2)}.prog-filtros .card-b{display:flex;gap:6px 8px;align-items:center;flex-wrap:wrap;padding:6px 10px!important}.prog-filtros select{padding:4px 6px;font-size:12px;max-width:138px}.prog-filtros .seg button{padding:4px 9px}.prog-filtros .acas-swap{padding:3px 8px}.prog-idade input{width:122px;font-size:12px!important;padding:4px 7px!important;padding:5px 7px;border:1.5px solid var(--alta-line);border-radius:7px;font:inherit;font-size:13px}
+#v-prog .prog-ch{position:relative;height:300px}#v-prog .prog-ch-tall{height:420px}
+.prog-bar{position:relative;height:12px;background:var(--alta-wash);border-radius:3px}
+.prog-bar b{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--ink-3)}
+.prog-bar i{position:absolute;top:2px;bottom:2px;border-radius:2px}.prog-bar i.up{background:#4A7FD4}.prog-bar i.dn{background:#B33A2E}
+#uso-colar-t{width:100%;max-width:640px;padding:8px 10px;border:1.5px solid var(--alta-line);border-radius:9px;font:inherit;font-size:13px;margin-bottom:6px}
+.uso-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.uso-chip{display:inline-flex;align-items:center;gap:6px;background:var(--alta-wash);border:1px solid var(--alta-line);color:var(--alta);border-radius:999px;padding:3px 6px 3px 11px;font-size:12px;font-weight:600}
+.uso-chip small{font-weight:400;color:var(--ink-3)}
+.uso-chip button{border:0;background:none;cursor:pointer;font-size:15px;line-height:1;color:var(--ink-3);padding:0 4px}
+.uso-chip button:hover{color:#b3261e}
 .filechip{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:4px 11px;font-size:12px;margin:3px 4px 0 0}
 .filechip b{font-weight:600;color:var(--alta)}
 .lockbar{background:var(--amber-wash);border:1px dashed var(--amber);border-radius:8px;padding:12px 15px;font-size:13px;color:#7A5200;margin-bottom:16px}
@@ -1273,9 +1294,10 @@ body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
           <label class="share-check"><input type="checkbox" value="oport"> Onde está o ganho</label>
           <label class="share-check"><input type="checkbox" value="cert"> Certificado do animal</label>
           <label class="share-check"><input type="checkbox" value="cdcb"> Comparação com o CDCB (EUA)</label>
-          <label class="share-check"><input type="checkbox" value="uso"> Touros em uso</label>
+          <label class="share-check"><input type="checkbox" value="uso"> Escolha de touros</label>
           <label class="share-check"><input type="checkbox" value="rebanho"> Rebanho completo</label>
           <label class="share-check"><input type="checkbox" value="acas"> Acasalamento animal a animal</label>
+          <label class="share-check"><input type="checkbox" value="prog"> Progresso genético</label>
         </div>
       </fieldset>
       <fieldset class="share-group"><legend>Detalhamento das seções selecionadas</legend>
@@ -1527,15 +1549,25 @@ body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
 
 <!-- ===== TOUROS EM USO ===== -->
 <section class="view" id="v-uso">
-  <div class="sec-h"><span class="eyebrow">Sêmen contratado</span><h2>Touros em uso × rebanho × CDCB</h2></div>
-  <div class="card acas-up" id="uso-up" style="margin-bottom:16px"><div class="card-b">
-    <div id="drop-uso" tabindex="0" role="button" aria-label="Carregar a planilha de touros em uso">
-      <div class="big">Arraste aqui a planilha de touros em uso (.xlsx)</div>
-      <div class="small">export do BullSearch (.xlsx) · aba Alta identificada automaticamente</div>
-      <input type="file" id="file-uso" accept=".xlsx,.xls" hidden>
+  <div class="sec-h"><span class="eyebrow">Base BullSearch</span><h2>Escolha de touros × rebanho × CDCB</h2></div>
+  <div class="card" id="uso-up" style="margin-bottom:16px;position:relative;z-index:60"><div class="card-b">
+    <div class="uso-pick">
+      <label for="uso-busca" class="uso-pick-l">Buscar touro na base BullSearch</label>
+      <div class="uso-busca-w">
+        <input type="search" id="uso-busca" placeholder="Digite o nome ou o código NAAB (ex.: Ginger, 551HO06687)" autocomplete="off" spellcheck="false">
+        <div id="uso-res" class="uso-res" hidden></div>
+      </div>
+      <div class="uso-pick-f"><span class="ghint" id="uso-base"></span>
+        <button type="button" class="acas-swap" id="uso-colar-b">Colar lista de touros</button>
+        <button type="button" class="acas-swap" id="uso-limpar" hidden>Limpar seleção</button></div>
+      <div id="uso-colar" hidden style="margin-top:8px">
+        <textarea id="uso-colar-t" rows="4" placeholder="Um touro por linha (ou separados por vírgula): código NAAB ou nome"></textarea>
+        <button type="button" class="acas-swap" id="uso-colar-ok">Adicionar à seleção</button>
+        <div id="uso-colar-msg" class="ghint" style="margin-top:6px"></div>
+      </div>
+      <div id="uso-chips" class="uso-chips"></div>
+      <div id="uso-files" style="margin-top:8px"></div>
     </div>
-    <div id="uso-files" style="margin-top:10px"></div>
-    <button type="button" class="acas-swap" id="uso-swap" hidden>Trocar planilha</button>
     <div id="uso-err" class="ins bad" style="display:none;margin-top:10px"></div>
   </div></div>
   <div id="uso-conteudo" hidden>
@@ -1544,6 +1576,8 @@ body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
       <select id="uso-trait"></select>
       <span style="font-size:12px;font-weight:600;color:var(--ink-2);margin-left:8px">Raça da comparação</span>
       <select id="uso-raca"></select>
+      <span style="font-size:12px;font-weight:600;color:var(--ink-2);margin-left:8px">Categoria do rebanho</span>
+      <select id="uso-cat"></select>
       <span class="ghint" id="uso-hint"></span>
     </div></div>
     <div class="grid g4" id="uso-kpis" style="margin-bottom:16px"></div>
@@ -1551,15 +1585,47 @@ body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
     <div class="card" style="margin-bottom:16px"><div class="card-h"><h3>Dispersão dos touros na característica</h3>
       <span class="hint">cada ponto é um touro · linhas de referência do rebanho e do CDCB</span></div>
       <div class="card-b"><div class="uso-disp"><canvas id="c-uso-disp"></canvas></div></div></div>
-    <div class="card" style="margin-bottom:16px"><div class="card-h"><h3>Touros em uso × rebanho × CDCB</h3>
+    <div class="card" style="margin-bottom:16px"><div class="card-h"><h3>Touros escolhidos × rebanho × CDCB</h3>
       <span class="hint">característica a característica</span></div>
       <div class="card-b tw"><div class="tabela-fixa"><table id="t-uso-comp"></table></div><p class="share-note" id="uso-comp-note"></p></div></div>
-    <div class="card" id="uso-avg-card" hidden><div class="card-h"><h3>Alta × Outros</h3>
-      <span class="hint">médias que vieram prontas na planilha</span></div>
-      <div class="card-b tw"><div class="tabela-fixa"><table id="t-uso-avg"></table></div></div></div>
-    <div class="card" style="margin-top:16px"><div class="card-h"><h3>Touros da planilha</h3>
+    <div class="card" style="margin-top:16px"><div class="card-h"><h3>Touros escolhidos</h3>
       <span class="hint" id="uso-count"></span><span class="ch-tools"><span class="colsel" id="uso-cols"></span></span></div>
       <div class="card-b tw"><div class="tabela-fixa"><table id="t-uso" class="center-all"></table></div></div></div>
+  </div>
+</section>
+
+<!-- ===== PROGRESSO GENÉTICO ===== -->
+<section class="view" id="v-prog">
+  <div class="sec-h"><span class="eyebrow">Resultado esperado</span><h2>Progresso genético da fazenda</h2></div>
+  <div id="prog-vazio" class="card" style="display:none"><div class="card-b">Carregue o relatório de acasalamento na aba <b>Acasalamento</b> para ver o progresso genético esperado.</div></div>
+  <div id="prog-conteudo" style="display:none">
+    <div class="card sticky filterbar prog-filtros" style="margin-bottom:12px"><div class="card-b">
+      <div class="seg" id="prog-opt" title="Touro recomendado"></div>
+      <select id="prog-trait" title="Característica" aria-label="Característica"></select>
+      <select id="prog-cat" title="Categoria" aria-label="Categoria"></select>
+      <select id="prog-stoc" title="Tipo de sêmen" aria-label="Tipo de sêmen"></select>
+      <span class="prog-idade" title="Idade mínima, em meses"><input type="number" id="prog-imin" min="0" max="300" step="1" placeholder="mín. (meses)" title="Idade mínima, em meses" aria-label="Idade mínima em meses"></span>
+      <button type="button" class="acas-swap" id="prog-idade-x" hidden>limpar</button>
+    </div></div>
+    <p class="ghint" id="prog-hint" style="margin:0 2px 10px"></p>
+    <div class="grid g3" id="prog-kpis" style="margin-bottom:16px"></div>
+    <div id="prog-aviso" style="margin-bottom:16px"></div>
+
+    <div class="card" style="margin-bottom:16px"><div class="card-h"><h3>Resumo por característica: mães × opções</h3>
+      <span class="hint" id="prog-resumo-hint">as três opções do acasalamento, nas mesmas fêmeas</span></div>
+      <div class="card-b"><div id="prog-resumo"></div>
+        <div class="tw" style="margin-top:14px"><div class="tabela-fixa"><table id="t-prog-op" class="center-all"></table></div><p class="share-note" id="prog-op-note"></p></div></div></div>
+
+    <div class="card" style="margin-bottom:16px"><div class="card-h"><h3>Curvas de distribuição: rebanho por geração × progênie</h3>
+      <span class="hint" id="prog-dist-hint"></span></div>
+      <div class="card-b"><div class="prog-ch prog-ch-tall"><canvas id="c-prog-dist"></canvas></div>
+        <div class="tw" style="margin-top:12px"><div class="tabela-fixa"><table id="t-prog-dist" class="center-all"></table></div></div></div></div>
+
+    <div class="card" style="margin-bottom:16px"><div class="card-h"><h3>Acasalamento por animal</h3>
+      <span class="hint" id="prog-animais-hint"></span></div>
+      <div class="card-b tw"><div class="tabela-fixa"><table id="t-prog-animais" class="center-all"></table></div></div></div>
+
+    <div class="ins info" id="prog-metodo"></div>
   </div>
 </section>
 
@@ -1788,7 +1854,7 @@ body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
 /* --- Direções de seleção. Rafael: revise antes de publicar. dir 1=maior melhor,
    -1=menor melhor, 0=intermediário/neutro (não colorir). ------------------ */
 /* Data da última versão publicada. Atualize junto com cada nova entrega do index. */
-const APP_ATUALIZADO = '02/11/2026';
+const APP_ATUALIZADO = '05/11/2026';
 const TRAITS = [
   {k:'Meu Índice',                     lab:'Plano Genético',            u:'US$', pre:1, d:0, dir:1, g:'plano'},
   {k:'Leite',                          lab:'Leite',                     u:'libras', d:0, dir:1, g:'prod'},
@@ -2340,7 +2406,7 @@ function ingest(text){
     const inval = D.all.filter(r=>r.paiInvalido);
     if(branco+inval.length) AVISOS.push(['warn','Pai sem código NAAB',
       `<b>${fmt(branco+inval.length)}</b> fêmea(s) sem pai identificável: <b>${fmt(branco)}</b> com o código em branco e <b>${fmt(inval.length)}</b> com um código que não é NAAB`+
-      `${inval.length?` (ex.: ${[...new Set(inval.map(r=>r.paiInvalido))].slice(0,4).join(', ')})`:''}. Elas entram nas médias do rebanho, mas ficam fora das análises por touro (Touros, Centrais, Touros em uso).`]);
+      `${inval.length?` (ex.: ${[...new Set(inval.map(r=>r.paiInvalido))].slice(0,4).join(', ')})`:''}. Elas entram nas médias do rebanho, mas ficam fora das análises por touro (Touros, Centrais, Escolha de touros).`]);
   }
   const semRaca = D.all.filter(r=>r.raca==='—').length;
   if(semRaca) AVISOS.push(['info','Raça não identificada',
@@ -2825,7 +2891,7 @@ let REPORT = false;
    Certificado. Era possível esconder Centrais mas não Dados; agora o técnico
    escolhe aba por aba o que sai na versão do cliente. O perfil "Executivo" foi
    retirado a pedido: sobraram Completo e Personalizado. */
-const SHARE_ALL = ['resumo','dados','planocli','geral','carac','evol','cdcb','curvas','touros','centrais','uso','plano','oport','cert','acas','rebanho'];
+const SHARE_ALL = ['resumo','dados','planocli','geral','carac','evol','cdcb','curvas','touros','centrais','uso','plano','oport','cert','acas','prog','rebanho'];
 const SHARE_PRESETS = {
   complete:{profile:'complete',sections:SHARE_ALL,charts:true,tables:true}
 };
@@ -2904,7 +2970,7 @@ function abrirModalShare(acao){
   const cliente=acao==='client-link'||acao==='client-download';
   $('#share-title').textContent=cliente?'Conteúdo da versão do cliente':'Conteúdo do relatório em PDF';
   if(!cliente) setTimeout(()=>{ $('#share-subtitle').textContent='O PDF traz as seções analíticas em páginas A4. Rebanho completo, Qualidade dos dados, Certificado e Acasalamento não entram: a lista inteira continua no painel e no Excel.'; },0);
-  $('#share-subtitle').textContent=cliente?`Escolha o que o cliente poderá visualizar. ${USO?.touros?.length?`${fmt(USO.touros.length)} touros em uso serão incorporados ao HTML.`:'Carregue a planilha BullSearch em Touros em uso antes de gerar o HTML para incluir esta análise.'}`:'Escolha o que aparecerá no relatório antes de abrir a impressão.';
+  $('#share-subtitle').textContent=cliente?`Escolha o que o cliente poderá visualizar. ${USO?.touros?.length?`${fmt(USO.touros.length)} touros escolhidos serão incorporados ao HTML.`:'Escolha os touros em Escolha de touros antes de gerar o HTML para incluir esta análise.'}`:'Escolha o que aparecerá no relatório antes de abrir a impressão.';
   $('#share-apply').textContent=acao==='client-link'?'Gerar link':acao==='client-download'?'Baixar HTML':'Gerar PDF';
   $('#share-modal').hidden=false;
 }
@@ -3381,11 +3447,12 @@ const VIEWS = [
   {id:'curvas', lab:'Curvas',           full:'Curvas de Distribuição', fn:()=>rCurvas()},
   {id:'touros', lab:'Touros',           full:'Touros Pais', fn:()=>rTouros()},
   {id:'centrais',lab:'Centrais',         full:'Centrais Genéticas', fn:()=>rCentrais()},
-  {id:'uso',    lab:'Touros em uso',   full:'Touros em uso × rebanho × CDCB', fn:()=>rUso()},
+  {id:'uso',    lab:'Escolha de touros',   full:'Escolha de touros × rebanho × CDCB', fn:()=>rUso()},
   {id:'plano',  lab:'Distribuição',     full:'Distribuição do Plano Genético no rebanho', fn:()=>rPlano()},
   {id:'oport',  lab:'Oportunidades',    fn:()=>rOport()},
   {id:'cert',   lab:'Certificado',      fn:()=>rCertificado()},
   {id:'acas',   lab:'Acasalamento',    fn:()=>rAcas()},
+  {id:'prog',   lab:'Progresso genético', full:'Progresso genético esperado com o acasalamento', fn:()=>rProg()},
   {id:'rebanho',lab:'Rebanho',          full:'Rebanho completo', fn:()=>rRebanho()},
 ];
 let painted = {};
@@ -3403,11 +3470,13 @@ const TAB_GRUPOS = [
   {lab:'Evolução',    ids:['evol','cdcb']},
   {lab:'Origem',      ids:['touros','centrais','uso']},
   {lab:'Decisão',     ids:['oport','acas']},
+  {lab:'Resultado',   ids:['prog']},
   {lab:'Consulta',    ids:['cert','rebanho']}
 ];
 function montarTabs(aplicar){
   const vis = VIEWS.filter(v =>
     (v.id !== 'acas'     || APP_CONFIG.mode !== 'client' || AC.map.size) &&
+    (v.id !== 'prog'     || (AC.map && AC.map.size)) &&
     (v.id !== 'planocli' || PLANO.ativo) &&
     (v.id !== 'uso'      || (APP_CONFIG.mode !== 'client' || (USO.touros && USO.touros.length))));
   const porId = new Map(vis.map(v=>[v.id,v]));
@@ -4661,19 +4730,19 @@ function rCDCB(){
   });
   $('.cdcb-wrap').style.minHeight = `${Math.max(280, ord.length*34+70)}px`;
   chart('c-cdcb',{type:'bar', data:{labels:ord.map(l=>l.t.lab.replace(/ \(.*\)/,'')),
-    datasets:[{data:ord.map(l=>l.z),
+    datasets:[{data:ord.map(l=>l.z*(l.t.dir||1)),
       backgroundColor:ord.map(l=>{const a=Math.min(1,Math.abs(l.z)/1.2);
         return l.z*l.t.dir<0 ? `rgba(179,58,46,${0.35+a*0.55})` : `rgba(41,80,151,${0.3+a*0.6})`;}),
       borderRadius:4, barThickness:20}]},
     options:{indexAxis:'y', maintainAspectRatio:false, layout:{padding:{right:72, top:44}},
       plugins:{legend:{display:false}, tooltip:{callbacks:{
         title:c=>ord[c[0].dataIndex].t.lab,
-        label:c=>`${fmt(c.raw,2)} desvios-padrão da distribuição CDCB`,
+        label:c=>{const l=ord[c.dataIndex]; return l.t.dir ? `${fmt(c.raw,2)} desvios-padrão · ${c.raw>=0?'melhor':'pior'} que a média da raça` : `${fmt(c.raw,2)} desvios-padrão da distribuição CDCB`;},
         afterLabel:c=>{const l=ord[c.dataIndex];return [
           `Rebanho (${raca}): ${uv(l.m,l.t)} (n ${fmt(l.n)})`,
           `Média CDCB: ${uv(l.ref.media,l.t)}`,
           `Diferença: ${uv(l.dif,l.t,false,true)}`];}}}},
-      scales:{x:{grid:{color:C.line}, title:{display:true,text:`desvios-padrão em relação à média CDCB · ${raca}`}},
+      scales:{x:{grid:{color:C.line}, title:{display:true,text:`desvios-padrão da média CDCB · ${raca} · positivo = melhor que a raça (já considera que menos é melhor em CCS etc.)`}},
               y:{grid:{display:false}, ticks:{autoSkip:false, font:{size:10.5}}}}},
     plugins:[{id:'zeroCdcb',afterDraw(ch){const {ctx,chartArea:a,scales:sc}=ch;const x=sc.x.getPixelForValue(0);
       ctx.save();ctx.strokeStyle=C.ink3;ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(x,a.top);ctx.lineTo(x,a.bottom);ctx.stroke();
@@ -4910,33 +4979,105 @@ function lerPlanilhaUso(buf, nomeArquivo){
   return {touros, medias, traits:[...traitMap.values()], aba:melhor.nome, colunas:Object.keys(idx).length, total:hdr.length};
 }
 
+/* ---- Escolha de touros: seleção direta na base BullSearch embutida (sem planilha) ---- */
+let USO_CAT = 'all';
+const rotuloCatUso = () => USO_CAT==='nov' ? 'todas as novilhas' : USO_CAT==='vac' ? 'todas as vacas' : USO_CAT;
+let USO_SEL = [];                       // códigos NAAB escolhidos, na ordem em que entraram
+const semAcento = s => String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+let _usoIdx = null;
+function usoIndice(){
+  if(_usoIdx && _usoIdx.n===B.bulls.size) return _usoIdx.lista;
+  const lista=[...B.bulls.values()].map(b=>({b, naab:String(b['NAAB Code']||''), nome:String(b['Name']||'').trim(), full:String(b['Full Name']||'').trim(), raca:String(b['Breed']||'').trim().toUpperCase(),
+    s: semAcento([b['Name'],b['Full Name'],b['NAAB Code']].join(' | '))}));
+  _usoIdx={n:B.bulls.size,lista}; return lista;
+}
+function usoBuscar(q, max=40){
+  q=semAcento(q).trim(); if(q.length<2) return [];
+  const ts=q.split(/\s+/).filter(Boolean);
+  const out=[];
+  for(const x of usoIndice()){
+    if(!ts.every(t=>x.s.includes(t))) continue;
+    const nm=semAcento(x.nome), cd=x.naab.toLowerCase();
+    const pr = (cd===q||nm===q) ? 0 : (nm.startsWith(q)||cd.startsWith(q)) ? 1 : 2;
+    out.push([pr,x]);
+  }
+  out.sort((a,b)=>a[0]-b[0] || num(b[1].b['TPI'])-num(a[1].b['TPI']) || 0);
+  return out.slice(0,max).map(a=>a[1]);
+}
+/* Monta o mesmo objeto que a planilha gerava, agora a partir da base embutida. */
+function usoMontar(){
+  const cols=[...new Set([...(BULLSEARCH_EMBED.columns||[]),...B.cols])];
+  const idx={}, traitMap=new Map();
+  cols.forEach(c=>{const tr=traitUsoBull(c); if(tr && !traitMap.has(tr.k)){idx[tr.k]=c;traitMap.set(tr.k,tr);}});
+  const touros=USO_SEL.map(cod=>bullDoNaab(cod)).filter(Boolean).map(b=>{
+    const cod=String(b['NAAB Code']).trim().toUpperCase();
+    const t={naab:cod, nome:nomeBullSearch(cod), nomeCompleto:nomeCompletoBullSearch(cod),
+      raca:racaBullSearch(cod)||racaDoNaab(cod)||'', tpi:num(b['TPI']), nm:num(b['NM$']),
+      prova:String(b['Proof']||'').trim(), sexado:ehAltaSex(cod), v:{}};
+    Object.entries(idx).forEach(([k,c])=>{t.v[k]=num(b[c]);});
+    t.central=centralDoNaab(cod);
+    return t;
+  });
+  USO={touros, arquivo:'Seleção na base BullSearch', medias:null, traits:[...traitMap.values()], aba:'base BullSearch', colunas:traitMap.size, total:cols.length};
+}
+function usoAdicionar(cod){
+  cod=String(cod||'').trim().toUpperCase();
+  if(!cod || USO_SEL.includes(cod) || !bullDoNaab(cod)) return false;
+  USO_SEL.push(cod); return true;
+}
+function usoRemover(cod){ USO_SEL=USO_SEL.filter(c=>c!==cod); }
+function usoAposMudar(){ usoMontar(); montarTabs(false); rUso(); }
+function usoPainelResultados(){
+  const q=$('#uso-busca').value, box=$('#uso-res');
+  const r=usoBuscar(q);
+  if(q.trim().length<2){ box.hidden=true; return; }
+  box.hidden=false;
+  box.innerHTML = r.length ? r.map((x,i)=>{
+      const ja=USO_SEL.includes(x.naab), tpi=num(x.b['TPI']);
+      return `<button type="button" data-n="${esc(x.naab)}" ${ja?'disabled':''}><span class="n">${esc(x.nome||x.full)}</span>`+
+        `<span class="c">${esc(x.naab)} · ${esc(x.raca)}${x.full&&x.full!==x.nome?' · '+esc(x.full):''}</span>`+
+        `<span class="t">${ja?'já escolhido':(tpi!==null?'TPI '+fmt(tpi):'')}</span></button>`;}).join('')
+    : `<div style="padding:10px 12px;font-size:13px;color:var(--ink-3)">Nenhum touro encontrado para "${esc(q)}".</div>`;
+  box.querySelectorAll('button[data-n]').forEach(bt=>bt.onmousedown=e=>{ e.preventDefault(); if(usoAdicionar(bt.dataset.n)){ $('#uso-busca').value=''; box.hidden=true; usoAposMudar(); $('#uso-busca').focus(); }});
+}
 function montarDropUso(){
-  const d = $('#drop-uso'), f = $('#file-uso');
-  if(!d || d.dataset.on) return; d.dataset.on = 1;
-  const carregar = arq => {
-    if(!arq) return;
-    const fr = new FileReader();
-    fr.onload = () => {
-      try{
-        const r = lerPlanilhaUso(new Uint8Array(fr.result), arq.name);
-        USO = {touros:r.touros, arquivo:arq.name, medias:r.medias, traits:r.traits, aba:r.aba, colunas:r.colunas, total:r.total};
-        $('#uso-err').style.display = 'none';
-        montarTabs(false); rUso();
-      }catch(err){ $('#uso-err').textContent = err.message; $('#uso-err').style.display = 'block'; }
-    };
-    fr.readAsArrayBuffer(arq);
+  const q=$('#uso-busca');
+  if(!q || q.dataset.on) return; q.dataset.on=1;
+  q.oninput=usoPainelResultados;
+  q.onfocus=usoPainelResultados;
+  q.onblur=()=>setTimeout(()=>{$('#uso-res').hidden=true;},120);
+  q.onkeydown=e=>{
+    const bts=[...$('#uso-res').querySelectorAll('button[data-n]:not([disabled])')];
+    if(e.key==='Enter'){ e.preventDefault(); if(bts[0]) bts[0].dispatchEvent(new MouseEvent('mousedown',{bubbles:true,cancelable:true})); }
+    if(e.key==='Escape'){ $('#uso-res').hidden=true; }
   };
-  d.onclick = () => f.click();
-  d.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); f.click(); } };
-  d.ondragover = e => { e.preventDefault(); d.classList.add('over'); };
-  d.ondragleave = () => d.classList.remove('over');
-  d.ondrop = e => { e.preventDefault(); d.classList.remove('over'); carregar(e.dataTransfer.files[0]); };
-  f.onchange = e => carregar(e.target.files[0]);
-  $('#uso-swap').onclick = () => { $('#uso-up').classList.remove('compact'); $('#uso-swap').hidden = true; };
+  $('#uso-limpar').onclick=()=>{ USO_SEL=[]; usoAposMudar(); };
+  $('#uso-colar-b').onclick=()=>{ const c=$('#uso-colar'); c.hidden=!c.hidden; if(!c.hidden) $('#uso-colar-t').focus(); };
+  $('#uso-colar-ok').onclick=()=>{
+    const itens=$('#uso-colar-t').value.split(/[\n;,\t]+/).map(s=>s.trim()).filter(Boolean);
+    let ok=0, dup=0; const falhas=[], ambig=[];
+    itens.forEach(it=>{
+      const cod=it.toUpperCase().replace(/\s+/g,'');
+      let alvo = bullDoNaab(cod) ? cod : null;
+      if(!alvo){
+        const r=usoBuscar(it,50), ex=r.filter(x=>semAcento(x.nome)===semAcento(it)||semAcento(x.full)===semAcento(it));
+        const c=ex.length?ex:r;
+        if(c.length===1 || ex.length===1) alvo=(ex.length===1?ex[0]:c[0]).naab;
+        else if(c.length>1){ ambig.push(`${it} (${c.length} touros)`); return; }
+      }
+      if(!alvo){ falhas.push(it); return; }
+      if(usoAdicionar(alvo)) ok++; else dup++;
+    });
+    $('#uso-colar-msg').innerHTML = `${fmt(ok)} adicionado(s)${dup?` · ${fmt(dup)} já estava(m) na seleção`:''}`+
+      (falhas.length?` · <b>não encontrado(s):</b> ${esc(falhas.slice(0,8).join(', '))}${falhas.length>8?'…':''}`:'')+
+      (ambig.length?` · <b>nome ambíguo (use o NAAB ou a busca):</b> ${esc(ambig.slice(0,6).join('; '))}`:'');
+    if(ok){ $('#uso-colar-t').value=''; usoAposMudar(); }
+  };
 }
 
 function rUso(){
   montarDropUso();
+  if(!USO_SEL.length && USO.touros && USO.touros.length) USO_SEL = USO.touros.map(b=>b.naab);
   const T0 = USO.touros || [];
   const elegiveis = T0.filter(b=>racaElegivelAnalise(b.raca || racaDoNaab(b.naab)));
   const exclRaca = T0.length - elegiveis.length;
@@ -4945,16 +5086,21 @@ function rUso(){
   const refCodigos = new Set(Object.keys(CDCB_BULLS).map(x=>CDCB_COD_POR_RACA[x]).filter(Boolean));
   const semRef = elegiveis.filter(b=>!refCodigos.has(racaCanonica(b.raca || racaDoNaab(b.naab)))).length;
   const T = codRaca ? elegiveis.filter(b=>racaCanonica(b.raca || racaDoNaab(b.naab))===codRaca) : [];
-  const Rraca = codRaca ? D.rows.filter(x=>racaCanonica(x.raca)===codRaca) : [];
+  atualizarSelCategoria($('#uso-cat'), ()=>{ USO_CAT=$('#uso-cat').value; rUso(); });
+  if(![...$('#uso-cat').options].some(o=>o.value===USO_CAT)) USO_CAT='all';
+  $('#uso-cat').value = USO_CAT;
+  const catOk = r => USO_CAT==='all' ? true : USO_CAT==='nov' ? ehNovilha(r) : USO_CAT==='vac' ? r.cat.startsWith('Lact') : r.cat===USO_CAT;
+  const Rraca = codRaca ? D.rows.filter(x=>racaCanonica(x.raca)===codRaca && catOk(x)) : [];
   $('#uso-conteudo').hidden = !T.length;
-  $('#uso-up').classList.toggle('compact', !!T.length);
-  $('#uso-swap').hidden = !T0.length;
+  $('#uso-base').textContent = `${fmt(B.bulls.size)} touros na base BullSearch ${BULLSEARCH_EMBED.version||''}`.trim();
+  $('#uso-limpar').hidden = !T0.length;
+  $('#uso-chips').innerHTML = USO_SEL.map(c=>{const b=bullDoNaab(c);return b?`<span class="uso-chip">${esc(nomeBullSearch(c)||c)} <small>${esc(c)}</small><button type="button" data-r="${esc(c)}" aria-label="Remover ${esc(nomeBullSearch(c)||c)}">×</button></span>`:'';}).join('');
+  $('#uso-chips').querySelectorAll('button[data-r]').forEach(bt=>bt.onclick=()=>{usoRemover(bt.dataset.r);usoAposMudar();});
   $('#uso-files').innerHTML = T0.length
-    ? `<span class="pill b">${esc(USO.arquivo)}</span> <span style="font-size:11.5px;color:var(--ink-3)">`+
-      `${fmt(T.length)} touros ${raca?esc(raca):''} em análise · aba "${esc(USO.aba)}" · ${fmt(USO.colunas)} características genéticas disponíveis`+
+    ? `<span style="font-size:11.5px;color:var(--ink-3)">${fmt(T.length)} touros ${raca?esc(raca):''} em análise · ${fmt(USO.colunas)} características disponíveis`+
       `${exclRaca?` · ${fmt(exclRaca)} fora porque a raça oficial BullSearch não é HO/JE`:''}`+
       `${semRef?` · ${fmt(semRef)} touro(s) HO/JE fora desta comparação porque ainda não há referência CDCB de touros para a raça`:''}</span>`
-    : '';
+    : `<span style="font-size:11.5px;color:var(--ink-3)">Escolha ao menos um touro (HO ou JE) para ver a comparação com o rebanho e o CDCB.</span>`;
   if(!T.length){
     const err=$('#uso-err');
     if(err && elegiveis.length){ err.style.display='block'; err.textContent='Não há touros da raça com referência CDCB disponível para esta comparação. Atualmente só são analisadas aqui as raças presentes no arquivo CDCB de touros carregado na plataforma.'; }
@@ -4975,13 +5121,13 @@ function rUso(){
   const mUso = mean(vals_), mReb = mean(vals(Rraca, t.k));
   const ref = raca && D.traits.some(z=>z.k===t.k) ? cdcbRef(t.k, raca, 'touros') : null;
   if(!disp.length){$('#uso-hint').textContent='Nenhuma característica numérica foi encontrada no BullSearch.';return;}
-  $('#uso-hint').innerHTML = `${fmt(T.length)} touros ${esc(raca||'')} na planilha · ${fmt(Rraca.length)} fêmeas ${esc(raca||'')} no rebanho`+
+  $('#uso-hint').innerHTML = `${fmt(T.length)} touros ${esc(raca||'')} escolhidos · ${fmt(Rraca.length)} fêmeas ${esc(raca||'')} ${USO_CAT==='all'?'no rebanho':'em '+esc(rotuloCatUso())}`+
     (ref ? ` · média CDCB de touros ${esc(raca)} (${fmt(ref.n)} animais no arquivo)` : ` · sem referência CDCB de touros para ${esc(t.lab)}`);
 
   const dReb = (mUso!==null && mReb!==null) ? mUso-mReb : null;
   const dCd  = (mUso!==null && ref) ? mUso-ref.media : null;
   $('#uso-kpis').innerHTML = [
-    kpi(`Touros em uso · ${raca||'—'}`, fmt(T.length), `${fmt(T.filter(b=>b.central.alta).length)} da Alta · ${fmt(T.filter(b=>b.sexado).length)} com versão sexada`),
+    kpi(`Touros escolhidos · ${raca||'—'}`, fmt(T.length), `${fmt(T.filter(b=>b.central.alta).length)} da Alta · ${fmt(T.filter(b=>b.sexado).length)} com versão sexada`),
     kpi(`${t.lab} médio dos touros`, uv(mUso,t), vals_.length<T.length?`${fmt(vals_.length)} de ${fmt(T.length)} touros com o dado`:'todos os touros com o dado'),
     kpi('Distância da base do rebanho', dReb===null?'—':uv(dReb,t,false,true), mReb===null?'sem dado no rebanho':`${raca} em ${uv(mReb,t)} · não é ganho projetado`,
         dReb!==null && t.dir && dReb*t.dir>0 ? 'k-green':'k-amber'),
@@ -5002,7 +5148,7 @@ function rUso(){
   const yUsoHi = yUsoVals.length ? Math.max(...yUsoVals) : 1;
   const yUsoRange = Math.max(Math.abs(yUsoHi-yUsoLo), t.d===0 ? 1 : 0.1);
   const yUsoPad = Math.max(yUsoRange*0.10, t.d===0 ? 0.5 : 0.05);
-  chart('c-uso-disp', {type:'scatter', data:{datasets:[{label:`Touros em uso · ${raca}`, __norot:true,
+  chart('c-uso-disp', {type:'scatter', data:{datasets:[{label:`Touros escolhidos · ${raca}`, __norot:true,
       data: ord.map((b,i) => ({x:i+1, y:b.v[t.k], nome:b.nomeCompleto||b.nome||b.naab, naab:b.naab,
                                central:b.central.nome, sexado:b.sexado})),
       backgroundColor: ord.map(b => b.central.alta ? C.alta : C.red),
@@ -5020,18 +5166,14 @@ function rUso(){
               y:{min:yUsoLo-yUsoPad, max:yUsoHi+yUsoPad, grid:{color:C.line}, title:{display:true,text:`${t.lab}${t.u?` (${t.u})`:''}`}, ticks:{callback:v=>fmt(v,t.d)}}}},
     plugins:[{id:'refsUso', afterDatasetsDraw(ch){
       const {ctx, chartArea:a, scales:sc} = ch;
+      const itens = [];
       const linha = (valor, cor, texto) => {
         if(valor===null || valor===undefined || !isFinite(valor)) return;
         const y = sc.y.getPixelForValue(valor);
         if(!isFinite(y) || y<a.top || y>a.bottom) return;
-        ctx.save(); ctx.strokeStyle=cor; ctx.lineWidth=1.6; ctx.setLineDash([6,4]);
-        ctx.beginPath(); ctx.moveTo(a.left,y); ctx.lineTo(a.right,y); ctx.stroke(); ctx.setLineDash([]);
-        ctx.font='700 10px Arial'; const w=ctx.measureText(texto).width+12;
-        ctx.fillStyle='#fff'; ctx.strokeStyle=cor;
-        ctx.beginPath(); ctx.roundRect(a.left+6, y-18, w, 15, 4); ctx.fill(); ctx.stroke();
-        ctx.fillStyle=cor; ctx.textAlign='center'; ctx.fillText(texto, a.left+6+w/2, y-7); ctx.restore();
+        itens.push({y, cor, texto});
       };
-      linha(mReb, C.green, `rebanho ${raca} ${uv(mReb,t)}`);
+      linha(mReb, C.green, `rebanho ${raca}${USO_CAT!=='all'?' · '+rotuloCatUso():''} ${uv(mReb,t)}`);
       if(ref){
         linha(ref.media, '#C89500', `CDCB ${raca} ${uv(ref.media,t)}`);
         if(ref.sd){
@@ -5039,9 +5181,27 @@ function rUso(){
           linha(ref.media-ref.sd, '#C89500', `CDCB −1σ ${uv(ref.media-ref.sd,t)}`);
         }
       }
+      /* Linhas */
+      itens.forEach(it=>{ ctx.save(); ctx.strokeStyle=it.cor; ctx.lineWidth=1.6; ctx.setLineDash([6,4]);
+        ctx.beginPath(); ctx.moveTo(a.left,it.y); ctx.lineTo(a.right,it.y); ctx.stroke(); ctx.restore(); });
+      /* Rótulos: quando duas linhas estão próximas, o rótulo seguinte é deslocado
+         para a direita (e, se preciso, para cima) até não cobrir o anterior. */
+      ctx.font='700 10px Arial';
+      const H=15, caixas=[];
+      itens.sort((p,q)=>q.y-p.y).forEach(it=>{
+        const w=ctx.measureText(it.texto).width+12;
+        let x=a.left+6, ly=it.y-H-3, tent=0;
+        const bate = c => !(x+w+4<c.x || x>c.x+c.w+4 || ly+H+2<c.y || ly>c.y+c.h+2);
+        let c;
+        while((c=caixas.find(bate)) && tent<40){ x=c.x+c.w+8; if(x+w>a.right-4){ x=a.left+6; ly=c.y-H-3; } tent++; }
+        caixas.push({x,y:ly,w,h:H});
+        ctx.save(); ctx.fillStyle='#fff'; ctx.strokeStyle=it.cor; ctx.lineWidth=1.2;
+        ctx.beginPath(); ctx.roundRect(x, ly, w, H, 4); ctx.fill(); ctx.stroke();
+        ctx.fillStyle=it.cor; ctx.textAlign='center'; ctx.fillText(it.texto, x+w/2, ly+H-4); ctx.restore();
+      });
     }}]});
 
-  let h = `<thead><tr><th>Característica</th><th>Touros em uso</th><th>n</th><th>Base do rebanho</th><th>DIF TOUROS X REBANHO</th>`+
+  let h = `<thead><tr><th>Característica</th><th>Touros escolhidos</th><th>n</th><th>Base do rebanho</th><th>DIF TOUROS X REBANHO</th>`+
           `<th>Média CDCB</th><th>DIF TOUROS X CDCB</th></tr></thead><tbody>`;
   let comCdcb = 0;
   disp.forEach(x => {
@@ -5067,26 +5227,9 @@ function rUso(){
     `${semRef?`Há <b>${fmt(semRef)}</b> touro(s) HO/JE de raça ainda sem referência CDCB de touros disponível; eles não entram nesta comparação. `:''}`+
     `${ref&&ref.sd!==null?`As linhas douradas mostram a média e ±1 desvio-padrão do arquivo CDCB de touros ${esc(raca)}.`:''}</div>`;
   $('#uso-comp-note').innerHTML =
-    `<b>Touros em uso</b> é a média simples dos touros ${esc(raca)} da planilha — não é ponderada pelo número de doses, porque a planilha não traz doses. `+
-    `<b>Base do rebanho</b> é a média apenas das fêmeas ${esc(raca)} do recorte atual. `+
+    `<b>Touros escolhidos</b> é a média simples dos touros ${esc(raca)} da sua seleção — não é ponderada pelo número de doses. `+
+    `<b>Base do rebanho</b> é a média das fêmeas ${esc(raca)}${USO_CAT==='all'?' de todo o rebanho':' de <b>'+esc(rotuloCatUso())+'</b>'}. `+
     `<b>${fmt(comCdcb)}</b> das ${fmt(disp.length)} características têm média publicada no <b>arquivo CDCB de touros ${esc(raca)}</b>; as demais aparecem com traço.`;
-
-  /* A aba de médias prontas do export só é mostrada quando toda a planilha
-     elegível pertence à mesma raça selecionada; em planilha multirracial ela
-     seria uma média misturada e não pode ser usada neste comparativo. */
-  const racasElegiveis = new Set(elegiveis.map(b=>racaCanonica(b.raca || racaDoNaab(b.naab))));
-  if(USO.medias && racasElegiveis.size===1 && racasElegiveis.has(codRaca)){
-    $('#uso-avg-card').hidden = false;
-    const M = USO.medias;
-    $('#t-uso-avg').innerHTML =
-      `<thead><tr><th>Característica</th><th>${esc(M.colA)}</th><th>${esc(M.colB)}</th><th>Diferença</th></tr></thead><tbody>`+
-      M.linhas.map(l => {
-        const d = (l.a!==null && l.b!==null) ? l.a-l.b : null, dd = decUsoMedia(l.trait);
-        return `<tr><td>${esc(l.trait)}</td><td><b>${fmt(l.a,dd)}</b></td><td>${l.b===null?'—':fmt(l.b,dd)}</td>`+
-               `<td>${d===null?'—':sgn(d,dd)}</td></tr>`;
-      }).join('')+`</tbody>`;
-    ordenavel('t-uso-avg');
-  } else $('#uso-avg-card').hidden = true;
 
   if(USO_COLS === null) USO_COLS = new Set(['Leite','Gordura','Proteína','Vida Produtiva','Taxa de Gravidez da Filha']);
   montarSeletorColunas('uso-cols', USO_COLS, rUso, [...disp.filter(x=>!['Meu Índice','bull:TPI','bull:NM'].includes(x.k)),{k:'TPI',lab:'TPI'},{k:'NM$',lab:'NM$'}], 'Características');
@@ -5497,7 +5640,7 @@ function rTouros(){
   const conf = B.filter(b=>b.conflito.length);
   const paiBranco = R.filter(r=>!r.codTouro && !r.paiInvalido).length, paiInval = R.filter(r=>r.paiInvalido);
   const avisoPai = (paiBranco+paiInval.length)
-    ? `<div class="ins info" style="margin-bottom:8px"><span class="tag">Pai sem NAAB</span><b>${fmt(paiBranco+paiInval.length)}</b> fêmea(s) ficam fora desta aba e de Centrais e Touros em uso: <b>${fmt(paiBranco)}</b> com o código do pai em branco e <b>${fmt(paiInval.length)}</b> com código que não é NAAB${paiInval.length?` (ex.: ${[...new Set(paiInval.map(r=>r.paiInvalido))].slice(0,4).join(', ')})`:''}. Elas continuam nas médias do rebanho.</div>` : '';
+    ? `<div class="ins info" style="margin-bottom:8px"><span class="tag">Pai sem NAAB</span><b>${fmt(paiBranco+paiInval.length)}</b> fêmea(s) ficam fora desta aba e de Centrais e Escolha de touros: <b>${fmt(paiBranco)}</b> com o código do pai em branco e <b>${fmt(paiInval.length)}</b> com código que não é NAAB${paiInval.length?` (ex.: ${[...new Set(paiInval.map(r=>r.paiInvalido))].slice(0,4).join(', ')})`:''}. Elas continuam nas médias do rebanho.</div>` : '';
   $('#bull-aviso').innerHTML = avisoPai + (conf.length
     ? `<div class="ins warn"><span class="tag">Nome divergente na origem</span>`+
       `<b>${fmt(conf.length)}</b> registro(s) trazem o mesmo código NAAB com nomes de touro diferentes: `+
@@ -6088,6 +6231,9 @@ function paintSel(){
   R.forEach((r,i)=>{ r.__rank = i+1; r.__sel = i<k; });
   const base = mean(vals(R,cr.k)), sel = mean(vals(S,cr.k));
   const dif = sel - base, sdp = sd(vals(R,cr.k));
+  const baseLab = pool==='all' ? 'do rebanho' : pool==='nov' ? 'de todas as novilhas' : `de ${pool}`;
+  const mediaHerd = mean(vals(D.rows.filter(r=>r[cr.k]!==null), cr.k));
+  const difHerd = (pool!=='all' && mediaHerd!==null) ? sel - mediaHerd : null;
   const i = sdp ? Math.abs(dif)/sdp : 0;
   ULT_SEL = {R, S, cr, cr2, cr3, pool};
   document.querySelectorAll('#seg-sel button').forEach(b=>b.classList.toggle('on', +b.dataset.p===selPct));
@@ -6111,14 +6257,18 @@ function paintSel(){
 
   $('#sel-kpis').innerHTML = [
     kpi('Fêmeas selecionadas', `${fmt(k)} / ${fmt(R.length)}`, `${selLado==='top'?'melhores':'piores'} ${selPct}% · corte em ${cr.lab} ${asc?'≤':'≥'} ${uv(S[S.length-1][cr.k],cr)}`,''),
-    kpi('Diferencial', uv(dif,cr,false,true), `média do grupo escolhido − média do rebanho, em ${cr.lab}`, dif*(cr.dir||1)>0?'k-green':'k-red'),
-    kpi('Intensidade (i)', fmt(i,2)+' σ', `σ do grupo = ${fmt(sdp,cr.d)} ${cr.u}`,''),
+    kpi('Diferencial', uv(dif,cr,false,true), `média dos selecionados (${uv(sel,cr)}) − média ${baseLab} (${uv(base,cr)})`, dif*(cr.dir||1)>0?'k-green':'k-red'),
+    ...(difHerd!==null ? [kpi('Diferencial vs rebanho todo', uv(difHerd,cr,false,true), `média dos selecionados (${uv(sel,cr)}) − média de todas as fêmeas (${uv(mediaHerd,cr)})`, difHerd*(cr.dir||1)>0?'k-green':'k-red')] : []),
+    kpi('Intensidade (i)', fmt(i,2)+' σ', `σ ${baseLab} = ${fmt(sdp,cr.d)} ${cr.u}`,''),
   ].join('');
+  $('#sel-kpis').className = 'grid ' + (difHerd!==null ? 'g4' : 'g3');
 
   $('#sel-animal-hint').textContent=`${fmt(S.length)} fêmeas · ${selPct}% ${ladoLab} por ${cr.lab} · clique nos títulos para reordenar`;
   $('#sel-aviso').innerHTML =
     `<div class="ins info"><span class="tag">Definição</span>`+
-    `<b>Diferencial</b>: distância entre a média do grupo escolhido e a média do rebanho.</div>`;
+    `<b>Diferencial</b>: média dos selecionados menos a média do grupo em que a seleção foi feita (${baseLab}). `+
+    (difHerd!==null ? `<b>Diferencial vs rebanho todo</b> compara os mesmos selecionados com a média de todas as fêmeas. ` : '')+
+    `O <b>valor de corte</b> (tabela acima) é o limite do grupo: a média dos selecionados é sempre maior que ele.</div>`;
   document.querySelector('#sel-animals-card h3').textContent =
     selLado==='top' ? 'Animais dentro do corte selecionado' : 'Animais na cauda inferior do rebanho';
   /* Quando o ranqueamento JÁ É o Plano Genético, a coluna saía duas vezes —
@@ -6135,7 +6285,7 @@ function paintSel(){
      só o que a MÃE transmite. A filha nasce da média dos dois pais, então o
      resultado real depende do touro usado — que esta aba não conhece. Chamar
      de "ganho" prometia um número que a aba não tem como entregar. */
-  let h = `<thead><tr><th>Característica</th><th>Grupo todo</th><th>${selPct}% ${ladoLab}</th><th>Diferencial</th></tr></thead><tbody>`;
+  let h = `<thead><tr><th>Característica</th><th>Média ${baseLab}</th><th>${selPct}% ${ladoLab}</th><th>Diferencial</th></tr></thead><tbody>`;
   cols.forEach(c=>{
     const a = mean(vals(R,c.k)), b = mean(vals(S,c.k));
     if(a===null||b===null) return;
@@ -7000,6 +7150,238 @@ function acasExportarLinhas(){
 function acasExportar(){ abrirModalAcasExport('xlsx'); }
 
 /* ---------- render da aba ---------- */
+/* =========================================================================
+   PROGRESSO GENÉTICO
+   A filha herda, em média, metade da mãe e metade do pai: a progênie esperada
+   é a MÉDIA ARITMÉTICA SIMPLES entre a matriz (valor do relatório do rebanho)
+   e o touro recomendado (valor do BullSearch), característica a característica.
+   Não há Plano Genético aqui: ele é do cliente e não existe no BullSearch.
+   ========================================================================= */
+let PROG = {opt:0, cat:'all', stoc:'all', k:null, imin:null};
+const PROG_COR = ['#17305C','#4A7FD4','#A9BFE6'], PROG_MAE = '#8B93A3', PROG_FILHA = '#C77F00';
+function progBullMap(){
+  const cols=[...new Set([...(BULLSEARCH_EMBED.columns||[]),...B.cols])], m={};
+  cols.forEach(c=>{ const tr=traitUsoBull(c); if(tr && !(tr.k in m)) m[tr.k]=c; });
+  return m;
+}
+function progTraits(){
+  const bm=progBullMap();
+  return D.traits.filter(t=>t.k!=='Meu Índice' && t.g!=='lin' && t.g!=='plano' && bm[t.k]);
+}
+function progTouro(naab){
+  const c=String(naab||'').trim().toUpperCase();
+  return bullDoNaab(c) || bullDoNaab(naabAltaEquiv(c)) || (/^011[A-Z]{2}\d/.test(c) ? bullDoNaab('511'+c.slice(3)) : null) || null;
+}
+function progCalc(){
+  const TP=progTraits(), bm=progBullMap();
+  const byId=new Map(); D.rows.forEach(r=>{ if(!byId.has(r.id)) byId.set(r.id,r); });
+  const cache=new Map();
+  const info=naab=>{
+    const c=String(naab||'').trim().toUpperCase();
+    if(cache.has(c)) return cache.get(c);
+    const b=progTouro(c); let o=null;
+    if(b){ const v={}; TP.forEach(t=>{ v[t.k]=num(b[bm[t.k]]); }); o={v, nome:nomeBullSearch(b['NAAB Code'])||c, naab:c}; }
+    cache.set(c,o); return o;
+  };
+  const linhas=[], faltaTouro=new Map(); let semRebanho=0;
+  AC.map.forEach(a=>{
+    const r=byId.get(a.id); if(!r){ semRebanho++; return; }
+    const opts=[0,1,2].map(i=>{
+      const rec=a.recs[i]; if(!rec) return null;
+      const s=info(rec.naab);
+      if(!s){ faltaTouro.set(rec.naab,(faltaTouro.get(rec.naab)||0)+1); return {rec,s:null,prog:null}; }
+      const prog={}; TP.forEach(t=>{ const d=r[t.k], sv=s.v[t.k]; prog[t.k]=(d!==null&&d!==undefined&&sv!==null)?(d+sv)/2:null; });
+      return {rec, s, prog};
+    });
+    linhas.push({a,r,cat:r.cat,stoc:a.stoc,opts});
+  });
+  return {TP,linhas,semRebanho,faltaTouro,total:AC.map.size};
+}
+function progFiltrar(P){
+  const catOk = r => PROG.cat==='all' ? true : PROG.cat==='nov' ? ehNovilha(r) : PROG.cat==='vac' ? r.cat.startsWith('Lact') : r.cat===PROG.cat;
+  const idOk = r => {
+    if(PROG.imin===null) return true;
+    return r.idade!==null && r.idade!==undefined && r.idade>=PROG.imin;
+  };
+  return P.linhas.filter(l=>catOk(l.r) && idOk(l.r) && (PROG.stoc==='all' || l.stoc===PROG.stoc));
+}
+/* valores da característica t: mães e progênie da opção i, nas mesmas fêmeas */
+function progTrait(L,i,t){
+  const S=L.filter(l=>l.opts[i] && l.opts[i].prog && l.opts[i].prog[t.k]!==null && l.r[t.k]!==null && l.r[t.k]!==undefined);
+  const dam=S.map(l=>l.r[t.k]), pr=S.map(l=>l.opts[i].prog[t.k]);
+  const fav=S.length&&t.dir ? S.filter(l=>(l.opts[i].prog[t.k]-l.r[t.k])*t.dir>0).length/S.length*100 : null;
+  return {S, n:S.length, dam:mean(dam), prog:mean(pr), fav};
+}
+const progDifCls = (d,t) => d===null||!t.dir||Math.abs(d)<1e-9 ? '' : (d*t.dir>0?'pos':'neg');
+function progAjustaTopo(){
+  const bar=document.querySelector('#v-prog .prog-filtros'); if(!bar) return;
+  const hh=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hh'))||86;
+  const g=document.getElementById('gfilter');
+  const gs=(g && getComputedStyle(g).position==='sticky' && g.offsetHeight) ? g.offsetHeight+4 : 0;
+  bar.style.top=(hh+gs)+'px';
+}
+window.addEventListener('resize',()=>{ try{progAjustaTopo();}catch(e){} });
+function rProg(){
+  const vazio=!AC.map || !AC.map.size;
+  $('#prog-vazio').style.display=vazio?'':'none'; $('#prog-conteudo').style.display=vazio?'none':'';
+  if(vazio) return;
+  const P=progCalc();
+  if(!P.TP.length){ $('#prog-conteudo').style.display='none'; $('#prog-vazio').style.display=''; $('#prog-vazio .card-b').textContent='Nenhuma característica do relatório do rebanho existe também na base BullSearch.'; return; }
+  const L0=progFiltrar(P);
+  const nOp=[0,1,2].filter(i=>P.linhas.some(l=>l.opts[i])).length || 1;
+  if(PROG.opt>=nOp) PROG.opt=0;
+  const i=PROG.opt, cor=PROG_COR[i];
+  if(!PROG.k || !P.TP.some(t=>t.k===PROG.k)) PROG.k=(P.TP.find(t=>t.k==='Leite')||P.TP[0]).k;
+  const t=P.TP.find(x=>x.k===PROG.k);
+
+  /* filtros */
+  $('#prog-opt').innerHTML=[...Array(nOp).keys()].map(k=>`<button type="button" data-o="${k}" class="${k===i?'on':''}">Opção ${k+1}</button>`).join('');
+  $('#prog-opt').querySelectorAll('button').forEach(b=>b.onclick=()=>{ PROG.opt=+b.dataset.o; rProg(); });
+  $('#prog-trait').innerHTML=P.TP.map(x=>`<option value="${esc(x.k)}">${esc(x.lab)}</option>`).join('');
+  $('#prog-trait').value=PROG.k; $('#prog-trait').onchange=()=>{ PROG.k=$('#prog-trait').value; rProg(); };
+  const catsArq=CATS.filter(c=>P.linhas.some(l=>l.cat===c));
+  const temNov=P.linhas.some(l=>ehNovilha(l.r)), temVac=P.linhas.some(l=>l.cat.startsWith('Lact'));
+  $('#prog-cat').innerHTML=`<option value="all">Todas as categorias</option>`+catsArq.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')+
+    (temNov&&catsArq.filter(c=>ehNovilha({cat:c})).length>1?`<option value="nov">Todas as novilhas</option>`:'')+(temVac&&catsArq.filter(c=>c.startsWith('Lact')).length>1?`<option value="vac">Todas as vacas</option>`:'');
+  if(![...$('#prog-cat').options].some(o=>o.value===PROG.cat)) PROG.cat='all';
+  $('#prog-cat').value=PROG.cat; $('#prog-cat').onchange=()=>{ PROG.cat=$('#prog-cat').value; rProg(); };
+  const stocs=[...new Set(P.linhas.map(l=>l.stoc).filter(Boolean))].sort();
+  $('#prog-stoc').innerHTML=`<option value="all">Todos</option>`+stocs.map(s=>`<option value="${esc(s)}">${esc(s==='SX'?'Sexado (SX)':s==='CN'?'Convencional (CN)':s)}</option>`).join('');
+  if(PROG.stoc!=='all' && !stocs.includes(PROG.stoc)) PROG.stoc='all';
+  $('#prog-stoc').value=PROG.stoc; $('#prog-stoc').onchange=()=>{ PROG.stoc=$('#prog-stoc').value; rProg(); };
+  const lerIdade=el=>{ const v=el.value.trim(); return v===''||!isFinite(+v)?null:Math.max(0,+v); };
+  const ia=$('#prog-imin');
+  ia.value=PROG.imin===null?'':PROG.imin;
+  ia.onchange=()=>{ PROG.imin=lerIdade(ia); rProg(); };
+  $('#prog-idade-x').hidden=(PROG.imin===null);
+  $('#prog-idade-x').onclick=()=>{ PROG.imin=null; rProg(); };
+  const idades=P.linhas.map(l=>l.r.idade).filter(v=>v!==null&&v!==undefined);
+  const foraIdade=P.linhas.length-P.linhas.filter(l=>progFiltrar({linhas:[l]}).length).length;
+  $('#prog-hint').textContent=`${fmt(L0.length)} de ${fmt(P.linhas.length)} fêmeas no filtro`+(idades.length?` · idades de ${fmt(Math.min(...idades),0)} a ${fmt(Math.max(...idades),0)} meses`:'');
+
+  /* KPIs da característica escolhida */
+  const R=progTrait(L0,i,t);
+  const gan=R.n?R.prog-R.dam:null;
+  const nFav=P.TP.filter(x=>x.dir).map(x=>{const r=progTrait(L0,i,x); return r.n?(r.prog-r.dam)*x.dir:null;}).filter(v=>v!==null);
+  $('#prog-kpis').innerHTML=[
+    kpi(`${t.lab} · progênie da opção ${i+1}`, R.n?uv(R.prog,t):'—', R.n?`mães: ${uv(R.dam,t)} · diferença <b>${uv(gan,t,false,true)}</b>`:'sem dados para calcular', gan!==null&&t.dir&&gan*t.dir>0?'k-green':'k-amber'),
+    kpi('Filhas melhores que a mãe', R.fav!==null?fmt(R.fav,0)+'%':'—', `em ${esc(t.lab)}, nos acasalamentos da opção ${i+1}`, ''),
+    kpi('Características que melhoram', nFav.length?`${fmt(nFav.filter(v=>v>0).length)} de ${fmt(nFav.length)}`:'—', `progênie melhor que as mães, na média, na opção ${i+1}`, '')
+  ].join('');
+
+  const av=[];
+  if(P.faltaTouro.size){
+    const tot=[...P.faltaTouro.values()].reduce((a,b)=>a+b,0);
+    av.push(['info','Touros fora da base BullSearch',`<b>${fmt(P.faltaTouro.size)}</b> touro(s) recomendados não estão na base BullSearch embutida (${fmt(tot)} recomendações): ${esc([...P.faltaTouro.keys()].slice(0,6).join(', '))}${P.faltaTouro.size>6?'…':''}. Esses acasalamentos ficam fora dos cálculos.`]);
+  }
+  if(P.semRebanho) av.push(['info','Animais sem cadastro no rebanho',`<b>${fmt(P.semRebanho)}</b> animal(is) do acasalamento não existem no relatório de índice do rebanho e foram ignorados.`]);
+  if(foraIdade) av.push(['info','Filtro de idade',`${fmt(P.linhas.length-L0.length)} fêmea(s) ficam fora dos cálculos pelos filtros atuais (idade, categoria ou sêmen).`]);
+  $('#prog-aviso').innerHTML=av.map(([c,tt,m])=>`<div class="ins ${c}" style="margin-bottom:8px"><span class="tag">${tt}</span>${m}</div>`).join('');
+
+  progResumo(P,L0,nOp,t,i);
+  progDist(P,L0,nOp,i,t);
+  progAnimais(P,L0,nOp,t);
+  $('#prog-metodo').innerHTML=`<span class="tag">Como é calculado</span>`+
+    `Progênie = <b>média aritmética simples</b> entre a matriz (relatório do rebanho${FONTE==='G'?', base genômica':FONTE==='PA'?', média de parentesco':''}) e o touro recomendado (BullSearch ${esc(BULLSEARCH_EMBED.version||'')}), característica a característica. `+
+    `O filtro de idade usa a idade da fêmea em meses na data de abertura do relatório. `+
+    `É a expectativa média da geração: não considera heterose, variação de Mendel nem a taxa real de uso de cada touro.`;
+  progAjustaTopo();
+  autoExports($('#v-prog'));
+}
+function progResumo(P,L0,nOp,t,sel){
+  const ops=[...Array(nOp).keys()];
+  const ok=l=>ops.every(k=>l.opts[k] && l.opts[k].prog);
+  const comum=L0.filter(ok);
+  const R=ops.map(k=>progTrait(comum,k,t));
+  const ganho=R.map(r=>r.n?r.prog-r.dam:null);
+  let h='';
+  if(comum.length<5){
+    h=`<div class="ins warn"><span class="tag">Poucos acasalamentos</span>Só ${fmt(comum.length)} fêmea(s) têm as ${nOp} opções calculáveis neste filtro.</div>`;
+  }else{
+    h=`<div class="grid ${nOp>=3?'g3':nOp===2?'g2':''}" style="margin-bottom:12px">`+ops.map(k=>
+      `<div class="kpi ${k===0?'k-green':''}"><div class="lab">Opção ${k+1} · ${esc(t.lab)}</div><div class="val">${uv(R[k].prog,t)}</div>`+
+      `<div class="foot">progênie média · diferença sobre as mães <b>${uv(ganho[k],t,false,true)}</b> (mães: ${uv(R[0].dam,t)})</div></div>`).join('')+`</div>`;
+    if(comum.length<L0.filter(l=>l.opts[0]&&l.opts[0].prog).length) h+=`<p class="share-note">Comparação nas ${fmt(comum.length)} fêmeas em que as ${nOp} opções têm touro na base (de ${fmt(L0.filter(l=>l.opts[0]&&l.opts[0].prog).length)} com a opção 1).</p>`;
+  }
+  $('#prog-resumo').innerHTML=h;
+  $('#prog-resumo-hint').textContent=`${t.lab} · as ${nOp} opções do acasalamento, nas mesmas fêmeas`;
+
+  const sdH=tt=>sd(vals(D.rows,tt.k));
+  const pct=(a,b,tt)=>(a===null||b===null||Math.abs(a)<0.25*(sdH(tt)||0)||Math.abs(a)<1e-9)?null:(b-a)/Math.abs(a)*100;
+  const linhasT=[];
+  let tb=`<thead><tr><th>Característica</th><th>Mães</th>${ops.map(k=>`<th>Opção ${k+1}</th>`).join('')}${ops.map(k=>`<th>Ganho % Op. ${k+1}</th>`).join('')}<th style="min-width:190px">Em desvios-padrão do rebanho · opção ${sel+1}</th></tr></thead><tbody>`;
+  const dz=[];
+  P.TP.forEach(tt=>{ const Rr=ops.map(k=>progTrait(comum,k,tt)); if(!Rr[0].n) return; const z=tt.dir?(Rr[sel].prog-Rr[0].dam)/(sdH(tt)||1)*tt.dir:null; dz.push(z); linhasT.push({tt,Rr,z}); });
+  const mx=Math.max(0.05,...dz.filter(v=>v!==null).map(Math.abs));
+  linhasT.forEach(({tt,Rr,z})=>{
+    const w=z===null?0:Math.abs(z)/mx*50;
+    const bar=z===null?'—':`<div class="prog-bar"><i class="${z>=0?'up':'dn'}" style="${z>=0?'left:50%':`left:${50-w}%`};width:${w}%"></i><b></b></div>`;
+    tb+=`<tr><td>${esc(tt.lab)}</td><td>${uv(Rr[0].dam,tt)}</td>${Rr.map(r=>`<td>${uv(r.prog,tt)}</td>`).join('')}`+
+      Rr.map(r=>{const pc=pct(r.dam,r.prog,tt); return `<td class="${progDifCls(r.prog-r.dam,tt)}">${pc===null?'—':sgn(pc,0)+'%'}</td>`;}).join('')+`<td>${bar}</td></tr>`;
+  });
+  const inb=ops.map(k=>mean(comum.map(l=>l.opts[k].rec.inb).filter(v=>v!==null&&v!==undefined)));
+  tb+=`<tr><td>Consanguinidade da filha (%)</td><td>—</td>${inb.map(v=>`<td>${fmt(v,2)}</td>`).join('')}${ops.map(()=>'<td>—</td>').join('')}<td>—</td></tr>`;
+  $('#prog-op-note').innerHTML=`<b>Ganho %</b> = (progênie − mães) ÷ |mães|. Quando a média das mães é muito próxima de zero (menos de 0,25 desvio-padrão), o percentual não é confiável e aparece como “—”: use a barra. `+
+    `As barras estão em desvios-padrão da própria fazenda, já considerando o sentido (menos é melhor em Células Somáticas, Natimorto e Facilidade de Parto); sem sentido definido, ficam sem barra. `+
+    `Só entram características que existem no relatório do rebanho e na base BullSearch.`;
+  $('#t-prog-op').innerHTML=tb+`</tbody>`;
+}
+/* Mesmo gráfico da aba Curvas (uma curva por geração do rebanho), mais a curva da progênie.
+   A progênie é comparada com as gerações — não com as mães. */
+function progDist(P,L0,nOp,i,t){
+  const cats=CATS_TEMPO();
+  const {series}=densidade(t.k,cats);
+  const bonsG=series.filter(g=>g.ok);
+  const prog=[i].map(k=>{
+    const v=L0.filter(l=>l.opts[k]&&l.opts[k].prog&&l.opts[k].prog[t.k]!==null&&l.opts[k].prog[t.k]!==undefined).map(l=>l.opts[k].prog[t.k]);
+    return {k, cat:`Progênie · opção ${k+1}`, n:v.length, mu:mean(v), s:sd(v), ok:v.length>=N_MIN_CURVA&&sd(v)>0};
+  });
+  const todos=[...bonsG,...prog.filter(g=>g.ok)];
+  $('#prog-dist-hint').textContent=`${t.lab} · curvas do rebanho por geração e da progênie esperada`;
+  if(!todos.length){ if(CHARTS['c-prog-dist']) CHARTS['c-prog-dist'].destroy(); $('#t-prog-dist').innerHTML=''; return; }
+  const lo=Math.min(...todos.map(g=>g.mu-3.5*g.s)), hi=Math.max(...todos.map(g=>g.mu+3.5*g.s));
+  const x=Array.from({length:180},(_,j)=>lo+j*(hi-lo)/179);
+  const RAMPA=['#AFC3E2','#8FA9D4','#6E8CC4','#4A7FD4','#295097','#17305C'];
+  const cc=RAMPA.slice(-Math.max(2,Math.min(6,bonsG.length)));
+  const dsG=bonsG.map((g,j)=>({label:`${g.cat} (n=${fmt(g.n)})`,data:x.map(v=>({x:v,y:dnorm(v,g.mu,g.s)})),borderColor:cc[j%cc.length],backgroundColor:'transparent',fill:false,tension:.34,pointRadius:0,borderWidth:3,__g:g,__norot:true}));
+  const dsP=prog.filter(g=>g.ok).map(g=>({label:`${g.cat} (n=${fmt(g.n)})`,data:x.map(v=>({x:v,y:dnorm(v,g.mu,g.s)})),
+    borderColor:PROG_FILHA,backgroundColor:'transparent',fill:false,tension:.34,pointRadius:0,
+    borderWidth:4,__g:g,__norot:true}));
+  const datasets=[...dsG,...dsP];
+  const ymax=Math.max(...datasets.flatMap(d=>d.data.map(p=>p.y)));
+  chart('c-prog-dist',{type:'line',data:{datasets},
+    options:{parsing:false,interaction:{mode:'nearest',axis:'x',intersect:false},maintainAspectRatio:false,layout:{padding:{top:24,right:10,bottom:6,left:8}},
+      plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true,pointStyle:'circle'}},
+        tooltip:{callbacks:{title:c=>`${t.lab}: ${fmt(c[0].parsed.x,t.d)} ${t.u}`,label:c=>c.dataset.label}}},
+      scales:{x:{type:'linear',grid:{color:C.line},title:{display:true,text:`${t.lab} (${t.u||'PTA'})`},ticks:{callback:v=>fmt(v,t.d),maxTicksLimit:9}},y:{display:false,min:0,max:ymax*1.16}}},
+    plugins:[{id:'overlayMeansProg',afterDatasetsDraw(ch){const {ctx,scales,chartArea:a}=ch;ctx.save();
+      datasets.forEach((ds,idx)=>{ if(!ch.isDatasetVisible(idx)) return; const g=ds.__g, col=ds.borderColor;
+        if(ds.borderDash && ds.borderDash.length) return;   // rótulo só nas curvas cheias
+        const px=scales.x.getPixelForValue(g.mu), py=scales.y.getPixelForValue(dnorm(g.mu,g.mu,g.s));
+        ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(px,a.bottom);ctx.lineTo(px,py);ctx.stroke();ctx.setLineDash([]);
+        ctx.fillStyle=col;ctx.beginPath();ctx.arc(px,py,4.5,0,Math.PI*2);ctx.fill();
+        const txt=`${g.cat.replace('Progênie · ','Progênie ')}: média ${fmt(g.mu,t.d)}`;ctx.font='700 10px Arial';ctx.textAlign='center';const w=ctx.measureText(txt).width+12;
+        const boxY=Math.max(a.top+4, py-26-(idx%2?14:0));
+        ctx.fillStyle='#fff';ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.beginPath();ctx.roundRect(px-w/2,boxY,w,17,4);ctx.fill();ctx.stroke();ctx.fillStyle=col;ctx.fillText(txt,px,boxY+11);
+      });ctx.restore();}}]});
+  let h=`<thead><tr><th>Grupo</th><th>Animais (n)</th><th>Média</th><th>Desvio-padrão</th><th>Faixa esperada de 95%</th></tr></thead><tbody>`;
+  [...series,...prog].forEach(g=>{
+    const faixa=(g.n>1&&g.s>0)?`${nivel(g.mu-2*g.s,t)} a ${uv(g.mu+2*g.s,t)}`:'—';
+    h+=`<tr><td>${esc(g.cat)}</td><td>${fmt(g.n)}</td><td>${uv(g.mu,t)}</td><td>${g.n>1?uv(g.s,t,true):'—'}</td><td>${faixa}</td></tr>`;
+  });
+  $('#t-prog-dist').innerHTML=h+'</tbody>';
+}
+function progAnimais(P,L0,nOp,t){
+  const LIM=1000, ops=[...Array(nOp).keys()];
+  const g=l=>l.opts[0]&&l.opts[0].prog&&l.opts[0].prog[t.k]!==null&&l.r[t.k]!==null&&l.r[t.k]!==undefined ? (l.opts[0].prog[t.k]-l.r[t.k])*(t.dir||1) : -1e12;
+  const S=L0.slice().sort((a,b)=>g(b)-g(a)).slice(0,LIM);
+  $('#prog-animais-hint').textContent=`${fmt(S.length)}${L0.length>LIM?` de ${fmt(L0.length)}`:''} fêmeas · ordenadas pelo ganho da opção 1 em ${t.lab}`;
+  let h=`<thead><tr><th>Animal</th><th>Idade (meses)</th><th>Categoria</th><th>Sêmen</th><th>${esc(t.lab)} da mãe</th>`+ops.map(k=>`<th>Touro ${k+1}</th><th>Progênie ${k+1}</th>`).join('')+`</tr></thead><tbody>`;
+  S.forEach(l=>{ h+=`<tr><td>${esc(l.a.id)}</td><td>${l.r.idade!==null&&l.r.idade!==undefined?fmt(l.r.idade,0):'—'}</td><td>${esc(l.cat||'')}</td><td>${esc(l.stoc)}</td><td>${uv(l.r[t.k],t)}</td>`+
+    ops.map(k=>{const o=l.opts[k]; const v=o&&o.prog?o.prog[t.k]:null; return o?`<td>${esc(o.rec.nome||o.rec.naab)}</td><td class="${v!==null&&l.r[t.k]!=null?progDifCls(v-l.r[t.k],t):''}">${uv(v,t)}</td>`:'<td>—</td><td>—</td>';}).join('')+`</tr>`; });
+  $('#t-prog-animais').innerHTML=h+`</tbody>`; ordenavel('t-prog-animais');
+}
+
 function rAcas(){
   const admin = APP_CONFIG.mode !== 'client';
   $('#acas-up').hidden = !admin;
@@ -7076,7 +7458,7 @@ async function acasLer(lista){
   if(!fs.length){ err.style.display='block'; err.innerHTML = `<span class="tag">Arquivo ignorado</span>Envie os arquivos <b>.csv</b> de acasalamento exportados do BlueLink.`; return; }
   try{
     const arqs = await Promise.all(fs.map(lerArquivo));
-    ingestAcas(arqs);
+    ingestAcas(arqs); painted.prog=false;
     ACQ=''; ACSEL=null; ACLIM=200;
     rAcas();
     if(document.body.classList.contains('acas-standalone')) montarTabsAcasalamento(); else montarTabs();
