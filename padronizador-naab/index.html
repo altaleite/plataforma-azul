@@ -206,7 +206,7 @@ html,body{margin:0;min-height:100%;background:#f4f7fb}body{color:#172b4d;font:14
   rd.onload=e=>{try{
    const csv=/\.csv$/i.test(file.name);let best=null;
    if(csv){
-    let data;try{data=new TextDecoder('utf-8',{fatal:true}).decode(e.target.result);}catch(e){data=new TextDecoder('windows-1252').decode(e.target.result);}
+    let data;const buf=e.target.result;try{data=new TextDecoder('utf-8',{fatal:true}).decode(buf);}catch(decodeErr){data=new TextDecoder('windows-1252').decode(buf);}
     const parsedCsv=Papa.parse(data,{skipEmptyLines:false});
     if(parsedCsv.errors?.some(e=>e.code==='MissingQuotes'))throw new Error('CSV com aspas abertas/inválidas. Corrija o arquivo recebido.');
     let aoa=parsedCsv.data||[];const found=findHeader(aoa);if(found.synthetic){found.sourceHeaderIndex=-1;aoa=[found.inferred,...aoa];found.headerIndex=0;}best={name:file.name,aoa,...found};
