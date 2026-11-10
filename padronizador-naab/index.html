@@ -361,7 +361,16 @@ function validYMD(y,m,d){const v=new Date(y,m-1,d);return y>=1900&&y<=2100&&v.ge
    if(!validYMD(y,m,d))return invalid;
    return {value:formattedDate(y,m,d),error:'',warning};
  }
- function cleanTrait(v){if(v===null||v===undefined||v==='')return '';if(typeof v==='number'&&Number.isFinite(v))return v;const s=text(v);if(/^[+-]?\d+(?:[.,]\d+)?$/.test(s))return Number(s.replace(',','.'));return s;}
+ function cleanTrait(v,key){
+  if(v===null||v===undefined||v==='')return '';
+  let n=null;
+  if(typeof v==='number'&&Number.isFinite(v))n=v;
+  else{const s=text(v);if(/^[+-]?\d+(?:[.,]\d+)?$/.test(s))n=Number(s.replace(',','.'));else return key==='trait_Beef'?s:'';}
+  /* Blue Link só aceita 1 a 9 nas características (0 é rejeitado) — fora disso, deixa em branco. Beef aceita também 0 como vazio. */
+  if(n===0)return '';
+  if(key==='trait_Beef')return n;
+  return (n>=1&&n<=9)?Math.round(n):'';
+ }
  function makePreparedRow(r,sourceRow,cm,dateOrders){
    const val=k=>cm[k]!==undefined?r[cm[k]]:null;
    const animal=text(val('animal')).replace(/\s+GL$/i,'').trim();const parents={SireId:{name:text(val('sireName')),code:text(val('sireCode'))},MaternalGrandsireId:{name:text(val('mgsName')),code:text(val('mgsCode'))},MaternalGreatGrandsireId:{name:text(val('mggsName')),code:text(val('mggsCode'))}};
@@ -376,29 +385,31 @@ function validYMD(y,m,d){const v=new Date(y,m-1,d);return y>=1900&&y<=2100&&v.ge
    const cat=norm(text(val('heifer')));
  let category=['vaca','cow','cows','lactante','gestante','vaca seca','c','pregnant'].includes(cat)?'Cow':['novilha','novilhas','heifer','heifers','em crescimento','h','n'].includes(cat)?'Heifer':'';
  if(!category&&lactKnown&&lactRaw!==''&&Number.isFinite(lactNum))category=lactNum>0?'Cow':'Heifer';put('HeiferCowIndicator',category);
-   for(const trait of traits){const v=val(traitKeys[trait]);put(trait,cleanTrait(v));}
+   for(const trait of traits){const v=val(traitKeys[trait]);put(trait,cleanTrait(v,traitKeys[trait]));}
    return {row:sourceRow,animal,birth:dates.birth.value,parents,matches:{},out,raw:r,dates,unidentified:!animal};
  }
  function auditRows(cm){
   const errors=[],warnings=[],seen=new Set(),keys=['animal','barn','reg','lact','birth','fresh','heifer',...traits.map(t=>traitKeys[t])];
-  let protectedCells=0,traitCells=0;const srcKey={animal:'AnimalId',barn:'BarnName',reg:'RegistrationNumber',lact:'LactationNumber',birth:'BirthDate',fresh:'FreshDate',heifer:'HeiferCowIndicator'};
+  let protectedCells=0,traitCells=0,removedTraits=0;const srcKey={animal:'AnimalId',barn:'BarnName',reg:'RegistrationNumber',lact:'LactationNumber',birth:'BirthDate',fresh:'FreshDate',heifer:'HeiferCowIndicator'};
   for(const row of result){
    const o=row.out;if(o.length!==targetHeaders.length)errors.push(`Linha ${row.row}: quantidade incorreta de colunas`);
    if(seen.has(row.row))errors.push(`Linha ${row.row}: duplicada`);seen.add(row.row);
    for(const key of keys){
     if(cm[key]===undefined)continue;const input=row.raw[cm[key]];
     if(input===null||input===undefined||text(input)==='')continue;
+    if(key.startsWith('trait_')&&cleanTrait(input,key)===''){removedTraits++;continue;}
     const target=srcKey[key]||key.replace(/^trait_/,'');const ix=targetHeaders.indexOf(target);
     protectedCells++;if(key.startsWith('trait_'))traitCells++;
     const value=o[ix];
     if(value===null||value===undefined||text(value)===''){errors.push(`Linha ${row.row}: ${target} estava preenchido e ficou vazio`);continue;}
-    if(key.startsWith('trait_')&&text(cleanTrait(input))!==text(value))errors.push(`Linha ${row.row}: ${target} foi alterado`);
+    if(key.startsWith('trait_')&&text(cleanTrait(input,key))!==text(value))errors.push(`Linha ${row.row}: ${target} foi alterado`);
     if(key==='birth'||key==='fresh'){
      const d=row.dates[key];if(d.error)errors.push(d.error);if(d.warning)warnings.push(d.warning);
      if(!/^\d{2}\/\d{2}\/\d{4}$/.test(text(value)))errors.push(`Linha ${row.row}: ${target} não está em DD/MM/AAAA`);
     }
    }
   }
+  if(removedTraits)warnings.push(`${removedTraits.toLocaleString('pt-BR')} valores de conformação 0 ou fora de 1–9 foram deixados em branco (o Blue Link rejeita 0).`);
   const expected=parsed.aoa.slice(parsed.headerIndex+1).filter(r=>r&&r.some(v=>text(v)!=='')&&!reportFooter(text(r[lastColumnMap?.animal]))&&norm(text(r[lastColumnMap?.animal]))!==norm(rawHeaders[lastColumnMap?.animal])).length;
   if(expected!==result.length)errors.push(`Esperados ${expected} registros, mas Animals contém ${result.length}`);
   let reachedNoId=false;for(const r of result){if(r.unidentified)reachedNoId=true;else if(reachedNoId){errors.push('Animais sem identificação não estão no final de Animals');break;}}
@@ -570,7 +581,7 @@ function validYMD(y,m,d){const v=new Date(y,m-1,d);return y>=1900&&y<=2100&&v.ge
   try{
    const outRows=result.map(x=>x.out),format=$('#nt-format').value;
    if(format==='csv' || format==='csvcomma'){
-    const csv=Papa.unparse({fields:targetHeaders,data:outRows},{delimiter:format==='csv'?';':',',newline:'\r\n',quotes:true});
+    const csv=Papa.unparse({fields:targetHeaders,data:outRows},{delimiter:format==='csv'?';':',',newline:'\r\n',quotes:false});
     setProgress(4,1,1,`CSV com ${outRows.length} animais pronto para download`);await yieldUI();
     saveBlob(new Blob(['\ufeff',csv],{type:'text/csv;charset=utf-8'}),fname+'.csv');
    }else{
@@ -578,6 +589,8 @@ function validYMD(y,m,d){const v=new Date(y,m-1,d);return y>=1900&&y<=2100&&v.ge
     const animals=XLSX.utils.aoa_to_sheet([targetHeaders,...outRows]);
     // Dates are exported as deliberate PT-BR text, not Excel date cells that change with the user's regional settings.
     for(const col of ['BirthDate','FreshDate']){const ci=targetHeaders.indexOf(col);for(let i=1;i<=outRows.length;i++){const address=XLSX.utils.encode_cell({r:i,c:ci});if(animals[address]){animals[address].t='s';animals[address].v=text(outRows[i-1][ci]);delete animals[address].z;}}}
+    /* Célula vazia não pode existir: o Blue Link lê célula com texto vazio como 0. */
+    for(const addr of Object.keys(animals)){if(addr[0]==='!')continue;const c=animals[addr];if(c&&(c.v===''||c.v===null||c.v===undefined))delete animals[addr];}
     animals['!cols']=targetHeaders.map(t=>({wch:['BirthDate','FreshDate'].includes(t)?16:Math.min(29,Math.max(12,t.length+3))}));
     XLSX.utils.book_append_sheet(wb,animals,'Animals');
     const review=[['Linha origem','AnimalId','Campo','Nome/código recebido','Código confirmado','Motivo','Status'],...result.flatMap(x=>Object.entries(x.matches).filter(([,m])=>m.status==='review').map(([field,m])=>[x.row,x.animal,field,x.parents[field].name||x.parents[field].code,m.code,m.reason,'Conferir']))];
