@@ -1919,6 +1919,9 @@ const GRP = {plano:'Plano Genético', prod:'Produção', eficiencia:'Eficiência
    existe no arquivo. E a ordem passou a ser sempre da geração mais velha para a
    mais nova, em TODA a plataforma (tabelas, sparklines, curvas). */
 const CATS = ['Lact 3+','Lact 2','Lact 1','Novilha >12','Bezerras 0-12'];
+/* Ordem de exibição ao ordenar por categoria: da mais nova para a mais velha. */
+const CAT_ORDEM = ['Bezerras 0-12','Novilha >12','Lact 1','Lact 2','Lact 3+'];
+const catRank = c => { const i = CAT_ORDEM.indexOf(String(c||'').trim()); return i<0 ? 99 : i; };
 const CATS_TEMPO = () => CATS.slice();
 const ehNovilha = r => r.cat==='Bezerras 0-12' || r.cat.startsWith('Novilha');
 
@@ -2874,6 +2877,7 @@ function ordenavel(id){
           const n = +m[3].replace(/\./g,'').replace(',','.');
           if(isFinite(n)) return neg ? -n : n;
         }
+        if(CAT_ORDEM.includes(bruto)) return catRank(bruto);
         return bruto.toLowerCase();
       };
       linhas.sort((a,b)=>{
@@ -6816,7 +6820,7 @@ function acasLinhasOperacionais(){
   return [...AC.map.values()].map(a => ({a, r:AC.byId.get(a.id), tipo:acasTipo(a)}))
     .filter(x => (ACTIPO === 'all' || x.tipo === ACTIPO) && (ACCAT === 'all' || (x.r && x.r.cat === ACCAT)))
     .sort((x,y) => {
-      const cat = String(x.r?.cat||'').localeCompare(String(y.r?.cat||''), 'pt-BR');
+      const cat = catRank(x.r?.cat) - catRank(y.r?.cat) || String(x.r?.cat||'').localeCompare(String(y.r?.cat||''), 'pt-BR');
       return cat || String(x.a.id).localeCompare(String(y.a.id), 'pt-BR', {numeric:true});
     });
 }
@@ -7319,6 +7323,120 @@ function rProg(){
     `É a expectativa média da geração: não considera heterose, variação de Mendel nem a taxa real de uso de cada touro.`;
   progAjustaTopo();
   autoExports($('#v-prog'));
+  progImgArmar();
+}
+
+/* --- Progresso genético: tabela de ganho -> imagem PNG com a logo da Alta ---------------------
+   A imagem é desenhada a partir dos valores que já estão na tabela da tela (#t-prog-op), em tamanho
+   fixo: sem barra de rolagem e sem cortar linhas. A logo da Alta entra sempre. A caixa
+   "Somente opção 1" deixa na imagem só Mães, Opção 1 e o Ganho % da opção 1. */
+window.PROG_IMG1 = window.PROG_IMG1 || false;
+function progImgArmar(){
+  const tb=document.getElementById('t-prog-op'); if(!tb) return;
+  const card=tb.closest('.card'); const h=card&&card.querySelector(':scope > .card-h'); if(!h) return;
+  let box=h.querySelector('.acts'); if(!box){ box=document.createElement('span'); box.className='acts'; h.appendChild(box); }
+  if(!box.querySelector('[data-exp="prog-img"]')){
+    box.insertAdjacentHTML('beforeend',
+      `<label class="act" id="prog-img-so1-lab" title="Na imagem, deixa só as mães, a opção 1 e o ganho % da opção 1" style="cursor:pointer"><input type="checkbox" id="prog-img-so1" style="margin:0 4px 0 0"> Somente opção 1</label>`+
+      `<button type="button" class="act" data-exp="prog-img" onclick="progImagem()" title="Baixar esta tabela como imagem PNG, com a logo da Alta">${ICO.img} Imagem</button>`);
+    box.querySelector('#prog-img-so1').onchange=e=>{ window.PROG_IMG1=e.target.checked; };
+  }
+  const cb=box.querySelector('#prog-img-so1'); if(cb) cb.checked=!!window.PROG_IMG1;
+  const nOp=[...tb.querySelectorAll('thead th')].filter(th=>/^Opção \d/.test(th.textContent.trim())).length;
+  const lab=box.querySelector('#prog-img-so1-lab'); if(lab) lab.hidden=nOp<=1;
+}
+async function progImagem(){
+  const tb=document.getElementById('t-prog-op'); if(!tb||!tb.rows.length) return;
+  const heads=[...tb.querySelectorAll('thead th')].map(th=>th.textContent.replace(/\s+/g,' ').trim());
+  const rows=[...tb.querySelectorAll('tbody tr')].map(tr=>[...tr.children].map(td=>{
+    const i=td.querySelector('.prog-bar i');
+    return {txt:td.textContent.replace(/\s+/g,' ').trim(), cor:getComputedStyle(td).color, peso:getComputedStyle(td).fontWeight,
+            bar:td.querySelector('.prog-bar')?(i?{left:parseFloat(i.style.left)||50,w:parseFloat(i.style.width)||0,up:i.classList.contains('up')}:{left:50,w:0,up:true}):null};
+  }));
+  const nOp=heads.filter(x=>/^Opção \d/.test(x)).length;
+  const so1=!!window.PROG_IMG1 && nOp>1;
+  const iBar=heads.length-1, selBar=parseInt((heads[iBar].match(/opção (\d)/i)||[])[1])||1;
+  let keep=heads.map((_,i)=>i);
+  if(so1){
+    const iOp1=heads.findIndex(x=>x==='Opção 1'), iG1=heads.findIndex(x=>/^Ganho % Op\. 1$/.test(x));
+    keep=[0,1,iOp1,iG1].filter(i=>i>=0);
+    if(selBar===1) keep.push(iBar);   /* a barra é da opção escolhida na tela; só entra se for a 1 */
+  }
+  const kind=i=>i===0?'nome':(i===iBar?'barra':(/^Ganho/.test(heads[i])?'ganho':'num'));
+  const wCol=i=>({nome:300,num:so1?160:140,ganho:so1?170:150,barra:350})[kind(i)];
+  const colsW=keep.map(wCol), tabW=colsW.reduce((a,b)=>a+b,0);
+  const M=56, W=Math.max(1200,tabW+2*M), S=2;
+  const rowH=44, headH=58, bandH=176, infoH=142, footH=144;
+  const H=bandH+infoH+headH+rows.length*rowH+footH;
+
+  const loadImg=src=>new Promise(res=>{ if(!src) return res(null); const im=new Image(); im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src; });
+  const logoBranca=await loadImg((document.querySelector('#hdr .hbar > img')||{}).src);
+  const logoAzul=await loadImg((document.getElementById('logo-alta-azul')||{}).src);
+
+  const cv=document.createElement('canvas'); cv.width=W*S; cv.height=H*S;
+  const ctx=cv.getContext('2d'); ctx.scale(S,S);
+  const PROF='#17305C', AZUL='#28549A', CINZA='#5B6577', LINHA='#DDE5F2', CLARO='#F4F7FC';
+  const txt=(s,x,y,tam,cor,peso='400',al='left',max=0)=>{ ctx.fillStyle=cor; ctx.textAlign=al; ctx.textBaseline='alphabetic'; let t=tam; ctx.font=`${peso} ${t}px Arial, Helvetica, sans-serif`; if(max){ while(ctx.measureText(s).width>max&&t>9){ t--; ctx.font=`${peso} ${t}px Arial, Helvetica, sans-serif`; } } ctx.fillText(s,x,y); };
+  const arred=(x,y,w,hh,r,fill)=>{ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+hh,r); ctx.arcTo(x+w,y+hh,x,y+hh,r); ctx.arcTo(x,y+hh,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); ctx.fillStyle=fill; ctx.fill(); };
+  ctx.fillStyle='#FFFFFF'; ctx.fillRect(0,0,W,H);
+
+  /* faixa do topo com a logo da Alta */
+  const g=ctx.createLinearGradient(0,0,W,0); g.addColorStop(0,'#15315D'); g.addColorStop(.55,'#28549A'); g.addColorStop(1,'#4C80C6');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,bandH); ctx.fillStyle='#6EA0EB'; ctx.fillRect(0,bandH,W,5);
+  if(logoBranca){ const lh=64, lw=lh*logoBranca.naturalWidth/logoBranca.naturalHeight; ctx.drawImage(logoBranca,M,(bandH-lh)/2,lw,lh); }
+  else txt('ALTA',M,bandH/2+14,44,'#FFFFFF','700');
+  txt('PLATAFORMA AZUL  ·  PROGRESSO GENÉTICO',W-M,66,15,'#C9DBF7','700','right');
+  txt('Ganho sobre as mães',W-M,112,38,'#FFFFFF','700','right');
+  txt(so1?'Somente opção 1':'Mães × opções do acasalamento',W-M,144,17,'#D6E4F8','400','right');
+
+  /* informações do rebanho e dos filtros */
+  const farm=(typeof META!=='undefined'&&META.farm)?META.farm:'', owner=(typeof META!=='undefined'&&META.owner)?META.owner:'';
+  let y=bandH+46;
+  txt(farm||'Fazenda não informada',M,y,24,PROF,'700','left',W-2*M);
+  if(owner) txt(owner,M,y+28,15,CINZA,'400','left',W-2*M);
+  const sel=id=>{const e=document.getElementById(id); return e&&e.selectedOptions&&e.selectedOptions[0]?e.selectedOptions[0].textContent.trim():'';};
+  const imin=(document.getElementById('prog-imin')||{}).value;
+  const filtros=[`Característica de referência: ${sel('prog-trait')}`,`Categoria: ${sel('prog-cat')}`,`Sêmen: ${sel('prog-stoc')}`].concat(imin?[`Idade mínima: ${imin} meses`]:[]).filter(x=>!/: $/.test(x));
+  const hint=(document.getElementById('prog-hint')||{}).textContent||'';
+  const nota=((document.querySelector('#prog-resumo .share-note')||{}).textContent||'').trim();
+  txt([hint].filter(Boolean).join(''),M,bandH+infoH-40,13,CINZA,'400','left',W-2*M);
+  txt(nota,M,bandH+infoH-18,13,CINZA,'400','left',W-2*M);
+  if(filtros.length) txt(filtros.slice(1).join('  ·  '),W-M,y,13,CINZA,'400','right',W*0.5);
+
+  /* tabela */
+  const x0=(W-tabW)/2, ty=bandH+infoH;
+  ctx.fillStyle='#173461'; ctx.fillRect(x0,ty,tabW,headH);
+  let cx=x0;
+  keep.forEach((i,k)=>{ const w=colsW[k]; const rot=heads[i].toUpperCase().replace('EM DESVIOS-PADRÃO DO REBANHO · OPÇÃO','EM DESVIOS-PADRÃO · OPÇÃO'); txt(rot,cx+w/2,ty+headH/2+5,12.5,'#FFFFFF','700','center',w-14); cx+=w; });
+  rows.forEach((r,ri)=>{
+    const yy=ty+headH+ri*rowH;
+    ctx.fillStyle=ri%2?CLARO:'#FFFFFF'; ctx.fillRect(x0,yy,tabW,rowH);
+    ctx.fillStyle=LINHA; ctx.fillRect(x0,yy+rowH-1,tabW,1);
+    let xx=x0;
+    keep.forEach((i,k)=>{
+      const w=colsW[k], c=r[i]||{txt:'',cor:PROF,peso:'400',bar:null}, kd=kind(i);
+      if(kd==='barra'){
+        if(c.bar){ const bw=w-56, bx=xx+28, by=yy+rowH/2-6; arred(bx,by,bw,12,3,'#E7EEF9');
+          const left=bx+bw*c.bar.left/100, ww=bw*c.bar.w/100; if(ww>0){ ctx.fillStyle=c.bar.up?'#4A7FD4':'#B33A2E'; ctx.fillRect(left,by+2,Math.max(ww,1),8); }
+          ctx.fillStyle='#8B93A3'; ctx.fillRect(bx+bw/2-.5,by-3,1,18); }
+        else txt('—',xx+w/2,yy+rowH/2+5,15,'#8B93A3','400','center');
+      } else if(kd==='nome'){ txt(c.txt,xx+w/2,yy+rowH/2+5,15,PROF,'500','center',w-20); }
+      else if(kd==='ganho'){ txt(c.txt,xx+w/2,yy+rowH/2+5,15,c.txt==='—'?'#8B93A3':(c.cor||PROF),c.txt==='—'?'400':'700','center',w-14); }
+      else { txt(c.txt,xx+w/2,yy+rowH/2+5,15,PROF,'400','center',w-14); }
+      xx+=w;
+    });
+  });
+  /* rodapé */
+  const fy=ty+headH+rows.length*rowH+30;
+  ctx.fillStyle=LINHA; ctx.fillRect(M,fy-14,W-2*M,1);
+  txt('Ganho % = (progênie − mães) ÷ |mães|. “—” quando a média das mães é próxima de zero (percentual não confiável): use a barra.',M,fy+8,12,CINZA,'400','left',W-2*M);
+  if(rows.length&&kind(keep[keep.length-1])==='barra') txt('Barras em desvios-padrão da própria fazenda, já considerando o sentido de cada característica (menos é melhor em CCS, natimorto e facilidade de parto).',M,fy+28,12,CINZA,'400','left',W-2*M);
+  if(logoAzul){ const lh=34, lw=lh*logoAzul.naturalWidth/logoAzul.naturalHeight; ctx.drawImage(logoAzul,M,fy+44,lw,lh); }
+  txt('PLATAFORMA AZUL  ·  ALTA GENETICS BRASIL',W-M,fy+58,12,PROF,'700','right');
+  txt(`Gerado em ${new Date().toLocaleDateString('pt-BR')}`,W-M,fy+76,12,CINZA,'400','right');
+
+  const nome=nomeArq('progresso genetico ganho')+(so1?'_opcao-1':'')+'.png';
+  cv.toBlob(b=>{ if(!b) return; const u=URL.createObjectURL(b); baixar(u,nome); setTimeout(()=>URL.revokeObjectURL(u),4000); },'image/png');
 }
 function progResumo(P,L0,nOp,t,sel){
   const ops=[...Array(nOp).keys()];
@@ -7459,7 +7577,7 @@ function rAcas(){
     document.querySelectorAll('#acas-seg-tipo button').forEach(x => x.classList.toggle('on', x.dataset.t === ACTIPO));
     acasTabela();
   };
-  const cats = CATS.filter(c => [...AC.map.keys()].some(id => AC.byId.get(id)?.cat === c));
+  const cats = CAT_ORDEM.filter(c => [...AC.map.keys()].some(id => AC.byId.get(id)?.cat === c));
   $('#acas-sel-cat').innerHTML = `<option value="all">Todas</option>` + cats.map(c => `<option value="${esc(c)}" ${ACCAT===c?'selected':''}>${esc(c)}</option>`).join('');
   $('#acas-sel-cat').onchange = e => {
     ACCAT = e.target.value; ACLIM = 200;
