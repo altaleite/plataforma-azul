@@ -122,25 +122,27 @@ html,body{margin:0;min-height:100%;background:#f4f7fb}body{color:#172b4d;font:14
 <script id="naab-tool-script">
 (function(){
  const $=s=>document.querySelector(s);
- const targetHeaders=['AnimalId','BarnName','RegistrationNumber','LactationNumber','BirthDate','FreshDate','SireId','MaternalGrandsireId','MaternalGreatGrandsireId','HeiferCowIndicator','Stature','Strength','DairyForm','RumpAngle','ThurlWidth','RearLegsSideView','RearLegsRearView','FootAngle','FeetLegsScore','UdderDepth','UdderTexture','MedianSuspensory','ForeUdderAttachment','RearUdderHeight','RearUdderWidth','FrontTeatPlacement','RearTeatPlacement'];
+ const targetHeaders=['AnimalId','BarnName','RegistrationNumber','LactationNumber','BirthDate','FreshDate','SireId','MaternalGrandsireId','MaternalGreatGrandsireId','HeiferCowIndicator','Beef','Stature','Strength','BodyDepth','Angularity','RumpAngle','ThurlWidth','RearLegSideView','RearLegRearView','FootAngle','ForeUdderAttach','RearUdderHeight','RearUdderWidth','UdderCleft','UdderDepth','ForeTeatPlacement','RearTeatPlacement','TeatLength'];
  const traitAliases={
+ Beef:['beef','corte'],
  Stature:['stature','estatura'], Strength:['strength','forca','força','fortaleza'],
- DairyForm:['dairyform','dairy form','forma leiteira','caracter leiteiro','caráter leiteiro'],
+ BodyDepth:['bodydepth','body depth','profundidade corporal','profundidade do corpo'],
+ Angularity:['angularity','angulosidade','dairyform','dairy form','forma leiteira','caracter leiteiro','caráter leiteiro'],
  RumpAngle:['rumpangle','rump angle','angulo da garupa','ângulo da garupa'],
  ThurlWidth:['thurlwidth','thurl width','largura de garupa','largura da garupa','largura de isquios','largura de ísquios'],
- RearLegsSideView:['rearlegssideview','rear legs side view','pernas vista lateral','pernas posteriores vista lateral'],
- RearLegsRearView:['rearlegsrearview','rear legs rear view','pernas vista posterior','pernas posteriores vista posterior'],
+ RearLegSideView:['rearlegsideview','rear leg side view','rearlegssideview','rear legs side view','pernas vista lateral','pernas posteriores vista lateral'],
+ RearLegRearView:['rearlegrearview','rear leg rear view','rearlegsrearview','rear legs rear view','pernas vista posterior','pernas posteriores vista posterior'],
  FootAngle:['footangle','foot angle','angulo de casco','ângulo de casco'],
- FeetLegsScore:['feetlegsscore','feet legs score','aprumos','patas e pernas'],
- UdderDepth:['udderdepth','udder depth','profundidade de ubre','profundidade de úbere'],
- UdderTexture:['uddertexture','udder texture','textura de ubre','textura de úbere'],
- MedianSuspensory:['mediansuspensory','median suspensory','ligamento central','ligamento medio','ligamento médio'],
- ForeUdderAttachment:['foreudderattachment','fore udder attachment','insercao ubre anterior','inserção úbere anterior'],
+ ForeUdderAttach:['foreudderattach','fore udder attach','foreudderattachment','fore udder attachment','insercao ubre anterior','inserção úbere anterior'],
  RearUdderHeight:['rearudderheight','rear udder height','altura ubre posterior','altura úbere posterior'],
  RearUdderWidth:['rearudderwidth','rear udder width','largura ubre posterior','largura úbere posterior'],
- FrontTeatPlacement:['frontteatplacement','front teat placement','colocacao tetos anteriores','colocação tetos anteriores'],
- RearTeatPlacement:['rearteatplacement','rear teat placement','colocacao tetos posteriores','colocação tetos posteriores']
+ UdderCleft:['uddercleft','udder cleft','mediansuspensory','median suspensory','ligamento central','ligamento medio','ligamento médio','ligamento suspensor'],
+ UdderDepth:['udderdepth','udder depth','profundidade de ubre','profundidade de úbere'],
+ ForeTeatPlacement:['foreteatplacement','fore teat placement','frontteatplacement','front teat placement','colocacao tetos anteriores','colocação tetos anteriores'],
+ RearTeatPlacement:['rearteatplacement','rear teat placement','colocacao tetos posteriores','colocação tetos posteriores'],
+ TeatLength:['teatlength','teat length','comprimento de teto','comprimento dos tetos','comprimento de tetos']
  };
+
  const traits=targetHeaders.slice(10);
  const traitKeys=Object.fromEntries(traits.map(k=>[k,'trait_'+k]));
  const centerList=['Alta Genetics','ABS Global','Select Sires','GENEX','STgenetics','CRV','Semex','URUS','Cogent','Accelerated Genetics','Alta Genetics Canada'];
