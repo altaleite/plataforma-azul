@@ -1537,7 +1537,8 @@ body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
   <div class="grid g3" id="evol-kpis" style="margin-bottom:16px"></div>
   <div class="card"><div class="card-h"><h3>Tendência genética por ano de nascimento</h3></div>
     <div class="card-b"><div class="chart-wrap"><canvas id="c-evol"></canvas></div>
-      <div class="evol-ctl"><span class="evol-ctl-l">Rótulos no gráfico</span><span class="seg"><button type="button" id="btn-evol-pct" class="on" aria-pressed="true">Variação % vs. ano anterior</button></span></div></div></div>
+      <div class="evol-ctl"><span class="evol-ctl-l">Rótulos no gráfico</span><span class="seg"><button type="button" id="btn-evol-pct" class="on" aria-pressed="true" title="Mostra, em cima de cada bolinha, quanto o ano variou em relação ao ano anterior">Variação % vs. ano anterior</button></span></div>
+      <p class="share-note" id="evol-pct-note" style="margin:8px 0 0">Os rótulos comparam cada ano com o ano anterior. Quando o ano anterior está perto de zero ou tem sinal oposto, a porcentagem não tem sentido (ex.: ir de −10 para +50); nesses anos o rótulo mostra a variação absoluta, em itálico (<i>Δ</i>), na unidade da característica.</p></div></div>
   <div class="card" style="margin-top:16px"><div class="card-h"><h3>Dispersão do rebanho × referência CDCB</h3>
     <span class="hint" id="evol2-hint"></span></div>
     <div class="card-b"><div class="chart-wrap" style="height:390px"><canvas id="c-evol2"></canvas></div>
@@ -1855,7 +1856,7 @@ body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
 /* --- Direções de seleção. Rafael: revise antes de publicar. dir 1=maior melhor,
    -1=menor melhor, 0=intermediário/neutro (não colorir). ------------------ */
 /* Data da última versão publicada. Atualize junto com cada nova entrega do index. */
-const APP_ATUALIZADO = '13/11/2026';
+const APP_ATUALIZADO = '17/11/2026';
 const TRAITS = [
   {k:'Meu Índice',                     lab:'Plano Genético',            u:'US$', pre:1, d:0, dir:1, g:'plano'},
   {k:'Leite',                          lab:'Leite',                     u:'libras', d:0, dir:1, g:'prod'},
@@ -4417,9 +4418,21 @@ function paintEvol(){
       if(i===0 || p.m===null || all[i-1].m===null || !meta.data[i]) return;
       /* % só faz sentido quando a base é um número "de verdade": sem cruzar o zero e sem
          base minúscula perto de zero (valores genéticos são centrados em zero). */
-      const prev = all[i-1].m; if(!isFinite(prev) || prev*p.m<=0 || Math.abs(prev)<0.05*escalaPct) return;
-      const pc = (p.m-prev)/Math.abs(prev)*100; if(!isFinite(pc)) return;
-      const ab = Math.abs(pc), txt = ab>999 ? (pc>0?'>+999%':'<−999%') : (pc>0?'+':(pc<0?'−':''))+fmt(ab, ab>=10?0:1)+'%';
+      const prev = all[i-1].m; if(!isFinite(prev) || !isFinite(p.m)) return;
+      /* Quando o % não tem sentido (ano anterior perto de zero ou de sinal oposto), o rótulo
+         NÃO some em silêncio: mostra a variação absoluta, em itálico, com Δ na frente. */
+      const pctOk = !(prev*p.m<=0 || Math.abs(prev)<0.05*escalaPct);
+      const delta = p.m-prev;
+      let txt, pc;
+      if(pctOk){
+        pc = delta/Math.abs(prev)*100; if(!isFinite(pc)) return;
+        const ab = Math.abs(pc); txt = ab>999 ? (pc>0?'>+999%':'<−999%') : (pc>0?'+':(pc<0?'−':''))+fmt(ab, ab>=10?0:1)+'%';
+        ctx.font='700 10px Arial';
+      }else{
+        pc = delta; if(delta===0) return;
+        txt = 'Δ '+(delta>0?'+':'−')+fmt(Math.abs(delta), t.d||0);
+        ctx.font='italic 700 10px Arial';
+      }
       const el = meta.data[i], y = el.y - (el.options?.radius ?? 5) - 5;
       const bom = !t.dir ? null : (pc*t.dir>0);
       ctx.lineWidth=3; ctx.strokeStyle='#fff'; ctx.strokeText(txt, el.x, y);
