@@ -1856,7 +1856,7 @@ body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
 /* --- Direções de seleção. Rafael: revise antes de publicar. dir 1=maior melhor,
    -1=menor melhor, 0=intermediário/neutro (não colorir). ------------------ */
 /* Data da última versão publicada. Atualize junto com cada nova entrega do index. */
-const APP_ATUALIZADO = '17/11/2026';
+const APP_ATUALIZADO = '18/11/2026';
 const TRAITS = [
   {k:'Meu Índice',                     lab:'Plano Genético',            u:'US$', pre:1, d:0, dir:1, g:'plano'},
   {k:'Leite',                          lab:'Leite',                     u:'libras', d:0, dir:1, g:'prod'},
@@ -1979,6 +1979,32 @@ function uv(v, t, abs, dif){
   const n = abs ? fmt(Math.abs(v), d) : ((t.semMais && !dif) ? fmt(v, d) : sgn(v, d));
   return t.u ? `${n} ${t.u}` : n;
 }
+/* Gráficos "média da característica" (Centrais e Touros). O eixo vertical do Chart.js se ajusta sozinho
+   ao menor intervalo dos dados: duas centrais com Vida Produtiva 2,41 e 2,43 ocupavam a altura toda
+   do gráfico e pareciam muito diferentes. Aqui o eixo cobre, no mínimo, 1,5 desvio-padrão do rebanho
+   NESTA característica (cada uma na sua unidade), e sempre inclui a média do rebanho. */
+const MERITO_SIGMAS = 1.5;
+function eixoMerito(ys, media, dp){
+  const v = [...ys, media].filter(x=>x!==null && x!==undefined && isFinite(x));
+  if(!v.length) return {};
+  let lo=Math.min(...v), hi=Math.max(...v);
+  const pad=(hi-lo)*0.12; lo-=pad; hi+=pad;
+  const minSpan = dp>0 ? MERITO_SIGMAS*dp : 0, meio=(lo+hi)/2;
+  if(hi-lo<minSpan){ lo=meio-minSpan/2; hi=meio+minSpan/2; }
+  return {suggestedMin:lo, suggestedMax:hi};
+}
+/* Rótulos do eixo com as casas que o passo realmente pede (sem repetir "2,4" em todas as linhas). */
+function tickMerito(t){
+  return (v,i,ticks)=>{
+    const st = ticks && ticks.length>1 ? Math.abs(ticks[1].value-ticks[0].value) : 0;
+    let dig = t.d||0;
+    for(let d=0; d<=4 && st>0; d++){ if(Math.abs(st*10**d-Math.round(st*10**d))<1e-6){ dig=Math.max(dig,d); break; } if(d===4) dig=Math.max(dig,4); }
+    return fmt(v,dig);
+  };
+}
+/* Diferença que arredondaria para "+0,0" ganha mais casas para não parecer zero exato. */
+const uvDif = (v,t) => uv(v, (v!==null && v!==undefined && isFinite(v) && v!==0 && Math.abs(v)<0.5*10**-(t.d||0)) ? {...t,d:(t.d||0)+2} : t, false, true);
+const notaEscalaMerito = (t,dp) => dp>0 ? ` O eixo vertical cobre pelo menos ${fmt(MERITO_SIGMAS,1)} desvio-padrão do rebanho em ${esc(t.lab)} (${fmt(MERITO_SIGMAS*dp, Math.max(t.d||0, MERITO_SIGMAS*dp<1?2:1))}${t.u?' '+esc(t.u):''}), então diferenças pequenas aparecem pequenas.` : '';
 /* Plano Genético avulso (fora de um trait). */
 const RS = (v, d=0, abs) => v===null||!isFinite(v) ? '—'
   : `${abs?'':(v<0?'−':'+')}US$\u00a0${fmt(Math.abs(v), d)}`;
@@ -5611,10 +5637,10 @@ function rTouros(){
     borderWidth:quadB.map(b=>destaque.has(b.key)?2.6:1.1)}]},
     options:{maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{
       title:c=>c[0].raw.nome, label:c=>[`${fmt(c.raw.x)} filhas · n ${fmt(c.raw.nMetric)} na característica`,
-        `${metric.lab} médio: ${uv(c.raw.y,metric)}`, `vs rebanho: ${uv(c.raw.y-mediaMetric,metric)}`,
+        `${metric.lab} médio: ${uv(c.raw.y,metric)}`, `vs rebanho: ${uvDif(c.raw.y-mediaMetric,metric)}`,
         `${c.raw.cod}${c.raw.central?' · '+c.raw.central:''}`]}}},
       scales:{x:{grid:{color:C.line}, title:{display:true,text:'nº de filhas no rebanho (uso)'}, beginAtZero:true},
-              y:{grid:{color:C.line}, ticks:{callback:v=>fmt(v,metric.d)}, title:{display:true,text:`${metric.lab} médio das filhas${metric.u?` (${metric.u})`:''}`}}}},
+              y:{grid:{color:C.line}, ...eixoMerito(quadB.map(b=>b.merit), mediaMetric, sd(vals(R,metric.k))), ticks:{callback:tickMerito(metric)}, title:{display:true,text:`${metric.lab} médio das filhas${metric.u?` (${metric.u})`:''}`}}}},
     plugins:[{id:'ref', afterDraw(ch){ const {ctx,chartArea:a,scales:sc}=ch; const y=sc.y.getPixelForValue(mediaMetric);
       if(!isFinite(y)) return;
       ctx.save(); ctx.strokeStyle=C.ink3; ctx.setLineDash([5,4]); ctx.beginPath(); ctx.moveTo(a.left,y); ctx.lineTo(a.right,y); ctx.stroke();
@@ -5625,8 +5651,8 @@ function rTouros(){
     ? `<span class="qi qi-tit"><span class="qc">Os 5 touros cujas filhas têm a melhor média de ${esc(metric.lab)} — destacados em azul no gráfico</span></span>`
       + topB.map((b,k)=>`<span class="qi"><span class="qn" style="background:${C.alta}">${k+1}</span>`+
         `<span><b>${esc(b.nome)}</b> <span class="qc">· ${fmt(b.n)} filhas · ${esc(metric.lab)} médio ${uv(b.merit,metric)} · `+
-        `${uv(b.merit-mediaMetric,metric)} vs rebanho${b.central?` · ${esc(b.central)}`:''}</span></span></span>`).join('')
-      + `<span class="qi" style="width:100%"><span class="qc">Critério: melhor média de ${esc(metric.lab)} entre as filhas presentes neste rebanho, com no mínimo <b>${MIN_FILHAS}</b> filhas com o dado.${BULL_QUAD_PCT<100?` Gráfico com os <b>${fmt(quadB.length)}</b> de ${fmt(quadTodos.length)} touros (${BULL_QUAD_PCT}%) que mais deixaram filhas.`:''}</span></span>`
+        `${uvDif(b.merit-mediaMetric,metric)} vs rebanho${b.central?` · ${esc(b.central)}`:''}</span></span></span>`).join('')
+      + `<span class="qi" style="width:100%"><span class="qc">Critério: melhor média de ${esc(metric.lab)} entre as filhas presentes neste rebanho, com no mínimo <b>${MIN_FILHAS}</b> filhas com o dado.${notaEscalaMerito(metric,sd(vals(R,metric.k)))}${BULL_QUAD_PCT<100?` Gráfico com os <b>${fmt(quadB.length)}</b> de ${fmt(quadTodos.length)} touros (${BULL_QUAD_PCT}%) que mais deixaram filhas.`:''}</span></span>`
     : `<span class="qi"><span class="qc">Nenhum touro tem ${MIN_FILHAS} filhas ou mais com dado de ${esc(metric.lab)} neste recorte.</span></span>`;
 
   montarSeletorColunas('bull-cols', BULL_COLS, ()=>rTouros(), D.traits.filter(t=>t.k!=='Meu Índice'), 'Características');
@@ -5877,6 +5903,7 @@ function rCentrais(){
      bolha. As centrais do top ficam em azul cheio no gráfico. */
   const destaqueC = new Set(topC.map(x=>x.id));
   const bolhas = B.filter(x=>x.mi!==null && !x.desconhecida);
+  const dpMeritoC = sd(vals(R,metric.k));
   chart('c-central-merit',{type:'bubble', data:{datasets:[{label:'Central', __norot:true,
     data:bolhas.map(x=>({x:x.n, y:x.mi, r:Math.max(6,Math.min(21,4+Math.sqrt(x.tourosN)*4)),
       nome:x.nome, naab:[...x.codigos].sort().join(' · '), touros:x.tourosN, nMetric:x.nMetric, share:x.share, id:x.id})),
@@ -5887,10 +5914,10 @@ function rCentrais(){
     options:{maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{
       title:c=>c[0].raw.nome, label:c=>[`${fmt(c.raw.x)} filhas · ${fmt(c.raw.share,1)}% do rebanho`,
         `${fmt(c.raw.touros)} touros pais · n ${fmt(c.raw.nMetric)} na característica`,
-        `${metric.lab} médio: ${uv(c.raw.y,metric)}`, `vs rebanho: ${uv(c.raw.y-media,metric)}`,
+        `${metric.lab} médio: ${uv(c.raw.y,metric)}`, `vs rebanho: ${uvDif(c.raw.y-media,metric)}`,
         `NAAB ${c.raw.naab}`]}}},
       scales:{x:{beginAtZero:true, grid:{color:C.line}, title:{display:true,text:'nº de filhas no rebanho (uso)'}},
-              y:{grid:{color:C.line}, ticks:{callback:v=>fmt(v,metric.d)}, title:{display:true,text:`${metric.lab} médio das filhas${metric.u?` (${metric.u})`:''}`}}}},
+              y:{grid:{color:C.line}, ...eixoMerito(bolhas.map(x=>x.mi), media, dpMeritoC), ticks:{callback:tickMerito(metric)}, title:{display:true,text:`${metric.lab} médio das filhas${metric.u?` (${metric.u})`:''}`}}}},
     plugins:[{id:'refCentral', afterDraw(ch){const {ctx,chartArea:a,scales:sc}=ch; const y=sc.y.getPixelForValue(media);
       if(!isFinite(y)) return;
       ctx.save(); ctx.strokeStyle=C.ink3; ctx.setLineDash([5,4]); ctx.beginPath(); ctx.moveTo(a.left,y); ctx.lineTo(a.right,y); ctx.stroke();
@@ -5901,8 +5928,8 @@ function rCentrais(){
     ? `<span class="qi qi-tit"><span class="qc">As ${topC.length} centrais com a melhor média de ${esc(metric.lab)} — destacadas em azul no gráfico</span></span>`
       + topC.map((x,k)=>`<span class="qi"><span class="qn" style="background:${x.alta?C.deep:C.alta}">${k+1}</span>`+
         `<span><b>${esc(x.nome)}</b> <span class="qc">· ${fmt(x.n)} filhas · ${esc(metric.lab)} médio ${uv(x.mi,metric)} · `+
-        `${uv(x.mi-media,metric)} vs rebanho</span></span></span>`).join('')
-      + `<span class="qi" style="width:100%"><span class="qc">Critério: melhor média de ${esc(metric.lab)} entre as filhas presentes neste rebanho, com no mínimo <b>${MIN_FILHAS_C}</b> filhas com o dado. É o resultado do uso histórico nesta fazenda, não a prova oficial dos touros.</span></span>`
+        `${uvDif(x.mi-media,metric)} vs rebanho</span></span></span>`).join('')
+      + `<span class="qi" style="width:100%"><span class="qc">Critério: melhor média de ${esc(metric.lab)} entre as filhas presentes neste rebanho, com no mínimo <b>${MIN_FILHAS_C}</b> filhas com o dado. É o resultado do uso histórico nesta fazenda, não a prova oficial dos touros.${notaEscalaMerito(metric,dpMeritoC)}</span></span>`
     : `<span class="qi"><span class="qc">Nenhuma central tem ${MIN_FILHAS_C} filhas ou mais com dado de ${esc(metric.lab)} neste recorte.</span></span>`;
 
   montarSeletorColunas('central-cols', CENTRAL_COLS, ()=>rCentrais(), D.traits.filter(t=>t.k!=='Meu Índice'), 'Características');
@@ -5915,7 +5942,7 @@ function rCentrais(){
          ''}</td>
       <td class="mono" style="font-size:11.5px">${esc(x.desconhecida?(x.naab||'—'):[...x.codigos].sort().join(' · ')||'—')}</td>
       <td>${fmt(x.n)}</td><td>${fmt(x.share,1)}</td><td>${fmt(x.tourosN)}</td>
-      <td>${uv(x.mi,metric)}</td><td class="${sentido(d)}">${uv(d,metric)}</td>`+
+      <td>${uv(x.mi,metric)}</td><td class="${sentido(d)}">${uvDif(d,metric)}</td>`+
       extras.map(t=>{const v=mean(vals(x.filhas,t.k));return `<td>${uv(v,t)}</td>`}).join('')+`</tr>`;
   });
   $('#t-centrais').innerHTML=h+'</tbody>'; ordenavel('t-centrais');
