@@ -408,7 +408,9 @@ function validYMD(y,m,d){const v=new Date(y,m-1,d);return y>=1900&&y<=2100&&v.ge
  }
  function makePreparedRow(r,sourceRow,cm,dateOrders){
    const val=k=>cm[k]!==undefined?r[cm[k]]:null;
-   const animal=text(val('animal')).replace(/\s+GL$/i,'').trim();const parents={SireId:{name:text(val('sireName')),code:text(val('sireCode'))},MaternalGrandsireId:{name:text(val('mgsName')),code:text(val('mgsCode'))},MaternalGreatGrandsireId:{name:text(val('mggsName')),code:text(val('mggsCode'))}};
+   const animal=text(val('animal')).replace(/\s+GL$/i,'').trim();/* Valores de preenchimento (0, NI, ND, -, N/A…) significam 'sem informação', não são nome nem código. */
+   const ph=v=>{const t=text(v);return /^(0+|ni|nd|na|null|nulo|seminformacao|seminfo|naoinformado|desconhecido|semdados)$/.test(norm(t).replace(/ /g,''))||/^[-–—.\s]+$/.test(t)?'':t;};
+   const parents={SireId:{name:ph(val('sireName')),code:ph(val('sireCode'))},MaternalGrandsireId:{name:ph(val('mgsName')),code:ph(val('mgsCode'))},MaternalGreatGrandsireId:{name:ph(val('mggsName')),code:ph(val('mggsCode'))}};
    const out=Array(targetHeaders.length).fill('');const put=(k,v)=>{const ix=targetHeaders.indexOf(k);if(ix>=0)out[ix]=v??'';};
    put('AnimalId',animal);put('BarnName',text(val('barn')));put('RegistrationNumber',text(val('reg')));
    const lactRaw=text(val('lact'));const lactKnown=cm.lact!==undefined;
