@@ -1968,6 +1968,10 @@ const GRP = {plano:'Plano Genético', prod:'Produção', eficiencia:'Eficiência
    mais nova, em TODA a plataforma (tabelas, sparklines, curvas). */
 const CATS = ['Lact 3+','Lact 2','Lact 1','Novilha >12','Bezerras 0-12'];
 const CATS_TEMPO = () => CATS.slice();
+/* Ordem do Acasalamento: da mais nova para a mais velha. Bezerras 0-12, depois
+   novilhas >12 (entre as bezerras e a Lact 1), Lact 1, Lact 2, Lact 3+. */
+const CATS_ACAS = ['Bezerras 0-12','Novilha >12','Lact 1','Lact 2','Lact 3+'];
+const catAcasOrd = c => { const i = CATS_ACAS.indexOf(c); return i < 0 ? 99 : i; };
 const ehNovilha = r => r.cat==='Bezerras 0-12' || r.cat.startsWith('Novilha');
 
 /* --- Ponte NAAB: colunas do Alta Bull Search -> colunas do Relatório de Índice de Fêmeas.
@@ -6735,7 +6739,7 @@ function acasCalcPlano(){
     pools.get(k).push({a, i: (r && r['Meu Índice'] !== null) ? r['Meu Índice'] : a.indice});
   });
   ACSUG = new Map(); ACPOOLS = [];
-  const ordem = ['Lact 3+','Lact 2','Lact 1','Novilha >12','Bezerras 0-12','Sem data','Novilhas','Vacas','Rebanho inteiro','Sem categoria'];
+  const ordem = ['Bezerras 0-12','Novilha >12','Lact 1','Lact 2','Lact 3+','Sem data','Novilhas','Vacas','Rebanho inteiro','Sem categoria'];
   [...pools.keys()].sort((x,y) => {
     const ix = ordem.indexOf(x), iy = ordem.indexOf(y);
     return (ix<0?99:ix) - (iy<0?99:iy);
@@ -6974,7 +6978,7 @@ function acasLinhasOperacionais(){
   return [...AC.map.values()].map(a => ({a, r:AC.byId.get(a.id), tipo:acasTipo(a)}))
     .filter(x => (ACTIPO === 'all' || x.tipo === ACTIPO) && (ACCAT === 'all' || (x.r && x.r.cat === ACCAT)))
     .sort((x,y) => {
-      const cat = String(x.r?.cat||'').localeCompare(String(y.r?.cat||''), 'pt-BR');
+      const cat = catAcasOrd(x.r?.cat) - catAcasOrd(y.r?.cat);
       return cat || String(x.a.id).localeCompare(String(y.a.id), 'pt-BR', {numeric:true});
     });
 }
@@ -7834,7 +7838,7 @@ function acasModoUI(){
   if(!AC.duplo) return;
   const cont = new Map();
   AC.map.forEach(a => { const r = AC.byId.get(a.id); const c = r && r.cat ? r.cat : 'Sem categoria'; cont.set(c, (cont.get(c)||0)+1); });
-  const ordem = [...CATS, 'Sem categoria'];
+  const ordem = [...CATS_ACAS, 'Sem categoria'];
   const cats = ordem.filter(c => cont.has(c)).concat([...cont.keys()].filter(c => !ordem.includes(c)));
   $('#acas-modo-grid').innerHTML = cats.map(c => `<div class="acas-modo-row"><span>${esc(c)}<small>${fmt(cont.get(c))} ${plu(cont.get(c),'animal','animais')}</small></span>
     <select data-c="${esc(c)}" aria-label="Tipo de sêmen em ${esc(c)}">${[['dual','Sexado + convencional'],['CN','Só convencional'],['SX','Só sexado']].map(([v,l]) => `<option value="${v}" ${(ACMODO[c]||'dual')===v?'selected':''}>${l}</option>`).join('')}</select></div>`).join('');
@@ -7885,7 +7889,7 @@ function rAcas(){
     document.querySelectorAll('#acas-seg-tipo button').forEach(x => x.classList.toggle('on', x.dataset.t === ACTIPO));
     acasTabela();
   };
-  const cats = CATS.filter(c => [...AC.map.keys()].some(id => AC.byId.get(id)?.cat === c));
+  const cats = CATS_ACAS.filter(c => [...AC.map.keys()].some(id => AC.byId.get(id)?.cat === c));
   $('#acas-sel-cat').innerHTML = `<option value="all">Todas</option>` + cats.map(c => `<option value="${esc(c)}" ${ACCAT===c?'selected':''}>${esc(c)}</option>`).join('');
   $('#acas-sel-cat').onchange = e => {
     ACCAT = e.target.value; ACLIM = 200;
