@@ -253,6 +253,20 @@ body.report .chipbar,body.report .chipbar-acts{display:none!important}
 .uso-res .n{font-weight:600;color:var(--ink)}.uso-res .c{color:var(--ink-3);font-size:11.5px}.uso-res .t{margin-left:auto;color:var(--ink-3);font-size:11.5px;white-space:nowrap}
 .uso-pick-f{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
 #v-prog .prog-fl{font-size:12px;font-weight:600;color:var(--ink-2)}.prog-filtros .card-b{display:flex;gap:6px 8px;align-items:center;flex-wrap:wrap;padding:6px 10px!important}.prog-filtros select{padding:4px 6px;font-size:12px;max-width:138px}.prog-filtros .seg button{padding:4px 9px}.prog-filtros .acas-swap{padding:3px 8px}.prog-idade input{width:122px;font-size:12px!important;padding:4px 7px!important;padding:5px 7px;border:1.5px solid var(--alta-line);border-radius:7px;font:inherit;font-size:13px}
+.prog-estr-slots{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prog-slot{border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
+.prog-slot-t{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--alta);margin-bottom:6px}
+.prog-drop{border:1.5px dashed var(--alta-line);border-radius:10px;padding:14px 12px;background:var(--alta-wash);text-align:center;cursor:pointer;transition:.16s}
+.prog-drop:hover,.prog-drop.over{background:#E2EBF8;border-color:var(--alta)}
+.prog-drop .big{font-size:13px;font-weight:600;color:var(--alta)}.prog-drop .small{font-size:11.5px;color:var(--ink-2)}
+.prog-chip{font-size:12px;color:var(--ink-2);margin:8px 0 6px;word-break:break-word}
+.prog-cmp-grid{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:12px 14px;margin-bottom:16px}
+.prog-cmp-grid>.kpi{min-width:0}
+.prog-cmp-h{font-size:13px;font-weight:700;color:#fff;background:var(--alta-deep);border-radius:8px;padding:8px 12px}
+.prog-cmp-h small{display:block;font-weight:400;font-size:11px;opacity:.85;margin-top:2px;word-break:break-word}
+.prog-cmp-col{min-width:0}
+.prog-cmp-col .prog-cmp-h{margin-bottom:10px}
+@media(max-width:720px){.prog-estr-slots,.prog-cmp-grid{grid-template-columns:1fr}}
 #v-prog .prog-ch{position:relative;height:300px}#v-prog .prog-ch-tall{height:420px}
 .prog-bar{position:relative;height:12px;background:var(--alta-wash);border-radius:3px}
 .prog-bar b{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--ink-3)}
@@ -356,13 +370,25 @@ body.report .acas-up,body.report .acas-sug,body.report .acas-q-card{display:none
 .acas-badge{display:inline-flex;flex-direction:column;gap:2px;padding:12px 20px;border-radius:10px;min-width:170px}
 .acas-badge .k{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
 .acas-badge .v{font-size:24px;font-weight:700;line-height:1.15}
-.acas-badge.sx{background:var(--green-wash);color:#3F6B12}
+.acas-badge.sx{background:#FBDDE8;color:#8A2748}
 .acas-badge.cn{background:var(--alta-wash);color:var(--alta-deep)}
 .acas-badge.bf{background:var(--amber-wash);color:#8A5A00}
 .acas-badge.na{background:#F1F3F7;color:var(--ink-3)}
 .acas-badge.ghost{min-width:150px;opacity:.95;border:1px dashed currentColor;background:transparent}
 .acas-arrow{font-size:20px;color:var(--ink-3)}
 .acas-touros{padding:0 18px 6px}
+.acas-touros .acas-touro.tp-sx,.acas-touros .acas-touro.tp-cn{border-top:0;border-radius:8px;padding:10px 12px;margin-top:6px}
+.acas-touro.tp-sx{background:#FDE7EF}.acas-touro.tp-cn{background:#E1EEFB}
+.tpchip{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:99px;flex:none;min-width:98px;text-align:center}
+.tpchip.sx{background:#F6BFD3;color:#7A1E3F}.tpchip.cn{background:#BCD6F3;color:#17305C}
+#t-acas th.h-sx{background:#F6BFD3!important;color:#7A1E3F!important}#t-acas th.h-cn{background:#BCD6F3!important;color:#17305C!important}
+#t-acas td.c-sx{background:#FDE7EF}#t-acas td.c-cn{background:#E1EEFB}
+.pill.rs{background:#FBDDE8;color:#8A2748}
+.acas-modo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:8px 14px}
+.acas-modo-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px;border:1px solid var(--line);border-radius:8px}
+.acas-modo-row small{color:var(--ink-3);margin-left:4px}
+.acas-modo-row select{max-width:190px}
+.op-table td.sx{background:#FDE7EF;-webkit-print-color-adjust:exact;print-color-adjust:exact}.op-table td.cn{background:#E1EEFB;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .acas-touro{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--line)}
 .acas-touro .ord{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);width:74px;flex:none}
 .acas-touro .naab{font-family:Consolas,"Courier New",monospace;font-size:15px;font-weight:700;color:var(--alta-deep)}
@@ -458,7 +484,7 @@ body.report{padding-bottom:52px}
 footer{max-width:1440px;margin:0 auto;padding:22px 24px 40px;font-size:11px;color:var(--ink-3);border-top:1px solid var(--line);line-height:1.7}
 @media print{
   @page{size:A4 landscape;margin:9mm}
-  nav,#gate,.repbar,.acts,#drop2,#files2,#drop3,.acas-up,.acas-q-card,.acas-sug{display:none!important}
+  nav,#gate,.repbar,.acts,#drop2,#files2,#drop3,.acas-up,.prog-estr-up,.acas-q-card,.acas-sug{display:none!important}
   header{position:static;box-shadow:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   body{background:#fff;font-size:11px}
   main{max-width:none;padding:0}
@@ -648,7 +674,7 @@ body.report .rep-sec .sec-h h2{font-size:22px;color:var(--alta-deep)}
   @page{size:A4 landscape;margin:8mm}
   html,body{background:#fff!important}
   body.report{padding-bottom:0}
-  nav,#gate,.repbar,.acts,#drop2,#files2,#drop3,.acas-up,.acas-q-card,.acas-sug,.auth-gate,.modal-bg,
+  nav,#gate,.repbar,.acts,#drop2,#files2,#drop3,.acas-up,.prog-estr-up,.acas-q-card,.acas-sug,.auth-gate,.modal-bg,
   body.report header,body.report .filterbar,body.report .gfilter,
   body.report #merge-avisos,body.report #v-carac,body.report #v-dados,
   body.report #v-pop{display:none!important}
@@ -1450,6 +1476,10 @@ body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
     <div class="grid g4" id="acas-kpis" style="margin-bottom:16px"></div>
     <div id="acas-avisos"></div>
 
+    <div class="card" id="acas-modo-card" style="display:none;margin-bottom:16px"><div class="card-h"><h3>Sexado e convencional no mesmo animal</h3><span class="hint">escolha, por categoria, o que a ficha, a lista e os arquivos mostram</span></div>
+      <div class="card-b"><div class="acas-modo-grid" id="acas-modo-grid"></div>
+        <p class="share-note" style="margin-top:10px"><b>Sexado + convencional</b> mostra as 2 primeiras opções de cada tipo, com o sexado primeiro: a fazenda tenta o sexado e, se o animal não pegar ou a dose acabar, passa para o convencional. <b>Só convencional</b> e <b>Só sexado</b> mostram um tipo só. Se um animal não tiver o tipo escolhido no arquivo, aparece o que existe.</p></div></div>
+
     <div class="card sticky filterbar" style="margin-bottom:16px"><div class="card-b" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
       <span style="font-size:12px;font-weight:600;color:var(--ink-2)">Tipo de sêmen</span>
       <div class="seg" id="acas-seg-tipo"></div>
@@ -1599,7 +1629,21 @@ body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
 <!-- ===== PROGRESSO GENÉTICO ===== -->
 <section class="view" id="v-prog">
   <div class="sec-h"><span class="eyebrow">Resultado esperado</span><h2>Progresso genético da fazenda</h2></div>
-  <div id="prog-vazio" class="card" style="display:none"><div class="card-b">Carregue o relatório de acasalamento na aba <b>Acasalamento</b> para ver o progresso genético esperado.</div></div>
+  <div class="card prog-estr-up" id="prog-estr-up" style="display:none"><div class="card-h"><h3>Comparar estratégias de acasalamento</h3><span class="hint">dois CSVs do BlueLink para o mesmo rebanho · só para a projeção genética</span></div>
+    <div class="card-b">
+      <div class="prog-estr-slots">
+        <div class="prog-slot" id="prog-slot-A"><div class="prog-slot-t">Estratégia A</div>
+          <div class="prog-drop" id="prog-drop-A" tabindex="0" role="button" aria-label="Carregar o CSV da Estratégia A"><div class="big">Arraste o .csv da Estratégia A</div><div class="small">ou clique para escolher</div><input type="file" id="prog-file-A" accept=".csv" multiple hidden></div>
+          <div class="prog-chip" id="prog-chip-A"></div><button type="button" class="acas-swap" id="prog-x-A" hidden>Remover Estratégia A</button></div>
+        <div class="prog-slot" id="prog-slot-B"><div class="prog-slot-t">Estratégia B</div>
+          <div class="prog-drop" id="prog-drop-B" tabindex="0" role="button" aria-label="Carregar o CSV da Estratégia B"><div class="big">Arraste o .csv da Estratégia B</div><div class="small">ou clique para escolher</div><input type="file" id="prog-file-B" accept=".csv" multiple hidden></div>
+          <div class="prog-chip" id="prog-chip-B"></div><button type="button" class="acas-swap" id="prog-x-B" hidden>Remover Estratégia B</button></div>
+      </div>
+      <p class="share-note" style="margin-top:10px">Cada estratégia usa o touro indicado como <b>1ª opção</b> no CSV dela, combinado com as mesmas fêmeas do relatório de índice. Estes arquivos não alteram a aba Acasalamento nem o que o cliente vê nela.</p>
+      <div id="prog-estr-err" class="ins bad" style="display:none;margin-top:10px"></div>
+    </div></div>
+  <div id="prog-modo" class="seg" style="display:none;margin-bottom:12px"></div>
+  <div id="prog-vazio" class="card" style="display:none"><div class="card-b">Carregue o relatório de acasalamento na aba <b>Acasalamento</b>, ou importe as Estratégias A e B acima, para ver o progresso genético esperado.</div></div>
   <div id="prog-conteudo" style="display:none">
     <div class="card sticky filterbar prog-filtros" style="margin-bottom:12px"><div class="card-b">
       <div class="seg" id="prog-opt" title="Touro recomendado"></div>
@@ -1610,6 +1654,7 @@ body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
       <button type="button" class="acas-swap" id="prog-idade-x" hidden>limpar</button>
     </div></div>
     <p class="ghint" id="prog-hint" style="margin:0 2px 10px"></p>
+    <div id="prog-corpo-acas">
     <div class="grid g3" id="prog-kpis" style="margin-bottom:16px"></div>
     <div id="prog-aviso" style="margin-bottom:16px"></div>
 
@@ -1628,6 +1673,8 @@ body.rp-live .g2 .chart-wrap, body.rp-live .g2 .chart-sm{ max-height:225px }
       <div class="card-b tw"><div class="tabela-fixa"><table id="t-prog-animais" class="center-all"></table></div></div></div>
 
     <div class="ins info" id="prog-metodo"></div>
+    </div>
+    <div id="prog-corpo-cmp" style="display:none"></div>
   </div>
 </section>
 
@@ -3511,7 +3558,7 @@ const TAB_GRUPOS = [
 function montarTabs(aplicar){
   const vis = VIEWS.filter(v =>
     (v.id !== 'acas'     || APP_CONFIG.mode !== 'client' || AC.map.size) &&
-    (v.id !== 'prog'     || (AC.map && AC.map.size)) &&
+    (v.id !== 'prog'     || (AC.map && AC.map.size) || progEstAtivas().length || APP_CONFIG.mode !== 'client') &&
     (v.id !== 'planocli' || PLANO.ativo) &&
     (v.id !== 'uso'      || (APP_CONFIG.mode !== 'client' || (USO.touros && USO.touros.length))));
   const porId = new Map(vis.map(v=>[v.id,v]));
@@ -6456,16 +6503,17 @@ function expTudo(){
    arquivo está em centésimos e é dividido por 100. A escala detectada aparece
    escrita na tela, para ninguém aplicar a regra no escuro. */
 let AC_INB_ESCALA = 1;
+const acasTodasRecs = mapa => { const st=new Set(); mapa.forEach(a=>{ (a.alt?Object.values(a.alt):[a.recs]).forEach(l=>l.forEach(r=>st.add(r))); }); return st; };
 function normalizarConsanguinidade(mapa){
   const v = [];
-  mapa.forEach(a => a.recs.forEach(r => { if(r.inb !== null && isFinite(r.inb)) v.push(Math.abs(r.inb)); }));
+  acasTodasRecs(mapa).forEach(r => { if(r.inb !== null && isFinite(r.inb)) v.push(Math.abs(r.inb)); });
   AC_INB_ESCALA = 1;
   if(v.length >= 5){
     v.sort((a,b)=>a-b);
     const med = v[Math.floor(v.length/2)];
     if(med > 40) AC_INB_ESCALA = 100;
   }
-  if(AC_INB_ESCALA !== 1) mapa.forEach(a => a.recs.forEach(r => { if(r.inb !== null) r.inb = r.inb / AC_INB_ESCALA; }));
+  if(AC_INB_ESCALA !== 1) acasTodasRecs(mapa).forEach(r => { if(r.inb !== null) r.inb = r.inb / AC_INB_ESCALA; });
 }
 const inbFmt = v => (v === null || v === undefined || !isFinite(v)) ? '—' : fmt(v, 2);
 
@@ -6540,34 +6588,40 @@ function ingestAcas(arquivos){
     larguras.add(f.hdr.length);
     hdrRef = hdrRef || f.hdr;
     const P = f.P;
-    let add = 0, rep = 0;
+    let add = 0, rep = 0, compl = 0;
     f.linhas.forEach(L => {
       const id = String(L[P.iId]||'').trim();
       if(!id) return;
-      if(novos.has(id)){
-        rep++; dup++;
-        const arquivosDoAnimal = duplicados.get(id) || [novos.get(id).arq];
-        if(!arquivosDoAnimal.includes(a.nome)) arquivosDoAnimal.push(a.nome);
-        duplicados.set(id, arquivosDoAnimal);
-        return;
-      }   // primeiro arquivo vence
+      const stocL = P.iStoc>=0 ? String(L[P.iStoc]||'').trim().toUpperCase() : '';
       const recs = P.trios.map(([a1,b1,c1]) => ({
         naab: String(L[a1]||'').trim(),
         nome: String(L[b1]||'').trim(),
         inb : num(L[c1])
       })).filter(r => r.naab && r.naab.toUpperCase() !== 'BEEF');
+      if(novos.has(id)){
+        const ex = novos.get(id);
+        /* Mesmo animal em outro arquivo, mas com OUTRO tipo de sêmen (ex.: rodada do sexado + rodada do
+           convencional): não é repetido, é complemento. Só o mesmo tipo repetido é descartado. */
+        if(stocL && ex.stoc && !(stocL in ex.alt)){ ex.alt[stocL] = recs; brutas.push(L); compl++; return; }
+        rep++; dup++;
+        const arquivosDoAnimal = duplicados.get(id) || [ex.arq];
+        if(!arquivosDoAnimal.includes(a.nome)) arquivosDoAnimal.push(a.nome);
+        duplicados.set(id, arquivosDoAnimal);
+        return;
+      }   // primeiro arquivo vence
       novos.set(id, {
         id,
-        stoc: P.iStoc>=0 ? String(L[P.iStoc]||'').trim().toUpperCase() : '',
+        stoc: stocL,
         indice: P.iInd>=0 ? num(L[P.iInd]) : null,
         pai: P.iPai>=0 ? String(L[P.iPai]||'').trim() : '',
         recs,
+        alt: {[stocL]: recs},
         arq: a.nome
       });
       brutas.push(L);
       add++;
     });
-    chips.push({nome:a.nome, linhas:f.linhas.length, novos:add, dup:rep});
+    chips.push({nome:a.nome, linhas:f.linhas.length, novos:add, dup:rep, compl});
   });
   AC.map = novos; AC.arquivos = chips; AC.hdr = hdrRef;
   AC.esquemasDif = larguras.size > 1;
@@ -6586,6 +6640,7 @@ function ingestAcas(arquivos){
 /* ---------- conferência contra o banco de índice ---------- */
 function conferirAcas(){
   AC.avisos = [];
+  AC.duplo = [...AC.map.values()].some(a => a.alt && ['SX','CN'].filter(t => a.alt[t] && a.alt[t].length).length > 1);
   const idsD = new Map(); D.all.forEach(r => { if(!idsD.has(r.id)) idsD.set(r.id, r); });
   let semRebanho = 0, paiDif = 0, indDif = 0;
   AC.map.forEach(a => {
@@ -6619,6 +6674,10 @@ function conferirAcas(){
     'Os arquivos de acasalamento enviados têm número de colunas diferente entre si. Isso deixou de ser erro: cada arquivo é lido pelo nome das suas próprias colunas, e só o que a aba precisa é aproveitado.']);
   if(AC_INB_ESCALA !== 1) AC.avisos.push(['info','Escala da consanguinidade',
     'A consanguinidade veio em centésimos de porcento neste arquivo (ex.: <b>416</b>) e foi convertida para porcentagem (<b>4,16%</b>). A conversão é aplicada na tela, no Excel e no PDF.']);
+  if(AC.duplo){
+    const nd = [...AC.map.values()].filter(a => ['SX','CN'].filter(t => a.alt && a.alt[t] && a.alt[t].length).length > 1).length;
+    AC.avisos.push(['info','Sexado e convencional combinados',`<b>${fmt(nd)}</b> ${plu(nd,'animal tem','animais têm')} touros dos dois tipos de sêmen (arquivos combinados por número do animal). Em <b>Sexado e convencional no mesmo animal</b> você escolhe, por categoria, o que mostrar.`]);
+  }
   if(semAcas) AC.avisos.push(['info','Animais sem acasalamento',
     `<b>${fmt(semAcas)}</b> ${plu(semAcas,'fêmea do banco não tem','fêmeas do banco não têm')} recomendação neste arquivo de acasalamento.`]);
 
@@ -6626,8 +6685,10 @@ function conferirAcas(){
   // sem reprocessar. Calculado, não presumido.
   const porTipo = new Map();
   AC.map.forEach(a => {
-    if(!porTipo.has(a.stoc)) porTipo.set(a.stoc, new Set());
-    a.recs.forEach(r => porTipo.get(a.stoc).add(r.naab.slice(3)));   // identidade do touro, sem o código de unidade
+    Object.entries(a.alt || {[a.stoc]:a.recs}).forEach(([tp, lista]) => {
+      if(!porTipo.has(tp)) porTipo.set(tp, new Set());
+      lista.forEach(r => porTipo.get(tp).add(r.naab.slice(3)));   // identidade do touro, sem o código de unidade
+    });
   });
   AC.porTipo = porTipo;
   const sx = porTipo.get('SX') || new Set(), cn = porTipo.get('CN') || new Set();
@@ -6697,7 +6758,27 @@ function acasCalcPlano(){
   });
 }
 let ACSHOW_NAAB=false;
-const acasTipo = a => (ACPLAN.on && ACSUG.has(a.id)) ? ACSUG.get(a.id) : a.stoc;
+let ACMODO = {};    // categoria -> 'dual' (padrão) | 'CN' | 'SX'
+/* O que mostrar para um animal. Sem arquivos dos dois tipos, nada muda (tipo e opções do arquivo).
+   Com os dois: 'dual' = 2 primeiras do sexado + 2 primeiras do convencional; 'SX'/'CN' = um tipo só.
+   Se o animal não tem o tipo pedido, cai no que existir. */
+function acasVista(a){
+  const r = AC.byId ? AC.byId.get(a.id) : null;
+  const alt = a.alt || {[a.stoc]: a.recs};
+  const tem = t => alt[t] && alt[t].length;
+  let tipos = [a.stoc];
+  if(AC.duplo){
+    const m = ACMODO[r && r.cat ? r.cat : 'Sem categoria'] || 'dual';
+    if(m==='SX' && tem('SX')) tipos = ['SX'];
+    else if(m==='CN' && tem('CN')) tipos = ['CN'];
+    else { const ex = ['SX','CN'].filter(tem); if(ex.length) tipos = ex; }
+  }
+  const n = tipos.length > 1 ? 2 : 3, por = {};
+  tipos.forEach(t => { por[t] = (alt[t] || []).slice(0, n); });
+  return {tipos, por, primeiro:tipos[0], dual:tipos.length > 1};
+}
+const acasTipo = a => (ACPLAN.on && ACSUG.has(a.id)) ? ACSUG.get(a.id) : (AC.duplo ? acasVista(a).primeiro : a.stoc);
+const acasTipoLab = a => (AC.duplo && acasVista(a).dual) ? 'Sexado + Convencional' : stocLab(acasTipo(a));
 const acasMudou = a => ACPLAN.on && ACSUG.has(a.id) && ACSUG.get(a.id) !== a.stoc;
 
 /* ---------- ficha individual ---------- */
@@ -6731,6 +6812,16 @@ function acasFicha(id){
     tourosHtml = `<div class="acas-fnota"><div class="ins warn"><span class="tag">Sem touro</span>Este animal não tem touro recomendado no arquivo.</div></div>`;
   }
 
+  const V = AC.duplo ? acasVista(a) : null;
+  if(V && !mudou && V.tipos.some(t => V.por[t] && V.por[t].length)){
+    if(V.dual){
+      tipoHtml = badge('SX', false, '1ª tentativa') + `<span class="acas-arrow">→</span>` + badge('CN', false, 'Se não pegar ou faltar dose');
+      tourosHtml = acasTourosDuplo(V);
+    } else {
+      tipoHtml = badge(V.primeiro, false, 'Sêmen a usar');
+      tourosHtml = acasTourosHtml(a, false, V.por[V.primeiro], V.primeiro);
+    }
+  }
   const pctBox = (k, v, s) => `<div class="acas-pct"><span class="k">${k}</span><span class="v">${v===null||v===undefined?'—':v}</span>`+
     (v===null||v===undefined?'':`<div class="acas-bar"><i style="width:${Math.max(2,v)}%"></i></div>`)+
     `<span class="s">${s}</span></div>`;
@@ -6750,10 +6841,19 @@ function acasFicha(id){
     </div>
   </div>`;
 }
-function acasTourosHtml(a, fraco){
+function acasTourosDuplo(V){
+  const ord = ['1ª opção','2ª opção'];
+  return `<div class="acas-touros">` + V.tipos.map(tp => (V.por[tp]||[]).map((t,i) =>
+    `<div class="acas-touro tp-${stocCls(tp)}">
+       <span class="tpchip ${stocCls(tp)}">${esc(stocLab(tp))}</span><span class="ord">${ord[i]}</span>
+       <span>${ACSHOW_NAAB?`<span class="naab">${esc(t.naab)}</span> `:''}<span class="nm">${esc(t.nome||t.naab)}</span></span>
+       ${ACINB?`<span class="inb">consang. ${t.inb===null?'—':fmt(t.inb,2)+'%'}</span>`:''}
+     </div>`).join('')).join('') + `</div>`;
+}
+function acasTourosHtml(a, fraco, lista, tp){
   const ord = ['1ª opção','2ª opção','3ª opção'];
-  return `<div class="acas-touros"${fraco?' style="opacity:.55"':''}>` + a.recs.map((t,i) =>
-    `<div class="acas-touro ${i===0&&!fraco?'p1':''}">
+  return `<div class="acas-touros"${fraco?' style="opacity:.55"':''}>` + (lista||a.recs).map((t,i) =>
+    `<div class="acas-touro ${i===0&&!fraco?'p1':''}${tp&&(tp==='SX'||tp==='CN')?' tp-'+stocCls(tp):''}">
        <span class="ord">${ord[i]||('opção '+(i+1))}</span>
        <span>${ACSHOW_NAAB?`<span class="naab">${esc(t.naab)}</span> `:''}<span class="nm">${esc(t.nome||t.naab)}</span></span>
        ${ACINB?`<span class="inb">consang. ${t.inb===null?'—':fmt(t.inb,2)+'%'}</span>`:''}
@@ -6832,7 +6932,7 @@ function acasTabela(){
       <td>${esc(x.r ? x.r.cat : '—')}</td>
       <td class="mono">${x.mi!==null?fmt(x.mi,0):'—'}</td>
       <td class="mono">${x.r && x.r.pct!==null ? x.r.pct : '—'}</td>
-      <td class="mid"><span class="pill ${x.tipo==='SX'?'g':x.tipo==='BF'?'a':'b'}">${esc(stocLab(x.tipo))}</span></td>
+      <td class="mid"><span class="pill ${x.tipo==='SX'?'rs':x.tipo==='BF'?'a':'b'}">${esc(stocLab(x.tipo))}</span></td>
       <td>${t1?`${esc(t1.nome||t1.naab)}${ACSHOW_NAAB&&t1.nome?` <small>(${esc(t1.naab)})</small>`:''}`:'—'}</td>
       ${ACINB?`<td class="mono">${t1?inbFmt(t1.inb):'—'}</td>`:''}
       <td>${t2?`${esc(t2.nome||t2.naab)}${ACSHOW_NAAB&&t2.nome?` <small>(${esc(t2.naab)})</small>`:''}`:'—'}</td>
@@ -6843,12 +6943,29 @@ function acasTabela(){
       <th>Animal</th><th>Categoria</th><th>Plano Genético</th><th>Percentil</th><th class="mid">Sêmen</th>
       <th>Touro 1ª opção</th>${ACINB?'<th>Consang. %</th>':''}<th>2ª opção</th><th>3ª opção</th>
     </tr></thead><tbody>${vis.map(cel).join('')}</tbody>`;
+  if(AC.duplo) $('#t-acas').innerHTML = acasTabelaDuplo(vis);
   ordenavel('t-acas');
   $('#acas-lista-hint').textContent = `${fmt(linhas.length)} ${plu(linhas.length,'animal','animais')} no recorte`;
   $('#acas-mais').innerHTML = linhas.length > vis.length
     ? `<button class="act" onclick="ACLIM=1e6;acasTabela()">Mostrar os ${fmt(linhas.length)} ${plu(linhas.length,'animal','animais')}</button>`
     : '';
   if(!$('#acas-operacional').hidden) acasRenderOperacional(false);
+}
+
+function acasTabelaDuplo(vis){
+  const c = (V,t,i) => { const t1=(V.por[t]||[])[i]; return t1 ? `${esc(t1.nome||t1.naab)}${ACSHOW_NAAB&&t1.nome?` <small>(${esc(t1.naab)})</small>`:''}${ACINB&&t1.inb!==null&&t1.inb!==undefined?` <small>· ${fmt(t1.inb,2)}%</small>`:''}` : '—'; };
+  const lin = x => { const V = acasVista(x.a); return `<tr>
+      <td class="mono"><b>${esc(x.a.id)}</b></td>
+      <td>${esc(x.r ? x.r.cat : '—')}</td>
+      <td class="mono">${x.mi!==null?fmt(x.mi,0):'—'}</td>
+      <td class="mono">${x.r && x.r.pct!==null ? x.r.pct : '—'}</td>
+      <td class="mid"><span class="pill ${V.dual?'b':x.tipo==='SX'?'rs':x.tipo==='BF'?'a':'b'}">${esc(acasTipoLab(x.a))}</span></td>
+      <td class="c-sx">${c(V,'SX',0)}</td><td class="c-sx">${c(V,'SX',1)}</td>
+      <td class="c-cn">${c(V,'CN',0)}</td><td class="c-cn">${c(V,'CN',1)}</td>
+    </tr>`; };
+  return `<thead><tr><th>Animal</th><th>Categoria</th><th>Plano Genético</th><th>Percentil</th><th class="mid">Sêmen</th>
+      <th class="h-sx">Sexado · 1ª opção</th><th class="h-sx">Sexado · 2ª opção</th><th class="h-cn">Convencional · 1ª opção</th><th class="h-cn">Convencional · 2ª opção</th>
+    </tr></thead><tbody>${vis.map(lin).join('')}</tbody>`;
 }
 
 /* Lista sem índices: feita para quem está no manejo e precisa apenas executar
@@ -6860,6 +6977,13 @@ function acasLinhasOperacionais(){
       const cat = String(x.r?.cat||'').localeCompare(String(y.r?.cat||''), 'pt-BR');
       return cat || String(x.a.id).localeCompare(String(y.a.id), 'pt-BR', {numeric:true});
     });
+}
+function acasOperDuplo(linhas){
+  const nomes = (V,t) => { const l = V.por[t]||[]; return l.length ? l.map((r,i)=>`${i+1}ª: <b>${esc(r.nome||r.naab)}</b>`).join('<br>') : '—'; };
+  const rows = linhas.map(({a,r}) => { const V = acasVista(a);
+    const obs = V.dual ? 'Tentar o sexado; se não pegar ou acabar a dose, usar o convencional.' : (V.primeiro==='SX' ? 'Usar sexado.' : V.primeiro==='CN' ? 'Usar convencional.' : 'Conferir antes de inseminar.');
+    return `<tr><td class="animal">${esc(a.id)}</td><td>${esc(r?.cat||'Sem grupo')}</td><td class="sx">${nomes(V,'SX')}</td><td class="cn">${nomes(V,'CN')}</td><td class="obs">${obs}</td></tr>`; }).join('');
+  return `<table class="op-table"><thead><tr><th>Nº animal</th><th>Grupo</th><th>Sexado (1ª tentativa)</th><th>Convencional (se não pegar ou faltar dose)</th><th>Observação</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 function acasEstrategiaOperacional(tipo){
   return ({SX:'Reposição — priorizar fêmeas', CN:'Reposição — equilíbrio', BF:'Corte — não reter filhas'})[tipo] || 'Definir estratégia';
@@ -6893,7 +7017,7 @@ function acasRenderOperacional(foco=true){
     <div class="op-sheet">
       <div class="op-head"><div class="op-brand"><div class="op-brand-logos"><img src="${$('#hdr img').src}" alt="Alta"><img src="${$('#logo-blue-link').src}" alt="Alta Blue Link"></div><div class="op-brand-copy">Plataforma Azul<b>Lista operacional de inseminação</b></div></div><div class="op-title">Rebanho<b>${esc(fazenda)}</b></div></div>
       <div class="op-meta"><div><b>${fmt(linhas.length)} ${plu(linhas.length,'animal','animais')} no manejo</b><span> · gerada em ${data}</span></div><div class="op-summary"><span class="op-chip">${fmt(prontos)} prontos para inseminar</span>${reproc?`<span class="op-chip warn">${fmt(reproc)} a reprocessar</span>`:''}</div></div>
-      <div class="op-table-wrap">${linhas.length ? `<table class="op-table"><thead><tr><th>Nº animal</th><th>Grupo</th><th>Touro</th><th>Tipo de sêmen</th><th>Observação</th></tr></thead><tbody>${rows}</tbody></table>` : '<div class="op-empty">Não há animais neste recorte.</div>'}</div>
+      <div class="op-table-wrap">${linhas.length ? `${AC.duplo ? acasOperDuplo(linhas) : `<table class="op-table"><thead><tr><th>Nº animal</th><th>Grupo</th><th>Touro</th><th>Tipo de sêmen</th><th>Observação</th></tr></thead><tbody>${rows}</tbody></table>`}` : '<div class="op-empty">Não há animais neste recorte.</div>'}</div>
       <div class="op-foot">${esc(regra)} · Confirme a identificação do animal antes da inseminação. Casos marcados para reprocessamento não devem usar a recomendação de touro anterior.</div>
     </div>`;
   $('#acas-op-close').onclick = () => { box.hidden = true; box.innerHTML=''; };
@@ -6923,7 +7047,7 @@ const ACAS_COLS = [
   {k:'idade', lab:'Idade (meses)',     w:14, on:false, v:x=>x.r&&x.r.idade!==null&&x.r.idade!==undefined?x.r.idade:null, num:true, d:0},
   {k:'plano', lab:'Plano Genético',    w:15, on:true,  v:x=>x.mi===null?null:Math.round(x.mi), num:true, d:0},
   {k:'pct',   lab:'Percentil',         w:11, on:false, v:x=>x.r&&x.r.pct!==null?x.r.pct:null, num:true, d:0},
-  {k:'semen', lab:'Sêmen',             w:14, on:true,  v:x=>stocLab(x.tipo), num:false},
+  {k:'semen', lab:'Sêmen',             w:14, on:true,  v:x=>AC.duplo?acasTipoLab(x.a):stocLab(x.tipo), num:false},
   {k:'t1',    lab:'Touro 1ª opção',    w:28, on:true,  v:x=>x.a.recs[0]?(x.a.recs[0].nome||x.a.recs[0].naab):'', num:false},
   {k:'n1',    lab:'NAAB 1ª',           w:13, on:false, v:x=>x.a.recs[0]?x.a.recs[0].naab:'', num:false},
   {k:'i1',    lab:'Consang. 1ª (%)',   w:16, on:true,  v:x=>x.a.recs[0]?x.a.recs[0].inb:null, num:true, d:2},
@@ -6937,6 +7061,20 @@ const ACAS_COLS = [
   {k:'sit',   lab:'Situação',          w:20, on:false,
      v:x=>x.a.recs.length?'Pronto':(x.tipo==='BF'?'Corte, touro livre':'Sem touro'), num:false}
 ];
+/* Colunas do modo "sexado + convencional": só existem quando os dois tipos foram carregados. */
+{
+  const dup = [];
+  [['SX','sx','Sexado'],['CN','cn','Convencional']].forEach(([t,k,nome]) => [0,1].forEach(i => {
+    const rec = x => (acasVista(x.a).por[t]||[])[i];
+    dup.push({k:`${k}${i+1}`,  lab:`${nome} ${i+1}ª opção`,        w:28, on:true,  modo:'duplo', cor:t, v:x=>{const r=rec(x); return r?(r.nome||r.naab):'';}, num:false});
+    dup.push({k:`n${k}${i+1}`, lab:`NAAB ${nome} ${i+1}ª`,          w:14, on:false, modo:'duplo', cor:t, v:x=>{const r=rec(x); return r?r.naab:'';}, num:false});
+    dup.push({k:`i${k}${i+1}`, lab:`Consang. ${nome} ${i+1}ª (%)`,  w:17, on:true,  modo:'duplo', cor:t, v:x=>{const r=rec(x); return r?r.inb:null;}, num:true, d:2});
+  }));
+  const ix = ACAS_COLS.findIndex(c => c.k==='pai');
+  ACAS_COLS.splice(ix, 0, ...dup);
+  ACAS_COLS.forEach(c => { if(['t1','n1','i1','t2','n2','i2','t3','n3','i3'].includes(c.k)) c.modo = 'simples'; });
+}
+const colAtiva = c => !c.modo || (c.modo==='duplo') === !!AC.duplo;
 let ACAS_EXP_ON = new Set(ACAS_COLS.filter(c=>c.on).map(c=>c.k));
 
 function acasLinhasExport(){
@@ -6951,7 +7089,7 @@ function acasLinhasExport(){
 function abrirModalAcasExport(formato){
   const box = $('#acas-exp-modal');
   const linhas = acasLinhasExport();
-  $('#acas-exp-cols').innerHTML = ACAS_COLS.map(c=>
+  $('#acas-exp-cols').innerHTML = ACAS_COLS.filter(colAtiva).map(c=>
     `<label class="share-check"><input type="checkbox" value="${c.k}" ${ACAS_EXP_ON.has(c.k)?'checked':''} ${c.fixa?'disabled':''}> ${esc(c.lab)}</label>`).join('');
   $('#acas-exp-sub').textContent = formato==='pdf'
     ? 'Marque as colunas do PDF. Ele sai na horizontal, com o cabeçalho da Alta e a lista ordenada pelo número do animal.'
@@ -6970,7 +7108,7 @@ function abrirModalAcasExport(formato){
   box.onclick = e => { if(e.target.id==='acas-exp-modal') box.hidden = true; };
   $('#acas-exp-ok').onclick = () => {
     box.hidden = true;
-    const cols = ACAS_COLS.filter(c => ACAS_EXP_ON.has(c.k));
+    const cols = ACAS_COLS.filter(c => colAtiva(c) && ACAS_EXP_ON.has(c.k));
     if(formato==='pdf') acasPDF(cols, linhas); else acasXlsx(cols, linhas);
   };
   box.hidden = false;
@@ -7040,25 +7178,28 @@ function acasXlsx(cols, linhas){
 `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
 <numFmts count="1"><numFmt numFmtId="164" formatCode="0.00"/></numFmts>
-<fonts count="5">
+<fonts count="6">
 <font><sz val="11"/><name val="Arial"/></font>
 <font><b/><sz val="16"/><color rgb="FFFFFFFF"/><name val="Arial"/></font>
 <font><sz val="10"/><color rgb="${ESCURO}"/><name val="Arial"/></font>
 <font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Arial"/></font>
 <font><sz val="10"/><color rgb="${ESCURO}"/><name val="Arial"/></font>
+<font><b/><sz val="11"/><color rgb="${ESCURO}"/><name val="Arial"/></font>
 </fonts>
-<fills count="5">
+<fills count="7">
 <fill><patternFill patternType="none"/></fill>
 <fill><patternFill patternType="gray125"/></fill>
 <fill><patternFill patternType="solid"><fgColor rgb="${ESCURO}"/><bgColor indexed="64"/></patternFill></fill>
 <fill><patternFill patternType="solid"><fgColor rgb="${AZUL}"/><bgColor indexed="64"/></patternFill></fill>
 <fill><patternFill patternType="solid"><fgColor rgb="${ZEBRA}"/><bgColor indexed="64"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFFDE7EF"/><bgColor indexed="64"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFE1EEFB"/><bgColor indexed="64"/></patternFill></fill>
 </fills>
 <borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>
 <border><left style="thin"><color rgb="${LINHA}"/></left><right style="thin"><color rgb="${LINHA}"/></right>
 <top style="thin"><color rgb="${LINHA}"/></top><bottom style="thin"><color rgb="${LINHA}"/></bottom><diagonal/></border></borders>
 <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
-<cellXfs count="10">
+<cellXfs count="16">
 <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
 <xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
 <xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
@@ -7069,6 +7210,12 @@ function acasXlsx(cols, linhas){
 <xf numFmtId="164" fontId="4" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
 <xf numFmtId="0" fontId="4" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
 <xf numFmtId="0" fontId="4" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
+<xf numFmtId="0" fontId="4" fillId="5" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
+<xf numFmtId="0" fontId="4" fillId="6" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
+<xf numFmtId="0" fontId="5" fillId="5" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
+<xf numFmtId="0" fontId="5" fillId="6" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
+<xf numFmtId="164" fontId="4" fillId="5" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
+<xf numFmtId="164" fontId="4" fillId="6" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
 </cellXfs>
 <cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
 </styleSheet>`;
@@ -7083,15 +7230,16 @@ function acasXlsx(cols, linhas){
   let linhasXml = `<row r="1" ht="60" customHeight="1">${cols.map((_,i)=>cel(colLetra(i)+'1','',1,false)).join('')}</row>`;
   linhasXml += `<row r="2" ht="30" customHeight="1">${cols.map((_,i)=>cel(colLetra(i)+'2', i?'':titulo, 1, false)).join('')}</row>`;
   linhasXml += `<row r="3" ht="18" customHeight="1">${cols.map((_,i)=>cel(colLetra(i)+'3', i?'':sub, 2, false)).join('')}</row>`;
-  linhasXml += `<row r="4" ht="32" customHeight="1">${cols.map((c,i)=>cel(colLetra(i)+'4', c.lab, 3, false)).join('')}</row>`;
+  linhasXml += `<row r="4" ht="32" customHeight="1">${cols.map((c,i)=>cel(colLetra(i)+'4', c.lab, c.cor==='SX'?12:c.cor==='CN'?13:3, false)).join('')}</row>`;
   linhas.forEach((x, li)=>{
     const r = li+5, z = li%2===1;
     linhasXml += `<row r="${r}" ht="18" customHeight="1">`+cols.map((c,i)=>{
       const v = c.v(x), ref = colLetra(i)+r;
-      if(v===null || v===undefined || v==='') return cel(ref, '—', z?5:4, false);
+      const cs = c.cor==='SX' ? {t:10,n:14} : c.cor==='CN' ? {t:11,n:15} : null;   // rosa claro = sexado · azul claro = convencional
+      if(v===null || v===undefined || v==='') return cel(ref, '—', cs?cs.t:(z?5:4), false);
       if(c.k==='id') return cel(ref, v, z?5:4, false);
-      if(c.num){ const est = (c.d===2) ? (z?7:6) : (z?5:4); return cel(ref, Number(v), est, true); }
-      return cel(ref, v, z?5:4, false);
+      if(c.num){ const est = (c.d===2) ? (cs?cs.n:(z?7:6)) : (cs?cs.t:(z?5:4)); return cel(ref, Number(v), est, true); }
+      return cel(ref, v, cs?cs.t:(z?5:4), false);
     }).join('')+`</row>`;
   });
 
@@ -7188,8 +7336,8 @@ function acasPDF(cols, linhas){
           <div class="pdf-meta"><b>${esc(fazenda)}</b><span>${esc(prop)}</span><span>${esc(responsavel)}</span><span>${fmt(linhas.length)} ${plu(linhas.length,'animal','animais')} · ${esc(recorte)}</span><span>Gerada em ${data}</span></div>
         </header>
         <table class="pdf-tb">
-          <thead><tr>${cols.map(c=>`<th>${esc(c.lab)}</th>`).join('')}</tr></thead>
-          <tbody>${pg.map(x=>`<tr>${cols.map(c=>`<td class="${c.k==='id'?'id':''}">${cel(c,x)}</td>`).join('')}</tr>`).join('')}</tbody>
+          <thead><tr>${cols.map(c=>`<th class="${c.cor==='SX'?'sx':c.cor==='CN'?'cn':''}">${esc(c.lab)}</th>`).join('')}</tr></thead>
+          <tbody>${pg.map(x=>`<tr>${cols.map(c=>`<td class="${c.k==='id'?'id':''} ${c.cor==='SX'?'sx':c.cor==='CN'?'cn':''}">${cel(c,x)}</td>`).join('')}</tr>`).join('')}</tbody>
         </table>
         <footer class="pdf-f">
           <span>Confira a identificação do animal antes da inseminação. Consanguinidade em % esperada da progênie.</span>
@@ -7209,6 +7357,7 @@ function acasPDF(cols, linhas){
       .pdf-tb{width:100%;border-collapse:collapse;table-layout:fixed;border:1px solid #D8E2F1;border-top:0}.pdf-tb tr{break-inside:avoid;page-break-inside:avoid}.pdf-tb th,.pdf-tb td{border:1px solid #D8E2F1;padding:4px 5px;vertical-align:middle;font-size:9px;line-height:1.16;word-break:break-word}.pdf-tb th{background:#F2F6FC;color:#173461;text-transform:uppercase;letter-spacing:.045em;font-size:8px}.pdf-tb td.id{font-weight:700;color:#173461}
       .pdf-f{margin-top:auto;display:flex;justify-content:space-between;gap:12px;align-items:center;padding:6px 2px 0;font-size:8.5px;line-height:1.2;color:#58677D}
     
+.pdf-tb th.sx{background:#F6BFD3!important;color:#7A1E3F!important}.pdf-tb th.cn{background:#BCD6F3!important;color:#17305C!important}.pdf-tb td.sx{background:#FDE7EF!important}.pdf-tb td.cn{background:#E1EEFB!important}
 </style></head><body>${html}<script>window.addEventListener('load',()=>setTimeout(()=>window.print(),180));window.addEventListener('afterprint',()=>setTimeout(()=>window.close(),120));<\/script></body></html>`;
   const w=window.open('', '_blank');
   if(!w){ window.alert('Permita pop-ups do navegador para gerar o PDF da lista.'); return; }
@@ -7218,7 +7367,7 @@ function acasPDF(cols, linhas){
 function acasExportarLinhas(){
   return acasLinhasExport().map(x => {
     const o = {'Animal': x.a.id};
-    ACAS_COLS.slice(1).forEach(c => { const v = c.v(x); o[c.lab] = (v===null||v===undefined)?'':v; });
+    ACAS_COLS.slice(1).filter(colAtiva).forEach(c => { const v = c.v(x); o[c.lab] = (v===null||v===undefined)?'':v; });
     return o;
   });
 }
@@ -7232,7 +7381,7 @@ function acasExportar(){ abrirModalAcasExport('xlsx'); }
    e o touro recomendado (valor do BullSearch), característica a característica.
    Não há Plano Genético aqui: ele é do cliente e não existe no BullSearch.
    ========================================================================= */
-let PROG = {opt:0, cat:'all', stoc:'all', k:null, imin:null};
+let PROG = {opt:0, cat:'all', stoc:'all', k:null, imin:null, modo:'estr'};
 const PROG_COR = ['#17305C','#4A7FD4','#A9BFE6'], PROG_MAE = '#8B93A3', PROG_FILHA = '#C77F00';
 function progBullMap(){
   const cols=[...new Set([...(BULLSEARCH_EMBED.columns||[]),...B.cols])], m={};
@@ -7247,7 +7396,7 @@ function progTouro(naab){
   const c=String(naab||'').trim().toUpperCase();
   return bullDoNaab(c) || bullDoNaab(naabAltaEquiv(c)) || (/^011[A-Z]{2}\d/.test(c) ? bullDoNaab('511'+c.slice(3)) : null) || null;
 }
-function progCalc(){
+function progCalc(mapa=AC.map, nOp=3){
   const TP=progTraits(), bm=progBullMap();
   const byId=new Map(); D.rows.forEach(r=>{ if(!byId.has(r.id)) byId.set(r.id,r); });
   const cache=new Map();
@@ -7259,9 +7408,9 @@ function progCalc(){
     cache.set(c,o); return o;
   };
   const linhas=[], faltaTouro=new Map(); let semRebanho=0;
-  AC.map.forEach(a=>{
+  mapa.forEach(a=>{
     const r=byId.get(a.id); if(!r){ semRebanho++; return; }
-    const opts=[0,1,2].map(i=>{
+    const opts=Array.from({length:nOp},(_,i)=>i).map(i=>{
       const rec=a.recs[i]; if(!rec) return null;
       const s=info(rec.naab);
       if(!s){ faltaTouro.set(rec.naab,(faltaTouro.get(rec.naab)||0)+1); return {rec,s:null,prog:null}; }
@@ -7270,15 +7419,37 @@ function progCalc(){
     });
     linhas.push({a,r,cat:r.cat,stoc:a.stoc,opts});
   });
-  return {TP,linhas,semRebanho,faltaTouro,total:AC.map.size};
+  return {TP,linhas,semRebanho,faltaTouro,total:mapa.size};
 }
-function progFiltrar(P){
+function progFiltrosUI(P,comStoc){
+  $('#prog-trait').innerHTML=P.TP.map(x=>`<option value="${esc(x.k)}">${esc(x.lab)}</option>`).join('');
+  $('#prog-trait').value=PROG.k; $('#prog-trait').onchange=()=>{ PROG.k=$('#prog-trait').value; rProg(); };
+  const catsArq=CATS.filter(c=>P.linhas.some(l=>l.cat===c));
+  const temNov=P.linhas.some(l=>ehNovilha(l.r)), temVac=P.linhas.some(l=>l.cat.startsWith('Lact'));
+  $('#prog-cat').innerHTML=`<option value="all">Todas as categorias</option>`+catsArq.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')+
+    (temNov&&catsArq.filter(c=>ehNovilha({cat:c})).length>1?`<option value="nov">Todas as novilhas</option>`:'')+(temVac&&catsArq.filter(c=>c.startsWith('Lact')).length>1?`<option value="vac">Todas as vacas</option>`:'');
+  if(![...$('#prog-cat').options].some(o=>o.value===PROG.cat)) PROG.cat='all';
+  $('#prog-cat').value=PROG.cat; $('#prog-cat').onchange=()=>{ PROG.cat=$('#prog-cat').value; rProg(); };
+  if(comStoc){
+  const stocs=[...new Set(P.linhas.map(l=>l.stoc).filter(Boolean))].sort();
+  $('#prog-stoc').innerHTML=`<option value="all">Todos</option>`+stocs.map(s=>`<option value="${esc(s)}">${esc(s==='SX'?'Sexado (SX)':s==='CN'?'Convencional (CN)':s)}</option>`).join('');
+  if(PROG.stoc!=='all' && !stocs.includes(PROG.stoc)) PROG.stoc='all';
+  $('#prog-stoc').value=PROG.stoc; $('#prog-stoc').onchange=()=>{ PROG.stoc=$('#prog-stoc').value; rProg(); };
+  }
+  const lerIdade=el=>{ const v=el.value.trim(); return v===''||!isFinite(+v)?null:Math.max(0,+v); };
+  const ia=$('#prog-imin');
+  ia.value=PROG.imin===null?'':PROG.imin;
+  ia.onchange=()=>{ PROG.imin=lerIdade(ia); rProg(); };
+  $('#prog-idade-x').hidden=(PROG.imin===null);
+  $('#prog-idade-x').onclick=()=>{ PROG.imin=null; rProg(); };
+}
+function progFiltrar(P,ignoraStoc){
   const catOk = r => PROG.cat==='all' ? true : PROG.cat==='nov' ? ehNovilha(r) : PROG.cat==='vac' ? r.cat.startsWith('Lact') : r.cat===PROG.cat;
   const idOk = r => {
     if(PROG.imin===null) return true;
     return r.idade!==null && r.idade!==undefined && r.idade>=PROG.imin;
   };
-  return P.linhas.filter(l=>catOk(l.r) && idOk(l.r) && (PROG.stoc==='all' || l.stoc===PROG.stoc));
+  return P.linhas.filter(l=>catOk(l.r) && idOk(l.r) && (ignoraStoc || PROG.stoc==='all' || l.stoc===PROG.stoc));
 }
 /* valores da característica t: mães e progênie da opção i, nas mesmas fêmeas */
 function progTrait(L,i,t){
@@ -7297,9 +7468,20 @@ function progAjustaTopo(){
 }
 window.addEventListener('resize',()=>{ try{progAjustaTopo();}catch(e){} });
 function rProg(){
-  const vazio=!AC.map || !AC.map.size;
+  progUpload();
+  const est=progEstAtivas(), temAc=!!(AC.map && AC.map.size);
+  const modo=(est.length && (!temAc || PROG.modo!=='acas')) ? 'estr' : 'acas';
+  const md=$('#prog-modo');
+  md.style.display=(est.length&&temAc)?'':'none';
+  md.innerHTML=[['estr','Estratégias A × B'],['acas','Acasalamento do relatório']].map(([k,l])=>`<button type="button" data-m="${k}" class="${k===modo?'on':''}">${l}</button>`).join('');
+  md.querySelectorAll('button').forEach(b=>b.onclick=()=>{ PROG.modo=b.dataset.m; rProg(); });
+  const vazio=modo==='acas' && !temAc;
   $('#prog-vazio').style.display=vazio?'':'none'; $('#prog-conteudo').style.display=vazio?'none':'';
   if(vazio) return;
+  $('#prog-corpo-acas').style.display=modo==='acas'?'':'none';
+  $('#prog-corpo-cmp').style.display=modo==='estr'?'':'none';
+  $('#prog-opt').style.display=$('#prog-stoc').style.display=(modo==='estr')?'none':'';
+  if(modo==='estr'){ rProgEstr(est); progAjustaTopo(); autoExports($('#v-prog')); return; }
   const P=progCalc();
   if(!P.TP.length){ $('#prog-conteudo').style.display='none'; $('#prog-vazio').style.display=''; $('#prog-vazio .card-b').textContent='Nenhuma característica do relatório do rebanho existe também na base BullSearch.'; return; }
   const L0=progFiltrar(P);
@@ -7312,24 +7494,7 @@ function rProg(){
   /* filtros */
   $('#prog-opt').innerHTML=[...Array(nOp).keys()].map(k=>`<button type="button" data-o="${k}" class="${k===i?'on':''}">Opção ${k+1}</button>`).join('');
   $('#prog-opt').querySelectorAll('button').forEach(b=>b.onclick=()=>{ PROG.opt=+b.dataset.o; rProg(); });
-  $('#prog-trait').innerHTML=P.TP.map(x=>`<option value="${esc(x.k)}">${esc(x.lab)}</option>`).join('');
-  $('#prog-trait').value=PROG.k; $('#prog-trait').onchange=()=>{ PROG.k=$('#prog-trait').value; rProg(); };
-  const catsArq=CATS.filter(c=>P.linhas.some(l=>l.cat===c));
-  const temNov=P.linhas.some(l=>ehNovilha(l.r)), temVac=P.linhas.some(l=>l.cat.startsWith('Lact'));
-  $('#prog-cat').innerHTML=`<option value="all">Todas as categorias</option>`+catsArq.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')+
-    (temNov&&catsArq.filter(c=>ehNovilha({cat:c})).length>1?`<option value="nov">Todas as novilhas</option>`:'')+(temVac&&catsArq.filter(c=>c.startsWith('Lact')).length>1?`<option value="vac">Todas as vacas</option>`:'');
-  if(![...$('#prog-cat').options].some(o=>o.value===PROG.cat)) PROG.cat='all';
-  $('#prog-cat').value=PROG.cat; $('#prog-cat').onchange=()=>{ PROG.cat=$('#prog-cat').value; rProg(); };
-  const stocs=[...new Set(P.linhas.map(l=>l.stoc).filter(Boolean))].sort();
-  $('#prog-stoc').innerHTML=`<option value="all">Todos</option>`+stocs.map(s=>`<option value="${esc(s)}">${esc(s==='SX'?'Sexado (SX)':s==='CN'?'Convencional (CN)':s)}</option>`).join('');
-  if(PROG.stoc!=='all' && !stocs.includes(PROG.stoc)) PROG.stoc='all';
-  $('#prog-stoc').value=PROG.stoc; $('#prog-stoc').onchange=()=>{ PROG.stoc=$('#prog-stoc').value; rProg(); };
-  const lerIdade=el=>{ const v=el.value.trim(); return v===''||!isFinite(+v)?null:Math.max(0,+v); };
-  const ia=$('#prog-imin');
-  ia.value=PROG.imin===null?'':PROG.imin;
-  ia.onchange=()=>{ PROG.imin=lerIdade(ia); rProg(); };
-  $('#prog-idade-x').hidden=(PROG.imin===null);
-  $('#prog-idade-x').onclick=()=>{ PROG.imin=null; rProg(); };
+  progFiltrosUI(P,true);
   const idades=P.linhas.map(l=>l.r.idade).filter(v=>v!==null&&v!==undefined);
   const foraIdade=P.linhas.length-P.linhas.filter(l=>progFiltrar({linhas:[l]}).length).length;
   $('#prog-hint').textContent=`${fmt(L0.length)} de ${fmt(P.linhas.length)} ${plu(P.linhas.length,'fêmea','fêmeas')} no filtro`+(idades.length?` · idades de ${fmt(Math.min(...idades),0)} a ${fmt(Math.max(...idades),0)} meses`:'');
@@ -7403,18 +7568,9 @@ function progResumo(P,L0,nOp,t,sel){
 }
 /* Mesmo gráfico da aba Curvas (uma curva por geração do rebanho), mais a curva da progênie.
    A progênie é comparada com as gerações — não com as mães. */
-function progDist(P,L0,nOp,i,t){
-  const cats=CATS_TEMPO();
-  const {series}=densidade(t.k,cats);
-  const bonsG=series.filter(g=>g.ok);
-  const prog=[i].map(k=>{
-    const v=L0.filter(l=>l.opts[k]&&l.opts[k].prog&&l.opts[k].prog[t.k]!==null&&l.opts[k].prog[t.k]!==undefined).map(l=>l.opts[k].prog[t.k]);
-    return {k, cat:`Progênie · opção ${k+1}`, n:v.length, mu:mean(v), s:sd(v), ok:v.length>=N_MIN_CURVA&&sd(v)>0};
-  });
+function progDistDesenha(cid,bonsG,prog,t,escala){
   const todos=[...bonsG,...prog.filter(g=>g.ok)];
-  $('#prog-dist-hint').textContent=`${t.lab} · curvas do rebanho por geração e da progênie esperada`;
-  if(!todos.length){ if(CHARTS['c-prog-dist']) CHARTS['c-prog-dist'].destroy(); $('#t-prog-dist').innerHTML=''; return; }
-  const lo=Math.min(...todos.map(g=>g.mu-3.5*g.s)), hi=Math.max(...todos.map(g=>g.mu+3.5*g.s));
+  const lo=escala?escala.lo:Math.min(...todos.map(g=>g.mu-3.5*g.s)), hi=escala?escala.hi:Math.max(...todos.map(g=>g.mu+3.5*g.s));
   const x=Array.from({length:180},(_,j)=>lo+j*(hi-lo)/179);
   const RAMPA=['#AFC3E2','#8FA9D4','#6E8CC4','#4A7FD4','#295097','#17305C'];
   const cc=RAMPA.slice(-Math.max(2,Math.min(6,bonsG.length)));
@@ -7423,8 +7579,8 @@ function progDist(P,L0,nOp,i,t){
     borderColor:PROG_FILHA,backgroundColor:'transparent',fill:false,tension:.34,pointRadius:0,
     borderWidth:4,__g:g,__norot:true}));
   const datasets=[...dsG,...dsP];
-  const ymax=Math.max(...datasets.flatMap(d=>d.data.map(p=>p.y)));
-  chart('c-prog-dist',{type:'line',data:{datasets},
+  const ymax=escala?escala.ymax:Math.max(...datasets.flatMap(d=>d.data.map(p=>p.y)));
+  chart(cid,{type:'line',data:{datasets},
     options:{parsing:false,interaction:{mode:'nearest',axis:'x',intersect:false},maintainAspectRatio:false,layout:{padding:{top:24,right:10,bottom:6,left:8}},
       plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true,pointStyle:'circle'}},
         tooltip:{callbacks:{title:c=>`${t.lab}: ${fmt(c[0].parsed.x,t.d)} ${t.u}`,label:c=>c.dataset.label}}},
@@ -7439,6 +7595,19 @@ function progDist(P,L0,nOp,i,t){
         const boxY=Math.max(a.top+4, py-26-(idx%2?14:0));
         ctx.fillStyle='#fff';ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.beginPath();ctx.roundRect(px-w/2,boxY,w,17,4);ctx.fill();ctx.stroke();ctx.fillStyle=col;ctx.fillText(txt,px,boxY+11);
       });ctx.restore();}}]});
+}
+function progDist(P,L0,nOp,i,t){
+  const cats=CATS_TEMPO();
+  const {series}=densidade(t.k,cats);
+  const bonsG=series.filter(g=>g.ok);
+  const prog=[i].map(k=>{
+    const v=L0.filter(l=>l.opts[k]&&l.opts[k].prog&&l.opts[k].prog[t.k]!==null&&l.opts[k].prog[t.k]!==undefined).map(l=>l.opts[k].prog[t.k]);
+    return {k, cat:`Progênie · opção ${k+1}`, n:v.length, mu:mean(v), s:sd(v), ok:v.length>=N_MIN_CURVA&&sd(v)>0};
+  });
+  const todos=[...bonsG,...prog.filter(g=>g.ok)];
+  $('#prog-dist-hint').textContent=`${t.lab} · curvas do rebanho por geração e da progênie esperada`;
+  if(!todos.length){ if(CHARTS['c-prog-dist']) CHARTS['c-prog-dist'].destroy(); $('#t-prog-dist').innerHTML=''; return; }
+  progDistDesenha('c-prog-dist',bonsG,prog,t);
   let h=`<thead><tr><th>Grupo</th><th>Animais (n)</th><th>Média</th><th>Desvio-padrão</th><th>Faixa esperada de 95%</th></tr></thead><tbody>`;
   [...series,...prog].forEach(g=>{
     const faixa=(g.n>1&&g.s>0)?`${nivel(g.mu-2*g.s,t)} a ${uv(g.mu+2*g.s,t)}`:'—';
@@ -7457,6 +7626,220 @@ function progAnimais(P,L0,nOp,t){
   $('#t-prog-animais').innerHTML=h+`</tbody>`; ordenavel('t-prog-animais');
 }
 
+/* =========================================================================
+   COMPARAÇÃO DE ESTRATÉGIAS (A × B) NA ABA PROGRESSO GENÉTICO
+   Dois CSVs de acasalamento do BlueLink para o MESMO rebanho, usados só na
+   projeção — não tocam em AC (aba Acasalamento / relatório do cliente).
+   Cada estratégia usa o touro da 1ª opção do CSV dela; a base de fêmeas é a
+   mesma (D.rows) e a conta é a mesma de progCalc (média da mãe e do touro).
+   ========================================================================= */
+let PROGE = {A:null, B:null};
+const progEstAtivas = () => ['A','B'].filter(k=>PROGE[k]).map(k=>PROGE[k]);
+
+function ingestEstrategia(k, arqs){
+  const map=new Map(), arquivos=[]; let dup=0, beef=0;
+  arqs.forEach(a=>{
+    const f=lerCsvAcas(a.texto,a.nome), P=f.P; let add=0;
+    const [a1,b1,c1]=P.trios[0];     // 1ª opção = primeiro bloco "NAAB" do arquivo
+    f.linhas.forEach(L=>{
+      const id=String(L[P.iId]||'').trim(); if(!id) return;
+      if(map.has(id)){ dup++; return; }   // primeiro arquivo vence
+      const naab=String(L[a1]||'').trim(), nome=String(L[b1]||'').trim();
+      const ehBeef=naab.toUpperCase()==='BEEF';
+      if(ehBeef) beef++;
+      map.set(id,{id, stoc:P.iStoc>=0?String(L[P.iStoc]||'').trim().toUpperCase():'', pai:P.iPai>=0?String(L[P.iPai]||'').trim():'',
+        recs:(naab&&!ehBeef)?[{naab,nome,inb:num(L[c1])}]:[], arq:a.nome});
+      add++;
+    });
+    arquivos.push({nome:a.nome, linhas:f.linhas.length, novos:add});
+  });
+  /* consanguinidade em centésimos de porcento (ex.: 416) -> % (4,16), como na aba Acasalamento */
+  const v=[]; map.forEach(a=>a.recs.forEach(r=>{ if(r.inb!==null&&isFinite(r.inb)) v.push(Math.abs(r.inb)); }));
+  if(v.length>=5){ v.sort((x,y)=>x-y); if(v[Math.floor(v.length/2)]>40) map.forEach(a=>a.recs.forEach(r=>{ if(r.inb!==null) r.inb=r.inb/100; })); }
+  PROGE[k]={k, rot:'Estratégia '+k, map, arquivos, textos:arqs, dup, beef};
+  return map.size;
+}
+async function progLerEstrategia(k, lista){
+  const err=$('#prog-estr-err'); err.style.display='none';
+  const fs=[...(lista||[])].filter(f=>/\.csv$/i.test(f.name)||f.type==='text/csv');
+  if(!fs.length){ err.style.display='block'; err.innerHTML='<span class="tag">Arquivo ignorado</span>Envie o arquivo <b>.csv</b> de acasalamento exportado do BlueLink.'; return; }
+  try{
+    const arqs=await Promise.all(fs.map(lerArquivo));
+    ingestEstrategia(k,arqs);
+    PROG.modo='estr'; painted.prog=true;
+    montarTabs(); rProg();
+  }catch(e){
+    err.style.display='block'; err.innerHTML=`<span class="tag">Não consegui ler</span>${esc(e.message)}`;
+  }
+}
+function progUpload(){
+  const adm=APP_CONFIG.mode!=='client';
+  $('#prog-estr-up').style.display=adm?'':'none';
+  if(!adm) return;
+  ['A','B'].forEach(k=>{
+    const e=PROGE[k], drop=$('#prog-drop-'+k), f=$('#prog-file-'+k);
+    $('#prog-chip-'+k).innerHTML=e?`<b>${esc(e.arquivos.map(a=>a.nome).join(' + '))}</b><br>${fmt(e.map.size)} ${plu(e.map.size,'animal','animais')}`+
+      (e.dup?` · ${fmt(e.dup)} ${plu(e.dup,'número repetido ignorado','números repetidos ignorados')}`:''):'<span style="color:var(--ink-3)">Nenhum arquivo carregado</span>';
+    $('#prog-x-'+k).hidden=!e;
+    if(drop.dataset.w) return;
+    drop.dataset.w='1';
+    drop.onclick=()=>f.click();
+    drop.onkeydown=ev=>{ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); f.click(); } };
+    drop.ondragover=ev=>{ ev.preventDefault(); drop.classList.add('over'); };
+    drop.ondragleave=()=>drop.classList.remove('over');
+    drop.ondrop=ev=>{ ev.preventDefault(); drop.classList.remove('over'); progLerEstrategia(k,ev.dataTransfer.files); };
+    f.onchange=ev=>{ progLerEstrategia(k,ev.target.files); ev.target.value=''; };
+    $('#prog-x-'+k).onclick=()=>{ PROGE[k]=null; $('#prog-estr-err').style.display='none'; montarTabs(); rProg(); };
+  });
+}
+
+/* Junta as estratégias por animal. Só entram fêmeas presentes em TODAS as estratégias carregadas. */
+function progCalcEstr(est){
+  const Ps=est.map(e=>progCalc(e.map,1));
+  const porId=Ps.map(P=>new Map(P.linhas.map(l=>[l.a.id,l])));
+  const linhas=[]; let soEmUma=0;
+  const todosIds=new Set(); porId.forEach(m=>m.forEach((_,id)=>todosIds.add(id)));
+  todosIds.forEach(id=>{
+    const ls=porId.map(m=>m.get(id));
+    if(ls.some(x=>!x)){ soEmUma++; return; }
+    linhas.push({id, r:ls[0].r, cat:ls[0].cat, stocs:ls.map(l=>l.stoc), opts:ls.map(l=>l.opts[0])});
+  });
+  return {TP:Ps[0].TP, linhas, Ps, soEmUma};
+}
+/* Mesmas fêmeas nas duas estratégias: só conta quem tem mãe e progênie calculáveis em TODAS. */
+function progTraitEstr(L,t,n){
+  const S=L.filter(l=>l.r[t.k]!==null&&l.r[t.k]!==undefined&&l.opts.every(o=>o&&o.prog&&o.prog[t.k]!==null&&o.prog[t.k]!==undefined));
+  const dam=S.length?mean(S.map(l=>l.r[t.k])):null;
+  const idx=[...Array(n).keys()];
+  return {S, n:S.length, dam,
+    prog:idx.map(s=>S.length?mean(S.map(l=>l.opts[s].prog[t.k])):null),
+    fav:idx.map(s=>S.length&&t.dir?S.filter(l=>(l.opts[s].prog[t.k]-l.r[t.k])*t.dir>0).length/S.length*100:null)};
+}
+
+function rProgEstr(est){
+  const n=est.length, host=$('#prog-corpo-cmp');
+  const Pj=progCalcEstr(est);
+  if(!Pj.TP.length){ host.innerHTML='<div class="ins warn"><span class="tag">Sem características comuns</span>Nenhuma característica do relatório do rebanho existe também na base BullSearch.</div>'; return; }
+  if(!PROG.k || !Pj.TP.some(x=>x.k===PROG.k)) PROG.k=(Pj.TP.find(x=>x.k==='Leite')||Pj.TP[0]).k;
+  const t=Pj.TP.find(x=>x.k===PROG.k);
+  progFiltrosUI(Pj,false);
+  const L0=progFiltrar(Pj,true);
+  const idades=Pj.linhas.map(l=>l.r.idade).filter(v=>v!==null&&v!==undefined);
+  $('#prog-hint').textContent=`${fmt(L0.length)} de ${fmt(Pj.linhas.length)} ${plu(Pj.linhas.length,'fêmea','fêmeas')} no filtro`+(idades.length?` · idades de ${fmt(Math.min(...idades),0)} a ${fmt(Math.max(...idades),0)} meses`:'')+` · mesmas fêmeas em ${n>1?'todas as estratégias':'a estratégia'}, touro da 1ª opção`;
+  const AR=Pj.TP.map(x=>progTraitEstr(L0,x,n));
+  const R=AR[Pj.TP.indexOf(t)];
+  const sdH=tt=>sd(vals(D.rows,tt.k));
+  const cab=e=>`<div class="prog-cmp-h">${esc(e.rot)}<small>${esc(e.arquivos.map(a=>a.nome).join(' + '))} · ${fmt(e.map.size)} ${plu(e.map.size,'animal','animais')}</small></div>`;
+
+  /* avisos */
+  const av=[];
+  est.forEach((e,s)=>{
+    const P=Pj.Ps[s];
+    if(P.faltaTouro.size){ const tot=[...P.faltaTouro.values()].reduce((a,b)=>a+b,0);
+      av.push(['info',`Touros fora da base BullSearch · ${esc(e.rot)}`,`<b>${fmt(P.faltaTouro.size)}</b> ${plu(P.faltaTouro.size,'touro de 1ª opção não está','touros de 1ª opção não estão')} na base BullSearch embutida (${fmt(tot)} ${plu(tot,'fêmea fica','fêmeas ficam')} sem projeção nesta estratégia, e por isso fora da comparação na característica).`]); }
+    if(P.semRebanho) av.push(['info',`Animais sem cadastro no rebanho · ${esc(e.rot)}`,`<b>${fmt(P.semRebanho)}</b> ${plu(P.semRebanho,'animal do CSV não existe','animais do CSV não existem')} no relatório de índice do rebanho e ${plu(P.semRebanho,'foi ignorado','foram ignorados')}.`]);
+    const semTouro=[...e.map.values()].filter(a=>!a.recs.length).length;
+    if(semTouro) av.push(['info',`Sem touro na 1ª opção · ${esc(e.rot)}`,`<b>${fmt(semTouro)}</b> ${plu(semTouro,'fêmea não tem','fêmeas não têm')} touro leiteiro na 1ª opção${e.beef?` (${fmt(e.beef)} com corte)`:''} e ${plu(semTouro,'fica','ficam')} fora da projeção.`]);
+  });
+  if(n>1&&Pj.soEmUma) av.push(['warn','Fêmeas presentes em só uma estratégia',`<b>${fmt(Pj.soEmUma)}</b> ${plu(Pj.soEmUma,'fêmea aparece','fêmeas aparecem')} em apenas um dos CSVs e ${plu(Pj.soEmUma,'ficou','ficaram')} fora da comparação. Confira se os dois arquivos são do mesmo rebanho e da mesma exportação.`]);
+  if(L0.length<Pj.linhas.length) av.push(['info','Filtro de idade ou categoria',`${fmt(Pj.linhas.length-L0.length)} ${plu(Pj.linhas.length-L0.length,'fêmea fica','fêmeas ficam')} fora dos cálculos pelos filtros atuais. O filtro de tipo de sêmen não se aplica aqui, porque o tipo muda de uma estratégia para outra e a comparação precisa das mesmas fêmeas nas duas.`]);
+  const avHtml=av.map(([c,tt,m])=>`<div class="ins ${c}" style="margin-bottom:8px"><span class="tag">${tt}</span>${m}</div>`).join('');
+
+  /* KPIs: uma coluna por estratégia, o mesmo indicador na mesma linha */
+  const gan=R.prog.map(p=>(R.n&&p!==null)?p-R.dam:null);
+  const nFav=est.map((_,s)=>Pj.TP.map((x,i)=>x.dir&&AR[i].n?(AR[i].prog[s]-AR[i].dam)*x.dir:null).filter(v=>v!==null));
+  const kp=est.map((_,s)=>[
+    kpi(`${t.lab} · progênie`, R.n?uv(R.prog[s],t):'—', R.n?`mães: ${uv(R.dam,t)} · diferença <b>${uv(gan[s],t,false,true)}</b>`:'sem dados para calcular', gan[s]!==null&&t.dir&&gan[s]*t.dir>0?'k-green':'k-amber'),
+    kpi('Filhas melhores que a mãe', R.fav[s]!==null?fmt(R.fav[s],0)+'%':'—', `em ${esc(t.lab)}, nesta estratégia`, ''),
+    kpi('Características que melhoram', nFav[s].length?`${fmt(nFav[s].filter(v=>v>0).length)} de ${fmt(nFav[s].length)}`:'—', 'progênie melhor que as mães, na média', '')
+  ]);
+  let kh=`<div class="prog-cmp-grid" style="--n:${n}">`+est.map(cab).join('');
+  for(let r=0;r<3;r++) est.forEach((_,s)=>{ kh+=kp[s][r]; });
+  kh+='</div>';
+
+  /* Resumo por característica: mesma característica na mesma linha, barra na mesma escala */
+  const pct=(a,b,tt)=>(a===null||b===null||Math.abs(a)<0.25*(sdH(tt)||0)||Math.abs(a)<1e-9)?null:(b-a)/Math.abs(a)*100;
+  const linhasT=[]; const dz=[];
+  Pj.TP.forEach((tt,i)=>{ const Rr=AR[i]; if(!Rr.n) return;
+    const z=Rr.prog.map(p=>tt.dir?(p-Rr.dam)/(sdH(tt)||1)*tt.dir:null);
+    z.forEach(v=>dz.push(v)); linhasT.push({tt,Rr,z}); });
+  const mx=Math.max(0.05,...dz.filter(v=>v!==null).map(Math.abs));
+  const L=est.map(e=>e.k);
+  let tb=`<thead><tr><th>Característica</th><th>Fêmeas (n)</th><th>Mães</th>`+
+    est.map(e=>`<th>${e.k} · Progênie</th><th>${e.k} · Ganho %</th><th style="min-width:150px">${e.k} · Em desvios-padrão</th>`).join('')+
+    (n===2?`<th>${L[1]} − ${L[0]}</th>`:'')+`</tr></thead><tbody>`;
+  linhasT.forEach(({tt,Rr,z})=>{
+    tb+=`<tr><td>${esc(tt.lab)}</td><td>${fmt(Rr.n)}</td><td>${uv(Rr.dam,tt)}</td>`+
+      Rr.prog.map((p,s)=>{ const pc=pct(Rr.dam,p,tt), zz=z[s], w=zz===null?0:Math.abs(zz)/mx*50;
+        const bar=zz===null?'—':`<div class="prog-bar"><i class="${zz>=0?'up':'dn'}" style="${zz>=0?'left:50%':`left:${50-w}%`};width:${w}%"></i><b></b></div>`;
+        return `<td>${uv(p,tt)}</td><td class="${progDifCls(p-Rr.dam,tt)}">${pc===null?'—':sgn(pc,0)+'%'}</td><td>${bar}</td>`; }).join('')+
+      (n===2?(()=>{ const d=Rr.prog[1]-Rr.prog[0]; return `<td class="${progDifCls(d,tt)}">${uv(d,tt,false,true)}</td>`; })():'')+`</tr>`;
+  });
+  const inb=est.map((_,s)=>mean(L0.filter(l=>l.opts.every(o=>o&&o.prog)).map(l=>l.opts[s].rec.inb).filter(v=>v!==null&&v!==undefined)));
+  tb+=`<tr><td>Consanguinidade da filha (%)</td><td>—</td><td>—</td>${inb.map(v=>`<td>${fmt(v,2)}</td><td>—</td><td>—</td>`).join('')}${n===2?`<td>${inb[0]!==null&&inb[1]!==null?sgn(inb[1]-inb[0],2):'—'}</td>`:''}</tr>`;
+  tb+='</tbody>';
+
+  /* Curvas: mesma escala nos dois gráficos */
+  const cats=CATS_TEMPO(), {series}=densidade(t.k,cats), bonsG=series.filter(g=>g.ok);
+  const progs=est.map((e,s)=>{ const v=R.S.map(l=>l.opts[s].prog[t.k]); return {k:s, cat:`Progênie · ${e.rot}`, n:v.length, mu:mean(v), s:sd(v), ok:v.length>=N_MIN_CURVA&&sd(v)>0}; });
+  const todos=[...bonsG,...progs.filter(g=>g.ok)];
+
+  /* Tabela por animal */
+  const LIM=1000;
+  const g0=l=>{ const o=l.opts[0]; return o&&o.prog&&o.prog[t.k]!==null&&l.r[t.k]!==null&&l.r[t.k]!==undefined?(o.prog[t.k]-l.r[t.k])*(t.dir||1):-1e12; };
+  const SA=L0.slice().sort((a,b)=>g0(b)-g0(a)).slice(0,LIM);
+  let ta=`<thead><tr><th>Animal</th><th>Idade (meses)</th><th>Categoria</th><th>${esc(t.lab)} da mãe</th>`+
+    est.map(e=>`<th>${e.k} · Sêmen</th><th>${e.k} · Touro</th><th>${e.k} · Progênie</th>`).join('')+(n===2?`<th>${L[1]} − ${L[0]}</th>`:'')+`</tr></thead><tbody>`;
+  SA.forEach(l=>{
+    const vv=l.opts.map(o=>o&&o.prog?o.prog[t.k]:null);
+    ta+=`<tr><td>${esc(l.id)}</td><td>${l.r.idade!==null&&l.r.idade!==undefined?fmt(l.r.idade,0):'—'}</td><td>${esc(l.cat||'')}</td><td>${uv(l.r[t.k],t)}</td>`+
+      l.opts.map((o,s)=>o?`<td>${esc(l.stocs[s]||'')}</td><td>${esc(o.rec.nome||o.rec.naab)}</td><td class="${vv[s]!==null&&l.r[t.k]!=null?progDifCls(vv[s]-l.r[t.k],t):''}">${uv(vv[s],t)}</td>`:'<td>—</td><td>—</td><td>—</td>').join('')+
+      (n===2?(vv[0]!==null&&vv[1]!==null?`<td class="${progDifCls(vv[1]-vv[0],t)}">${uv(vv[1]-vv[0],t,false,true)}</td>`:'<td>—</td>'):'')+`</tr>`;
+  });
+  ta+='</tbody>';
+
+  host.innerHTML=
+    (avHtml?`<div style="margin-bottom:16px">${avHtml}</div>`:'')+kh+
+    `<div class="card" style="margin-bottom:16px"><div class="card-h"><h3>Resumo por característica: mães × estratégias</h3><span class="hint">${n>1?'mesmas fêmeas nas estratégias, ':''}touro da 1ª opção</span></div>
+      <div class="card-b"><div class="tw"><div class="tabela-fixa"><table id="t-prog-cmp-op" class="center-all"></table></div>
+      <p class="share-note"><b>Ganho %</b> = (progênie − mães) ÷ |mães|. Quando a média das mães é muito próxima de zero (menos de 0,25 desvio-padrão), o percentual não é confiável e aparece como “—”: use a barra. As barras estão em desvios-padrão da própria fazenda, na mesma escala para todas as estratégias e características, já considerando o sentido (menos é melhor em Células Somáticas, Natimorto e Facilidade de Parto). ${n===2?`<b>${L[1]} − ${L[0]}</b> é a diferença entre as progênies projetadas, na unidade da característica. `:''}Cada linha usa só as fêmeas com mãe e progênie calculáveis em todas as estratégias (coluna Fêmeas).</p></div></div></div>`+
+    `<div class="card" style="margin-bottom:16px"><div class="card-h"><h3>Curvas de distribuição: rebanho por geração × progênie</h3><span class="hint">${esc(t.lab)} · mesma escala nos dois gráficos</span></div>
+      <div class="card-b"><div class="prog-cmp-grid" style="--n:${n}">`+est.map((e,s)=>`<div class="prog-cmp-col">${cab(e)}<div class="prog-ch prog-ch-tall"><canvas id="c-prog-dist-${e.k}"></canvas></div><div class="tw" style="margin-top:12px"><div class="tabela-fixa"><table id="t-prog-dist-${e.k}" class="center-all"></table></div></div></div>`).join('')+`</div></div></div>`+
+    `<div class="card" style="margin-bottom:16px"><div class="card-h"><h3>Acasalamento por animal</h3><span class="hint">${fmt(SA.length)}${L0.length>LIM?` de ${fmt(L0.length)}`:''} fêmeas · ordenadas pelo ganho da Estratégia ${L[0]} em ${esc(t.lab)}</span></div>
+      <div class="card-b tw"><div class="tabela-fixa"><table id="t-prog-cmp-animais" class="center-all"></table></div></div></div>`+
+    `<div class="ins info"><span class="tag">Como é calculado</span>Para cada estratégia, progênie = <b>média aritmética simples</b> entre a matriz (relatório do rebanho${FONTE==='G'?', base genômica':FONTE==='PA'?', média de parentesco':''}) e o <b>touro indicado como 1ª opção</b> no CSV daquela estratégia (BullSearch ${esc(BULLSEARCH_EMBED.version||'')}), característica a característica. As duas estratégias usam a mesma base de fêmeas e as mesmas referências (mães e gerações do rebanho). É a expectativa média da geração: não considera heterose, variação de Mendel nem a taxa real de uso de cada touro. Os CSVs das estratégias servem só para esta projeção.</div>`;
+
+  $('#t-prog-cmp-op').innerHTML=tb;
+  $('#t-prog-cmp-animais').innerHTML=ta; ordenavel('t-prog-cmp-animais');
+
+  if(!todos.length){
+    est.forEach(e=>{ if(CHARTS['c-prog-dist-'+e.k]) CHARTS['c-prog-dist-'+e.k].destroy(); const tbl=$('#t-prog-dist-'+e.k); if(tbl) tbl.innerHTML=''; });
+    return;
+  }
+  const escala={lo:Math.min(...todos.map(g=>g.mu-3.5*g.s)), hi:Math.max(...todos.map(g=>g.mu+3.5*g.s)), ymax:Math.max(...todos.map(g=>dnorm(g.mu,g.mu,g.s)))};
+  est.forEach((e,s)=>{
+    progDistDesenha('c-prog-dist-'+e.k,bonsG,[progs[s]],t,escala);
+    let h=`<thead><tr><th>Grupo</th><th>Animais (n)</th><th>Média</th><th>Desvio-padrão</th><th>Faixa esperada de 95%</th></tr></thead><tbody>`;
+    [...series,progs[s]].forEach(g=>{
+      const faixa=(g.n>1&&g.s>0)?`${nivel(g.mu-2*g.s,t)} a ${uv(g.mu+2*g.s,t)}`:'—';
+      h+=`<tr><td>${esc(g.cat)}</td><td>${fmt(g.n)}</td><td>${uv(g.mu,t)}</td><td>${g.n>1?uv(g.s,t,true):'—'}</td><td>${faixa}</td></tr>`;
+    });
+    $('#t-prog-dist-'+e.k).innerHTML=h+'</tbody>';
+  });
+}
+
+function acasModoUI(){
+  const card = $('#acas-modo-card'); if(!card) return;
+  card.style.display = AC.duplo ? '' : 'none';
+  if(!AC.duplo) return;
+  const cont = new Map();
+  AC.map.forEach(a => { const r = AC.byId.get(a.id); const c = r && r.cat ? r.cat : 'Sem categoria'; cont.set(c, (cont.get(c)||0)+1); });
+  const ordem = [...CATS, 'Sem categoria'];
+  const cats = ordem.filter(c => cont.has(c)).concat([...cont.keys()].filter(c => !ordem.includes(c)));
+  $('#acas-modo-grid').innerHTML = cats.map(c => `<div class="acas-modo-row"><span>${esc(c)}<small>${fmt(cont.get(c))} ${plu(cont.get(c),'animal','animais')}</small></span>
+    <select data-c="${esc(c)}" aria-label="Tipo de sêmen em ${esc(c)}">${[['dual','Sexado + convencional'],['CN','Só convencional'],['SX','Só sexado']].map(([v,l]) => `<option value="${v}" ${(ACMODO[c]||'dual')===v?'selected':''}>${l}</option>`).join('')}</select></div>`).join('');
+  $('#acas-modo-grid').onchange = e => { const sel = e.target.closest('select[data-c]'); if(!sel) return; ACMODO[sel.dataset.c] = sel.value; ACLIM = 200; rAcas(); };
+}
 function rAcas(){
   const admin = APP_CONFIG.mode !== 'client';
   $('#acas-up').hidden = !admin;
@@ -7481,7 +7864,7 @@ function rAcas(){
   $('#acas-q-card').hidden = false; $('#acas-body').hidden = false;
   $('#acas-up').classList.add('compact'); $('#acas-swap').hidden = !admin;
   $('#acas-files').innerHTML = AC.arquivos.map(a =>
-    `<span class="filechip"><b>${esc(a.nome)}</b> · ${fmt(a.novos)} ${plu(a.novos,'animal','animais')}${a.dup?` · ${fmt(a.dup)} repetidos`:''}</span>`).join('');
+    `<span class="filechip"><b>${esc(a.nome)}</b> · ${fmt(a.novos)} ${plu(a.novos,'animal','animais')}${a.compl?` · ${fmt(a.compl)} ${plu(a.compl,'complemento','complementos')} de outro tipo de sêmen`:''}${a.dup?` · ${fmt(a.dup)} repetidos`:''}</span>`).join('');
 
   const q = $('#acas-q');
   q.value = ACQ;
@@ -7520,7 +7903,7 @@ function rAcas(){
 
   $('#acas-operacional').hidden = true; $('#acas-operacional').innerHTML = '';
   $('#acas-op-open').onclick = () => acasRenderOperacional(true);
-  acasKpis(); acasAvisos(); acasPintarPlano(); acasTabela(); acasBuscar();
+  acasModoUI(); acasKpis(); acasAvisos(); acasPintarPlano(); acasTabela(); acasBuscar();
   // A lista tem somente os três destinos explícitos abaixo; o exportador
   // genérico da tabela é bloqueado para não criar um segundo botão "Excel".
   $('#acas-xlsx').onclick = () => abrirModalAcasExport('xlsx');
@@ -7589,9 +7972,17 @@ function boot(entrada){
       USO_COLS = Array.isArray(APP_CONFIG.usoCols) ? new Set(APP_CONFIG.usoCols) : null;
       USO_RACA = APP_CONFIG.usoRaca || 'auto';
     }
+    if(APP_CONFIG.acasModo) ACMODO = Object.assign({}, APP_CONFIG.acasModo);
     if(APP_CONFIG.embeddedAcasBase64){
       try{ ingestAcas([{nome:'acasalamento incorporado', texto:base64ToUtf8(APP_CONFIG.embeddedAcasBase64)}]); }
       catch(e){ console.error('Acasalamento incorporado ilegível:', e); }
+    }
+    if(APP_CONFIG.embeddedEstrategias){
+      for(const k of ['A','B']){
+        const lst=APP_CONFIG.embeddedEstrategias[k]; if(!Array.isArray(lst)||!lst.length) continue;
+        try{ ingestEstrategia(k, lst.map(x=>({nome:x.nome, texto:base64ToUtf8(x.b64)}))); }
+        catch(e){ console.error('Estratégia '+k+' incorporada ilegível:', e); }
+      }
     }
     montarTabs(false);
     $('#m-n').textContent = fmt(D.rows.length);
@@ -7652,6 +8043,8 @@ function montarConfigCliente(){
   if(!META.farm||!META.owner){alert('Preencha o nome da fazenda e do proprietário antes de gerar a versão do cliente.');openMeta();return;}
   return {mode:'client',embeddedCsvBase64:utf8ToBase64(RAW_CSV),
     embeddedAcasBase64: AC.csv ? utf8ToBase64(AC.csv) : '',
+    acasModo: ACMODO,
+    embeddedEstrategias: Object.fromEntries(['A','B'].filter(k=>PROGE[k]).map(k=>[k, PROGE[k].textos.map(a=>({nome:a.nome, b64:utf8ToBase64(a.texto)}))])),
     /* A planilha de touros em uso é um segundo arquivo e não fazia parte do
        payload anterior. Guardamos o resultado já normalizado, evitando
        depender do XLSX original no navegador do cliente. */
